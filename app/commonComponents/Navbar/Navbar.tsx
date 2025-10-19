@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect, FC } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Home,
   Zap,
@@ -16,18 +17,27 @@ interface NavItem {
   id: string;
   icon: LucideIcon;
   label: string;
+  path: string;
 }
 
 const Navbar: FC = () => {
-  const [activeSection, setActiveSection] = useState<string>("home");
+  const pathname = usePathname();
+  const router = useRouter();
   const [energyLevel, setEnergyLevel] = useState<number>(100);
 
   const navItems: NavItem[] = [
-    { id: "home", icon: Crosshair, label: "Home" },
-    { id: "contests", icon: Trophy, label: "Contests" },
-    { id: "profile", icon: Users, label: "Profile" },
-    { id: "contact", icon: Mail, label: "Contact" },
+    { id: "home", icon: Crosshair, label: "Home", path: "/ui/home" },
+    { id: "contests", icon: Trophy, label: "Contests", path: "/ui/contests" },
+    { id: "profile", icon: Users, label: "Profile", path: "/ui/profile" },
+    { id: "contact", icon: Mail, label: "Contact", path: "/ui/contact" },
   ];
+
+  const isActive = (path: string) => {
+    if (path === "/ui/home") {
+      return pathname === "/" || pathname === "/ui/home" || pathname?.startsWith("/ui/home");
+    }
+    return pathname?.startsWith(path);
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -62,27 +72,32 @@ const Navbar: FC = () => {
 
         {/* Navigation Items */}
         <div className="flex space-x-2">
-          {navItems.map(({ id, icon: Icon, label }) => (
-            <button
-              key={id}
-              onClick={() => setActiveSection(id)}
-              className={`group relative flex items-center space-x-2 px-4 py-2 transition-all duration-300 font-mono font-bold ${activeSection === id
-                  ? "text-emerald-400"
-                  : "text-gray-400 hover:text-emerald-400"
+          {navItems.map(({ id, icon: Icon, label, path }) => {
+            const active = isActive(path);
+            return (
+              <button
+                key={id}
+                onClick={() => router.push(path)}
+                className={`group relative flex items-center space-x-2 px-4 py-2 transition-all duration-300 font-mono font-bold ${
+                  active
+                    ? "text-emerald-400"
+                    : "text-gray-400 hover:text-emerald-400"
                 }`}
-            >
-              <Icon className="w-5 h-5" strokeWidth={2.5} />
-              <span className="text-xs hidden md:inline">{label}</span>
+              >
+                <Icon className="w-5 h-5" strokeWidth={2.5} />
+                <span className="text-xs hidden md:inline">{label}</span>
 
-              {/* Neon Glitch Animation */}
-              <span
-                className={`absolute inset-0 rounded-md pointer-events-none ${activeSection === id
-                    ? "border-2 border-emerald-400 animate-glow"
-                    : "border border-emerald-500/30 group-hover:animate-glow"
+                {/* Neon Glitch Animation */}
+                <span
+                  className={`absolute inset-0 rounded-md pointer-events-none ${
+                    active
+                      ? "border-2 border-emerald-400 bg-emerald-400/10 animate-glow"
+                      : "border border-emerald-500/30 group-hover:border-emerald-400/50 group-hover:bg-emerald-400/5 group-hover:animate-glow"
                   }`}
-              ></span>
-            </button>
-          ))}
+                ></span>
+              </button>
+            );
+          })}
         </div>
 
         {/* Energy Bar */}
