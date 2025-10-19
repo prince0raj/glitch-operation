@@ -39,6 +39,7 @@ import {
   BinaryPattern,
   BinaryColumn,
 } from "./style";
+import { signInWithGoogle } from "@/lib/auth-actions";
 
 const orbitron = Orbitron({   variable: "--font-geist-mono",subsets: ["latin"] });
 
@@ -132,7 +133,7 @@ const Page = () => {
               : "Create your OPS GLITCH identity to begin the mission"}
           </FormSubtitle>
           <div className="h-[50vh]">
-            <SocialButtons>
+            <SocialButtons onClick={()=>signInWithGoogle()}>
               <SocialButton type="button">
                 <Chrome size={16} />
                 Google Auth
