@@ -4,26 +4,17 @@ import { motion } from 'framer-motion';
 
 export default function HeroSection() {
   return (
-    <section className="relative h-screen w-full bg-[#05060a] text-white flex items-center justify-center overflow-hidden font-mono">
-      {/* Neon grid and particles for gaming vibe */}
+    <section className="relative h-screen w-full bg-[#05060a] text-white flex flex-col items-center justify-center overflow-hidden font-mono">
+      {/* Neon grid and particles */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_#0a0f1c_0%,_#000_100%)] overflow-hidden">
         <div className="absolute inset-0 bg-[linear-gradient(#00ffae40_1px,transparent_1px),linear-gradient(90deg,#00ffae40_1px,transparent_1px)] bg-[size:50px_50px] opacity-10 animate-[pulseGrid_4s_ease-in-out_infinite]" />
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/dark-mosaic.png')] opacity-20 animate-[matrixFlow_15s_linear_infinite]" />
       </div>
 
-      {/* Floating Particles */}
-      {/* {[...Array(15)].map((_, i) => (
-        <motion.span
-          key={i}
-          className="absolute w-2 h-2 bg-[#00ffae] rounded-full shadow-[0_0_10px_#00ffae]"
-          initial={{ opacity: 0, y: Math.random() * 800, x: Math.random() * 1200 }}
-          animate={{ opacity: [0, 1, 0], y: [Math.random() * 800, -50], x: [Math.random() * 1200, Math.random() * 1200] }}
-          transition={{ duration: 6 + Math.random() * 5, repeat: Infinity, ease: 'easeInOut' }}
-        />
-      ))} */}
+      {/* Floating Spheres */}
+      <WireframeSpheres />
 
       {/* Hero Content */}
-      <WireframeSpheres/>
       <div className="relative z-10 flex flex-col md:flex-row items-center justify-between w-11/12 max-w-6xl">
         {/* Left Text Section */}
         <div className="flex flex-col gap-4 max-w-lg">
@@ -48,10 +39,24 @@ export default function HeroSection() {
 
         {/* Right Animated Circle */}
         <div className="pt-16">
-            <TerminalWindows />
-          </div>
-       
+          <TerminalWindows />
+        </div>
       </div>
+
+      {/* Explore More Button */}
+      <motion.div
+        className="absolute bottom-10 left-1/2 transform -translate-x-1/2 opacity-60"
+        animate={{ y: [0, -15, 0] }}
+        transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+      >
+        <a
+          href="#how-it-works" // link to next section
+          className="px-6 py-3 border border-[#00ffae] text-[#00ffae] rounded-full hover:bg-[#00ffae]/20 hover:shadow-[0_0_20px_#00ffae] transition-all flex items-center gap-2"
+        >
+          Explore More
+          <span className="animate-bounce">↓</span>
+        </a>
+      </motion.div>
 
       <style jsx>{`
         @keyframes matrixFlow {
