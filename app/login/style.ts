@@ -16,6 +16,8 @@ export const LeftSection = styled.div`
   justify-content: center;
   padding: 2rem;
   position: relative;
+  height: 100vh;
+  overflow-y: auto;
   background: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
 `;
 
@@ -53,7 +55,6 @@ export const Logo = styled.div`
   margin-bottom: 3rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  font-family: 'Fira Code', monospace;
   
   &::before {
     content: '> ';
@@ -63,7 +64,7 @@ export const Logo = styled.div`
 
 export const FormTitle = styled.h1`
   color: #e4e4e7;
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
   line-height: 1.2;
@@ -71,10 +72,45 @@ export const FormTitle = styled.h1`
 
 export const FormSubtitle = styled.p`
   color: #a1a1aa;
-  font-size: 0.875rem;
+  font-size: 0.775rem;
   margin-bottom: 2rem;
   line-height: 1.4;
   opacity: 0.9;
+`;
+
+export const TabSwitcher = styled.div`
+  display: flex;
+  background: rgba(10, 10, 10, 0.9);
+  border: 1px solid #27272a;
+  border-radius: 10px;
+  padding: 0.25rem;
+  margin-bottom: 2rem;
+  gap: 0.5rem;
+  width: 50%;
+`;
+
+export const TabButton = styled.button<{ $active: boolean }>`
+  flex: 1;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: ${props => (props.$active ? '#0c0a09' : '#a1a1aa')};
+  background: ${props =>
+    props.$active
+      ? 'linear-gradient(135deg,rgb(235, 237, 236) 0%,rgb(210, 212, 211) 100%)'
+      : 'transparent'};
+
+  &:hover {
+    color: ${props => (props.$active ? '#000' : '#f4f4f5')};
+  }
 `;
 
 export const SocialButtons = styled.div`
@@ -94,7 +130,7 @@ export const SocialButton = styled.button`
   border: 1px solid #3f3f46;
   border-radius: 8px;
   color: #e4e4e7;
-  font-size: 0.875rem;
+  font-size: 0.775rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -193,7 +229,7 @@ export const SignUpButton = styled.button`
   letter-spacing: 0.05em;
 
   &:hover {
-    background: linear-gradient(135deg, #00d492 0%, #009900 100%);
+    opacity: 0.8;
   }
 
   &:active {
