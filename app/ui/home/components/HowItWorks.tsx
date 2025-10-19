@@ -90,7 +90,7 @@ export default function HowItWorks() {
                 {/* 🔹 Content (above border) */}
                 <div className="relative z-10">
                   {/* Number Badge */}
-                  <div className="absolute top-6 left-6 w-12 h-12 bg-[#00ffae] rounded-full flex items-center justify-center shadow-[0_0_15px_#00ffae]">
+                  <div className="absolute top-[-30px] left-2 w-12 h-12 bg-[#00ffae] rounded-full flex items-center justify-center shadow-[0_0_15px_#00ffae]">
                     <span className="text-black font-bold text-lg">
                       {step.number}
                     </span>

@@ -1,7 +1,8 @@
+import GlitchText from '@/app/commonComponents/GlitchText/GlitchText';
 import WireframeSpheres from '@/app/commonComponents/Sphere/WireframeSphere';
 import TerminalWindows from '@/app/commonComponents/TerminalWindows/TerminalWindows';
 import { motion } from 'framer-motion';
-
+    
 export default function HeroSection() {
   return (
     <section className="relative h-screen w-full bg-[#05060a] text-white flex flex-col items-center justify-center overflow-hidden font-mono">
@@ -20,7 +21,9 @@ export default function HeroSection() {
         <div className="flex flex-col gap-4 max-w-lg">
           <p className="text-[#00ffae] text-sm tracking-widest">// Welcome to</p>
           <h1 className="text-5xl md:text-6xl font-extrabold leading-tight text-white glitch" data-text="NEXUS TECH">
-            NEXUS TECH
+            <GlitchText className="text-5xl md:text-6xl font-extrabold leading-tight text-white glitch" data-text="NEXUS TECH">
+              NEXUS TECH
+            </GlitchText>
           </h1>
           <p className="text-gray-400 text-lg max-w-md">
             Find Bugs. Earn Rewards. Level up your debugging and hacking skills in our interactive playground.
