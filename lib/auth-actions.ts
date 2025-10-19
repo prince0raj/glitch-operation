@@ -5,11 +5,18 @@ import { redirect } from "next/navigation";
 
 import { createClient } from "@/utils/supabase/server";
 
+function getSiteUrl() {
+  const url =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ||
+    "http://localhost:3000";
+
+  return url.replace(/\/$/, "");
+}
+
 export async function login(formData: FormData) {
   const supabase = await createClient();
 
-  // type-casting here for convenience
-  // in practice, you should validate your inputs
   const data = {
     email: formData.get("email") as string,
     password: formData.get("password") as string,
@@ -28,8 +35,6 @@ export async function login(formData: FormData) {
 export async function signup(formData: FormData) {
   const supabase = await createClient();
 
-  // type-casting here for convenience
-  // in practice, you should validate your inputs
   const firstName = formData.get("first-name") as string;
   const lastName = formData.get("last-name") as string;
   const data = {
@@ -73,6 +78,7 @@ export async function signInWithGoogle() {
         access_type: "offline",
         prompt: "consent",
       },
+      redirectTo: `${getSiteUrl()}/api/auth/callback`,
     },
   });
 
