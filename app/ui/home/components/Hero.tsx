@@ -1,193 +1,103 @@
-"use client";
+import WireframeSpheres from '@/app/commonComponents/Sphere/WireframeSphere';
+import TerminalWindows from '@/app/commonComponents/TerminalWindows/TerminalWindows';
+import { motion } from 'framer-motion';
 
-import React, { useEffect, useState } from "react";
-
-interface Particle {
-  top: number;
-  left: number;
-  delay: number;
-}
-
-const Hero: React.FC = () => {
-  const [particles, setParticles] = useState<Particle[]>([]);
-
-  useEffect(() => {
-    // Generate 30 particles only on client
-    const generated = Array.from({ length: 30 }, () => ({
-      top: Math.random() * 100,
-      left: Math.random() * 100,
-      delay: Math.random() * 2,
-    }));
-    setParticles(generated);
-  }, []);
-
-  useEffect(() => {
-    const canvas = document.getElementById("matrix") as HTMLCanvasElement;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    const letters = "01111110000011010100011011110001";
-    const fontSize = 16;
-    const columns = Math.floor(canvas.width / fontSize);
-    const drops = Array(columns).fill(1);
-
-    const draw = () => {
-      ctx.fillStyle = "rgba(11,15,18,0.05)";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "#00ff99"; // neon green
-      ctx.font = `${fontSize}px Fira Mono`;
-
-      for (let i = 0; i < drops.length; i++) {
-        const text = letters.charAt(Math.floor(Math.random() * letters.length));
-        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-        drops[i]++;
-        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-          drops[i] = 0;
-        }
-      }
-    };
-
-    const interval = setInterval(draw, 50);
-
-    const handleResize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
+export default function HeroSection() {
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-[#0b0f12]">
-      {/* Matrix background */}
-      <canvas id="matrix" className="absolute top-0 left-0 w-full h-full"></canvas>
-
-      {/* Floating particle/glow elements */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-        {particles.map((p, i) => (
-          <div
-            key={i}
-            className="absolute bg-[#00c6ff] w-2 h-2 rounded-full animate-float"
-            style={{
-              top: `${p.top}%`,
-              left: `${p.left}%`,
-              animationDelay: `${p.delay}s`,
-            }}
-          ></div>
-        ))}
+    <section className="relative h-screen w-full bg-[#05060a] text-white flex items-center justify-center overflow-hidden font-mono">
+      {/* Neon grid and particles for gaming vibe */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_#0a0f1c_0%,_#000_100%)] overflow-hidden">
+        <div className="absolute inset-0 bg-[linear-gradient(#00ffae40_1px,transparent_1px),linear-gradient(90deg,#00ffae40_1px,transparent_1px)] bg-[size:50px_50px] opacity-10 animate-[pulseGrid_4s_ease-in-out_infinite]" />
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/dark-mosaic.png')] opacity-20 animate-[matrixFlow_15s_linear_infinite]" />
       </div>
 
-      {/* Hero content */}
-      <div className="relative z-10 flex flex-col justify-center items-center h-full text-center px-4">
-        <h1 className="text-5xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#00ff99] via-[#00c6ff] to-[#ff4db8] animate-glitch">
-          Find Bugs. Earn Rewards.
-        </h1>
-        <p className="mt-4 text-lg md:text-2xl text-[#b0b0b0] font-mono animate-fadeIn">
-          Level up your debugging skills in our hacker playground.
-        </p>
-        <div className="mt-8 flex space-x-6">
-          <button className="px-6 py-3 border-2 border-[#00ff99] text-[#00ff99] font-bold rounded-md hover:bg-[#00ff99] hover:text-[#0b0f12] transition duration-300 neon-button">
-            Start Hunting
-          </button>
-          <button className="px-6 py-3 border-2 border-[#00c6ff] text-[#00c6ff] font-bold rounded-md hover:bg-[#00c6ff] hover:text-[#0b0f12] transition duration-300 neon-button">
-            Learn Debugging
-          </button>
+      {/* Floating Particles */}
+      {/* {[...Array(15)].map((_, i) => (
+        <motion.span
+          key={i}
+          className="absolute w-2 h-2 bg-[#00ffae] rounded-full shadow-[0_0_10px_#00ffae]"
+          initial={{ opacity: 0, y: Math.random() * 800, x: Math.random() * 1200 }}
+          animate={{ opacity: [0, 1, 0], y: [Math.random() * 800, -50], x: [Math.random() * 1200, Math.random() * 1200] }}
+          transition={{ duration: 6 + Math.random() * 5, repeat: Infinity, ease: 'easeInOut' }}
+        />
+      ))} */}
+
+      {/* Hero Content */}
+      <WireframeSpheres/>
+      <div className="relative z-10 flex flex-col md:flex-row items-center justify-between w-11/12 max-w-6xl">
+        {/* Left Text Section */}
+        <div className="flex flex-col gap-4 max-w-lg">
+          <p className="text-[#00ffae] text-sm tracking-widest">// Welcome to</p>
+          <h1 className="text-5xl md:text-6xl font-extrabold leading-tight text-white glitch" data-text="NEXUS TECH">
+            NEXUS TECH
+          </h1>
+          <p className="text-gray-400 text-lg max-w-md">
+            Find Bugs. Earn Rewards. Level up your debugging and hacking skills in our interactive playground.
+          </p>
+
+          {/* Buttons */}
+          <div className="flex gap-4 mt-6">
+            <button className="px-6 py-3 bg-[#00ffae] text-black font-bold rounded-xl shadow-[0_0_20px_#00ffae] hover:scale-110 hover:shadow-[0_0_40px_#00ffae] transition-transform">
+              Start Hunting
+            </button>
+            <button className="px-6 py-3 border border-[#00ffae] text-[#00ffae] rounded-xl hover:bg-[#00ffae]/10 hover:shadow-[0_0_15px_#00ffae] transition-all">
+              Learn Debugging
+            </button>
+          </div>
         </div>
+
+        {/* Right Animated Circle */}
+        <div className="pt-16">
+            <TerminalWindows />
+          </div>
+       
       </div>
 
-      {/* Explore More Arrow */}
-      <div className="absolute bottom-10 w-full flex justify-center z-10">
-        <div className="flex flex-col items-center animate-bounce">
-          <span className="text-[#00ff99] font-mono tracking-wider uppercase text-sm">
-            Explore More
-          </span>
-          <svg
-            className="w-6 h-6 mt-2 text-[#00ff99]"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-          </svg>
-        </div>
-      </div>
-
-      {/* Animations */}
       <style jsx>{`
-        @keyframes float {
-          0% {
-            transform: translateY(0) translateX(0) scale(1);
-          }
-          50% {
-            transform: translateY(-10px) translateX(5px) scale(1.2);
-          }
-          100% {
-            transform: translateY(0) translateX(0) scale(1);
-          }
+        @keyframes matrixFlow {
+          0% { background-position: 0 0; }
+          100% { background-position: 0 1000px; }
         }
-        .animate-float {
-          animation: float 4s ease-in-out infinite;
+        @keyframes pulseGrid {
+          0%, 100% { opacity: 0.1; }
+          50% { opacity: 0.3; }
         }
-        @keyframes glitch {
-          0% {
-            text-shadow: 2px 0 #00ff99, -2px 0 #ff4db8;
-          }
-          20% {
-            text-shadow: -2px -2px #00c6ff, 2px 2px #ff4db8;
-          }
-          40% {
-            text-shadow: 2px 2px #00ff99, -2px -2px #ff4db8;
-          }
-          60% {
-            text-shadow: -2px 2px #00c6ff, 2px -2px #ff4db8;
-          }
-          80% {
-            text-shadow: 2px -2px #00ff99, -2px 2px #ff4db8;
-          }
-          100% {
-            text-shadow: 2px 0 #00ff99, -2px 0 #ff4db8;
-          }
+
+        .glitch {
+          position: relative;
+          color: #fff;
+          text-shadow: 0 0 5px #00ffae, 0 0 10px #00ffae;
         }
-        .animate-glitch {
-          animation: glitch 1s infinite;
+        .glitch::before, .glitch::after {
+          content: attr(data-text);
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          overflow: hidden;
+          clip: rect(0, 900px, 0, 0);
         }
-        @keyframes fadeIn {
-          0% {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0);
-          }
+        .glitch::before {
+          left: 2px;
+          text-shadow: -2px 0 magenta;
+          animation: glitchTop 2s infinite linear alternate-reverse;
         }
-        .animate-fadeIn {
-          animation: fadeIn 2s ease forwards;
+        .glitch::after {
+          left: -2px;
+          text-shadow: -2px 0 cyan;
+          animation: glitchBottom 2s infinite linear alternate-reverse;
         }
-        @keyframes bounce {
-          0%, 100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(12px);
-          }
+        @keyframes glitchTop {
+          0% { clip: rect(0, 9999px, 0, 0); }
+          50% { clip: rect(0, 9999px, 100%, 0); }
+          100% { clip: rect(0, 9999px, 0, 0); }
         }
-        .animate-bounce {
-          animation: bounce 1.5s infinite;
+        @keyframes glitchBottom {
+          0% { clip: rect(0, 9999px, 100%, 0); }
+          50% { clip: rect(0, 9999px, 0, 0); }
+          100% { clip: rect(0, 9999px, 100%, 0); }
         }
       `}</style>
-    </div>
+    </section>
   );
-};
-
-export default Hero;
+}
