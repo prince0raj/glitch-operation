@@ -31,7 +31,7 @@ export default function ProfilePage() {
     <section className="relative min-h-screen bg-[#05060a] text-white font-mono">
       {/* Background neon grid */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_#0a0f1c_0%,_#000_100%)] overflow-hidden">
-        <div className="absolute inset-0 bg-[linear-gradient(#00ffae40_1px,transparent_1px),linear-gradient(90deg,#00ffae40_1px,transparent_1px)] bg-[size:50px_50px] opacity-10 animate-[pulseGrid_4s_ease-in-out_infinite]" />
+        <div className="absolute inset-0 bg-[linear-gradient(#00d49240_1px,transparent_1px),linear-gradient(90deg,#00d49240_1px,transparent_1px)] bg-[size:50px_50px] opacity-10 animate-[pulseGrid_4s_ease-in-out_infinite]" />
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/dark-mosaic.png')] opacity-20 animate-[matrixFlow_15s_linear_infinite]" />
       </div>
 
@@ -43,7 +43,7 @@ export default function ProfilePage() {
             {!isEditing ? (
               <button
                 onClick={() => setIsEditing(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-[#00ffae]/10 border border-[#00ffae]/30 rounded-lg text-[#00ffae] hover:bg-[#00ffae]/20 transition-all"
+                className="flex items-center gap-2 px-4 py-2 bg-[#00d492]/10 border border-[#00d492]/30 rounded-lg text-[#00d492] hover:bg-[#00d492]/20 transition-all"
               >
                 <Edit2 className="w-4 h-4" />
                 Edit Profile
@@ -52,7 +52,7 @@ export default function ProfilePage() {
               <div className="flex gap-3">
                 <button
                   onClick={handleSave}
-                  className="flex items-center gap-2 px-4 py-2 bg-[#00ffae] text-black rounded-lg hover:bg-[#00ffae]/80 transition-all font-semibold"
+                  className="flex items-center gap-2 px-4 py-2 bg-[#00d492] text-black rounded-lg hover:bg-[#00d492]/80 transition-all font-semibold"
                 >
                   <Save className="w-4 h-4" />
                   Save
@@ -71,10 +71,10 @@ export default function ProfilePage() {
           <div className="flex flex-col md:flex-row items-center md:items-start gap-10 mb-12">
             {/* Avatar with pulse animation */}
             <div className="relative animate-scaleIn">
-              <div className="w-40 h-40 rounded-full border-4 border-[#00ffae]/60 flex items-center justify-center bg-black/60 shadow-[0_0_2px_#00ffae] animate-glow">
-                <User className="w-16 h-16 text-[#00ffae]" />
+              <div className="w-40 h-40 rounded-full border-4 border-[#00d492]/60 flex items-center justify-center bg-black/60 shadow-[0_0_2px_#00d492] animate-glow">
+                <User className="w-16 h-16 text-[#00d492]" />
               </div>
-              <div className="absolute -bottom-2 -right-[-20px] bg-[#00ffae] text-black font-bold px-3 py-1 rounded-lg text-sm shadow-[0_0_3px_#00ffae]">
+              <div className="absolute -bottom-2 -right-[-20px] bg-[#00d492] text-black font-bold px-3 py-1 rounded-lg text-sm shadow-[0_0_3px_#00d492]">
                 52
               </div>
             </div>
@@ -87,10 +87,10 @@ export default function ProfilePage() {
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="text-5xl font-bold text-[#00ffae] mb-2 bg-black/40 border border-[#00ffae]/30 rounded-lg px-3 py-2 w-full focus:outline-none focus:border-[#00ffae]"
+                  className="text-5xl font-bold text-[#00d492] mb-2 bg-black/40 border border-[#00d492]/30 rounded-lg px-3 py-2 w-full focus:outline-none focus:border-[#00d492]"
                 />
               ) : (
-                <h1 className="text-5xl font-bold text-[#00ffae] mb-2">
+                <h1 className="text-5xl font-bold text-[#00d492] mb-2">
                   {username}
                 </h1>
               )}
@@ -101,13 +101,13 @@ export default function ProfilePage() {
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="text-lg text-gray-400 mb-3 bg-black/40 border border-[#00ffae]/30 rounded-lg px-3 py-2 w-full focus:outline-none focus:border-[#00ffae]"
+                  className="text-lg text-gray-400 mb-3 bg-black/40 border border-[#00d492]/30 rounded-lg px-3 py-2 w-full focus:outline-none focus:border-[#00d492]"
                 />
               ) : (
                 <p className="text-gray-400 text-lg mb-3">{title}</p>
               )}
 
-              <div className="flex items-center justify-center md:justify-start gap-2 text-[#00ffae]/80 mb-4">
+              <div className="flex items-center justify-center md:justify-start gap-2 text-[#00d492]/80 mb-4">
                 <TrendingUp className="w-4 h-4" />
                 <span className="text-sm">Rank #47 Globally</span>
               </div>
@@ -118,7 +118,7 @@ export default function ProfilePage() {
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
                   rows={3}
-                  className="text-sm text-gray-400 mb-6 mx-auto md:mx-0 leading-relaxed bg-black/40 border border-[#00ffae]/30 rounded-lg px-3 py-2 w-full focus:outline-none focus:border-[#00ffae] resize-none"
+                  className="text-sm text-gray-400 mb-6 mx-auto md:mx-0 leading-relaxed bg-black/40 border border-[#00d492]/30 rounded-lg px-3 py-2 w-full focus:outline-none focus:border-[#00d492] resize-none"
                 />
               ) : (
                 <div className="mb-6 mx-auto md:mx-0">
@@ -130,7 +130,7 @@ export default function ProfilePage() {
                   {bio.length > BIO_CHAR_LIMIT && (
                     <button
                       onClick={() => setIsExpanded(!isExpanded)}
-                      className="text-[#00ffae] text-sm mt-2 hover:text-[#00ffae]/80 transition-colors font-semibold"
+                      className="text-[#00d492] text-sm mt-2 hover:text-[#00d492]/80 transition-colors font-semibold"
                     >
                       {isExpanded ? "Read Less" : "Read More"}
                     </button>
@@ -157,44 +157,44 @@ export default function ProfilePage() {
 
         {/* Stats Cards with staggered animation */}
         <div className="grid md:grid-cols-3 gap-6 mb-12">
-          <div className="bg-black/30 border border-[#00ffae]/30 rounded-xl p-6 backdrop-blur-sm hover:border-[#00ffae]/60 hover:shadow-[0_0_20px_rgba(0,255,174,0.3)] transition-all animate-slideUp" style={{ animationDelay: '0.1s' }}>
+          <div className="bg-black/30 border border-[#00d492]/30 rounded-xl p-6 backdrop-blur-sm hover:border-[#00d492]/60 hover:shadow-[0_0_20px_rgba(0,255,174,0.3)] transition-all animate-slideUp" style={{ animationDelay: '0.1s' }}>
             <div className="flex items-center justify-between mb-2">
-              <Target className="w-8 h-8 text-[#00ffae]" />
-              <span className="text-4xl font-bold text-[#00ffae] animate-countUp">120</span>
+              <Target className="w-8 h-8 text-[#00d492]" />
+              <span className="text-4xl font-bold text-[#00d492] animate-countUp">120</span>
             </div>
             <h3 className="text-sm text-gray-400">Challenges</h3>
           </div>
 
-          <div className="bg-black/30 border border-[#00ffae]/30 rounded-xl p-6 backdrop-blur-sm hover:border-[#00ffae]/60 hover:shadow-[0_0_20px_rgba(0,255,174,0.3)] transition-all animate-slideUp" style={{ animationDelay: '0.2s' }}>
+          <div className="bg-black/30 border border-[#00d492]/30 rounded-xl p-6 backdrop-blur-sm hover:border-[#00d492]/60 hover:shadow-[0_0_20px_rgba(0,255,174,0.3)] transition-all animate-slideUp" style={{ animationDelay: '0.2s' }}>
             <div className="flex items-center justify-between mb-2">
-              <Bug className="w-8 h-8 text-[#00ffae]" />
-              <span className="text-4xl font-bold text-[#00ffae] animate-countUp">78</span>
+              <Bug className="w-8 h-8 text-[#00d492]" />
+              <span className="text-4xl font-bold text-[#00d492] animate-countUp">78</span>
             </div>
             <h3 className="text-sm text-gray-400">Bugs Found</h3>
           </div>
 
-          <div className="bg-black/30 border border-[#00ffae]/30 rounded-xl p-6 backdrop-blur-sm hover:border-[#00ffae]/60 hover:shadow-[0_0_20px_rgba(0,255,174,0.3)] transition-all animate-slideUp" style={{ animationDelay: '0.3s' }}>
+          <div className="bg-black/30 border border-[#00d492]/30 rounded-xl p-6 backdrop-blur-sm hover:border-[#00d492]/60 hover:shadow-[0_0_20px_rgba(0,255,174,0.3)] transition-all animate-slideUp" style={{ animationDelay: '0.3s' }}>
             <div className="flex items-center justify-between mb-2">
-              <Award className="w-8 h-8 text-[#00ffae]" />
-              <span className="text-4xl font-bold text-[#00ffae] animate-countUp">15</span>
+              <Award className="w-8 h-8 text-[#00d492]" />
+              <span className="text-4xl font-bold text-[#00d492] animate-countUp">15</span>
             </div>
             <h3 className="text-sm text-gray-400">Achievements</h3>
           </div>
         </div>
 
         {/* Recent Activity with fade animation */}
-        <div className="bg-black/30 border border-[#00ffae]/30 rounded-2xl p-6 backdrop-blur-sm animate-fadeInUp" style={{ animationDelay: '0.4s' }}>
-          <h2 className="text-2xl font-bold text-[#00ffae] mb-6">Recent Activity</h2>
+        <div className="bg-black/30 border border-[#00d492]/30 rounded-2xl p-6 backdrop-blur-sm animate-fadeInUp" style={{ animationDelay: '0.4s' }}>
+          <h2 className="text-2xl font-bold text-[#00d492] mb-6">Recent Activity</h2>
           <div className="space-y-3">
             {activities.map((activity, idx) => (
               <div
                 key={idx}
-                className="bg-black/50 border border-[#00ffae]/20 p-4 rounded-lg flex justify-between items-center hover:border-[#00ffae]/50 hover:shadow-[0_0_10px_rgba(0,255,174,0.2)] transition-all animate-slideRight"
+                className="bg-black/50 border border-[#00d492]/20 p-4 rounded-lg flex justify-between items-center hover:border-[#00d492]/50 hover:shadow-[0_0_10px_rgba(0,255,174,0.2)] transition-all animate-slideRight"
                 style={{ animationDelay: `${0.5 + idx * 0.1}s` }}
               >
                 <span className="text-gray-300">{activity.text}</span>
                 {activity.xp > 0 && (
-                  <span className="text-[#00ffae] font-bold flex items-center gap-1">
+                  <span className="text-[#00d492] font-bold flex items-center gap-1">
                     <Zap className="w-4 h-4" />
                     +{activity.xp} XP
                   </span>
@@ -265,10 +265,10 @@ export default function ProfilePage() {
         }
         @keyframes glow {
           0%, 100% {
-            box-shadow: 0 0 5px #00ffae;
+            box-shadow: 0 0 5px #00d492;
           }
           50% {
-            box-shadow: 0 0 5px #00ffae, 0 0 5px #00ffae;
+            box-shadow: 0 0 5px #00d492, 0 0 5px #00d492;
           }
         }
         @keyframes progressBar {

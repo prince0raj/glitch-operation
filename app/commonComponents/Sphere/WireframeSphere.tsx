@@ -8,7 +8,7 @@ const WireframeSpheres = () => {
         className="sphere-animate absolute -bottom- -right-80 w-[500px] h-[500px]" 
         viewBox="0 0 200 200"
         fill="none"
-        stroke="#00ffae"
+        stroke="#00d492"
         strokeWidth="0.5"
       >
         {/* Longitude lines */}
@@ -46,7 +46,7 @@ const WireframeSpheres = () => {
         className="sphere-animate absolute top-1/3 -left-10 w-[350px] h-[350px] [animation-duration:25s]" 
         viewBox="0 0 200 200"
         fill="none"
-stroke="#00ffae"        strokeWidth="0.5"
+stroke="#00d492"        strokeWidth="0.5"
       >
         {Array.from({ length: 12 }).map((_, i) => {
           const angle = (i * 30 * Math.PI) / 180;
@@ -81,7 +81,7 @@ stroke="#00ffae"        strokeWidth="0.5"
         className="sphere-animate absolute top-10 left-1/4 w-[200px] h-[200px] [animation-duration:15s]" 
         viewBox="0 0 200 200"
         fill="none"
-        stroke="#00ffae"
+        stroke="#00d492"
         strokeWidth="0.5"
       >
         {Array.from({ length: 12 }).map((_, i) => {
@@ -117,7 +117,7 @@ stroke="#00ffae"        strokeWidth="0.5"
   className="sphere-animate absolute -bottom-10 left-1/2 -translate-x-1/2 w-[300px] h-[300px] "
   viewBox="0 0 200 200"
   fill="none"
-  stroke="#00ffae"
+  stroke="#00d492"
   strokeWidth="0.7"
 >
   {/* Longitude lines */}

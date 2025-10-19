@@ -8,7 +8,7 @@ export default function HeroSection() {
     <section className="relative h-screen w-full bg-[#05060a] text-white flex flex-col items-center justify-center overflow-hidden font-mono">
       {/* Neon grid and particles */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_#0a0f1c_0%,_#000_100%)] overflow-hidden">
-        <div className="absolute inset-0 bg-[linear-gradient(#00ffae40_1px,transparent_1px),linear-gradient(90deg,#00ffae40_1px,transparent_1px)] bg-[size:50px_50px] opacity-10 animate-[pulseGrid_4s_ease-in-out_infinite]" />
+        <div className="absolute inset-0 bg-[linear-gradient(#00d49240_1px,transparent_1px),linear-gradient(90deg,#00d49240_1px,transparent_1px)] bg-[size:50px_50px] opacity-10 animate-[pulseGrid_4s_ease-in-out_infinite]" />
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/dark-mosaic.png')] opacity-20 animate-[matrixFlow_15s_linear_infinite]" />
       </div>
 
@@ -19,7 +19,7 @@ export default function HeroSection() {
       <div className="relative z-10 flex flex-col md:flex-row items-center justify-between w-11/12 max-w-6xl">
         {/* Left Text Section */}
         <div className="flex flex-col gap-4 max-w-lg">
-          <p className="text-[#00ffae] text-sm tracking-widest">// Welcome to</p>
+          <p className="text-[#00d492] text-sm tracking-widest">// Welcome to</p>
           <h1 className="text-5xl md:text-6xl font-extrabold leading-tight text-white glitch" data-text="NEXUS TECH">
             <GlitchText className="text-5xl md:text-6xl font-extrabold leading-tight text-white glitch" data-text="NEXUS TECH">
               NEXUS TECH
@@ -31,10 +31,10 @@ export default function HeroSection() {
 
           {/* Buttons */}
           <div className="flex gap-4 mt-6">
-            <button className="px-6 py-3 bg-[#00ffae] text-black font-bold rounded-xl shadow-[0_0_20px_#00ffae] hover:scale-110 hover:shadow-[0_0_40px_#00ffae] transition-transform">
+            <button className="px-6 py-3 bg-[#00d492] text-black font-bold rounded-xl shadow-[0_0_20px_#00d492] hover:scale-110 hover:shadow-[0_0_40px_#00d492] transition-transform">
               Start Hunting
             </button>
-            <button className="px-6 py-3 border border-[#00ffae] text-[#00ffae] rounded-xl hover:bg-[#00ffae]/10 hover:shadow-[0_0_15px_#00ffae] transition-all">
+            <button className="px-6 py-3 border border-[#00d492] text-[#00d492] rounded-xl hover:bg-[#00d492]/10 hover:shadow-[0_0_15px_#00d492] transition-all">
               Learn Debugging
             </button>
           </div>
@@ -54,7 +54,7 @@ export default function HeroSection() {
       >
         <a
           href="#how-it-works" // link to next section
-          className="px-6 py-3 border border-[#00ffae] text-[#00ffae] rounded-full hover:bg-[#00ffae]/20 hover:shadow-[0_0_20px_#00ffae] transition-all flex items-center gap-2"
+          className="px-6 py-3 border border-[#00d492] text-[#00d492] rounded-full hover:bg-[#00d492]/20 hover:shadow-[0_0_20px_#00d492] transition-all flex items-center gap-2"
         >
           Explore More
           <span className="animate-bounce">↓</span>
@@ -74,7 +74,7 @@ export default function HeroSection() {
         .glitch {
           position: relative;
           color: #fff;
-          text-shadow: 0 0 5px #00ffae, 0 0 10px #00ffae;
+          text-shadow: 0 0 5px #00d492, 0 0 10px #00d492;
         }
         .glitch::before, .glitch::after {
           content: attr(data-text);
