@@ -20,13 +20,16 @@ export async function GET(request: Request) {
       if (user?.email) {
         const email = user.email
         const username = email.split('@')[0]
+        const full_name = user.user_metadata.full_name
+        const avatar_url = user.user_metadata.avatar_url
 
-        // Upsert the user profile with username
         await supabase.from('profiles').upsert(
           {
             id: user.id,
             email,
             username,
+            full_name,
+            avatar_url,
           },
           { onConflict: 'id' }
         )

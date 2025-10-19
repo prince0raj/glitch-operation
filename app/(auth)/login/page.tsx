@@ -10,6 +10,7 @@ import {
   Database,
   Code2,
   Chrome,
+  Github,
 } from "lucide-react";
 import {
   LoginContainer,
@@ -22,12 +23,6 @@ import {
   FormSubtitle,
   SocialButtons,
   SocialButton,
-  FormGroup,
-  Label,
-  Input,
-  SignUpButton,
-  TabSwitcher,
-  TabButton,
   Terminal,
   TerminalHeader,
   TerminalDot,
@@ -39,14 +34,16 @@ import {
   BinaryPattern,
   BinaryColumn,
 } from "./style";
-import { signInWithGoogle } from "@/lib/auth-actions";
+import { signInWithGoogle, signInWithGitHub } from "@/lib/auth-actions";
 
-const orbitron = Orbitron({   variable: "--font-geist-mono",subsets: ["latin"] });
+const orbitron = Orbitron({ 
+  subsets: ["latin"],
+  variable: "--font-orbitron"
+});
 
 const Page = () => {
   const [currentText, setCurrentText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
   const [binaryColumns, setBinaryColumns] = useState<any[]>([]);
   const [isClient, setIsClient] = useState(false);
 
@@ -107,74 +104,24 @@ const Page = () => {
         <FormContainer>
           <Logo className={orbitron.className}>OPS. GLITCH</Logo>
 
-          <TabSwitcher>
-            <TabButton
-              type="button"
-              $active={activeTab === "login"}
-              onClick={() => setActiveTab("login")}
-            >
-              Login
-            </TabButton>
-            <TabButton
-              type="button"
-              $active={activeTab === "signup"}
-              onClick={() => setActiveTab("signup")}
-            >
-              Sign Up
-            </TabButton>
-          </TabSwitcher>
-
-          <FormTitle>
-            {activeTab === "login" ? "Access Terminal" : "Request Access"}
-          </FormTitle>
+          <FormTitle className="font-mono">Access Terminal</FormTitle>
           <FormSubtitle>
-            {activeTab === "login"
-              ? "Enter credentials to access the hacker playground"
-              : "Create your OPS GLITCH identity to begin the mission"}
+            Choose your authentication method to access the hacker playground
           </FormSubtitle>
-          <div className="h-[50vh]">
-            <SocialButtons onClick={()=>signInWithGoogle()}>
+        
+            <SocialButtons onClick={() => signInWithGoogle()}>
               <SocialButton type="button">
                 <Chrome size={16} />
-                Google Auth
+                Continue with Google
               </SocialButton>
             </SocialButtons>
-
-            {activeTab === "login" ? (
-              <>
-                <FormGroup>
-                  <Label>Username</Label>
-                  <Input type="text" placeholder="hacker@opsglitch.com" />
-                </FormGroup>
-
-                <FormGroup>
-                  <Label>Password</Label>
-                  <Input type="password" placeholder="••••••••••••" />
-                </FormGroup>
-
-                <SignUpButton>HACK IN</SignUpButton>
-              </>
-            ) : (
-              <>
-                <FormGroup>
-                  <Label>Email</Label>
-                  <Input type="email" placeholder="agent@opsglitch.com" />
-                </FormGroup>
-
-                <FormGroup>
-                  <Label>Password</Label>
-                  <Input type="password" placeholder="Create a secure key" />
-                </FormGroup>
-
-                <FormGroup>
-                  <Label>Confirm Password</Label>
-                  <Input type="password" placeholder="Repeat secure key" />
-                </FormGroup>
-
-                <SignUpButton>INITIATE SIGNUP</SignUpButton>
-              </>
-            )}
-          </div>
+            
+            <SocialButtons onClick={() => signInWithGitHub()}>
+              <SocialButton type="button">
+                <Github size={16} />
+                Continue with GitHub
+              </SocialButton>
+            </SocialButtons>
         </FormContainer>
       </LeftSection>
 
