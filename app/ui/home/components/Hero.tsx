@@ -20,9 +20,9 @@ export default function HeroSection() {
         {/* Left Text Section */}
         <div className="flex flex-col gap-4 max-w-lg">
           <p className="text-[#00d492] text-sm tracking-widest">// Welcome to</p>
-          <h1 className="text-5xl md:text-6xl font-extrabold leading-tight text-white glitch" data-text="NEXUS TECH">
-            <GlitchText className="text-5xl md:text-6xl font-extrabold leading-tight text-white glitch" data-text="NEXUS TECH">
-              NEXUS TECH
+          <h1 className="text-5xl md:text-6xl font-extrabold leading-tight text-white glitch" data-text="OPS. GLITCH">
+            <GlitchText className="text-5xl md:text-6xl font-extrabold leading-tight text-white glitch" data-text="OPS. GLITCH">
+              OPS. GLITCH
             </GlitchText>
           </h1>
           <p className="text-gray-400 text-lg max-w-md">

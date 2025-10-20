@@ -61,7 +61,7 @@ const Navbar: FC = () => {
           </div>
           <div>
             <GlitchText className="text-2xl font-black tracking-wider text-white font-mono">
-              NEXUS TECH
+              OPS. GLITCH
             </GlitchText>
             <div className="text-xs text-emerald-400 font-mono flex items-center space-x-2">
               <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></div>

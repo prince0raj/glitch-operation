@@ -16,7 +16,7 @@ const Footer = () => {
                     <div>
                         <h3 className="text-white font-black mb-3 font-mono text-lg tracking-wide">
                             <GlitchText className="text-2xl font-black tracking-wider font-mono">
-                                NEXUS TECH
+                                OPS. GLITCH
                             </GlitchText>
                         </h3>
                         <p className="text-emerald-400 text-sm font-mono font-bold">
@@ -88,7 +88,7 @@ const Footer = () => {
                     </div>
 
                     <div className="text-gray-500 text-center md:text-right font-semibold">
-                        © 2025 NEXUS TECH. ALL RIGHTS RESERVED.
+                        © 2025 OPS. GLITCH. ALL RIGHTS RESERVED.
                     </div>
                 </div>
             </div>
