@@ -12,6 +12,7 @@ import {
   X,
 } from "lucide-react";
 import { useFetch } from "@/app/hook/useFetch";
+import { Preloader } from "@/app/commonComponents/Preloader/Preloader";
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
@@ -118,16 +119,7 @@ export default function ProfilePage() {
           <div className="h-full w-full bg-[#00d492] animate-progressLoader" />
         </div>
       )}
-      {loading && !error && (
-        <div className="absolute inset-0 z-30 flex items-center justify-center bg-[#05060a]/95">
-          <div className="flex flex-col items-center gap-4">
-            <div className="h-12 w-12 rounded-full border-4 border-[#00d492]/30 border-t-[#00d492] animate-spin" />
-            <span className="text-sm uppercase tracking-[0.3em] text-[#00d492]">
-              Loading profile
-            </span>
-          </div>
-        </div>
-      )}
+      {loading && !error && <Preloader variant="overlay" message="Loading profile" className="bg-[#05060a]/95" />}
       {/* Background neon grid */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_#0a0f1c_0%,_#000_100%)] overflow-hidden">
         <div className="absolute inset-0 bg-[linear-gradient(#00d49240_1px,transparent_1px),linear-gradient(90deg,#00d49240_1px,transparent_1px)] bg-[size:50px_50px] opacity-10 animate-[pulseGrid_4s_ease-in-out_infinite]" />
