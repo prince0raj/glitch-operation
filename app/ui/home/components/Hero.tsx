@@ -1,6 +1,6 @@
 import GlitchText from '@/app/commonComponents/GlitchText/GlitchText';
 import WireframeSpheres from '@/app/commonComponents/Sphere/WireframeSphere';
-import TerminalWindows from '@/app/commonComponents/TerminalWindows/TerminalWindows';
+import TerminalWindows from '@/app/ui/home/components/TerminalWindows';
 import { motion } from 'framer-motion';
     
 export default function HeroSection() {
