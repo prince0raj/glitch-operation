@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect, FC } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 import {
   Home,
   Zap,
@@ -9,9 +10,12 @@ import {
   Terminal,
   Trophy,
   Crosshair,
+  LogOut,
   LucideIcon,
 } from "lucide-react";
 import GlitchText from "../GlitchText/GlitchText";
+import { signout } from "@/lib/auth-actions";
+import { Orbitron } from "next/font/google";
 
 interface NavItem {
   id: string;
@@ -20,21 +24,43 @@ interface NavItem {
   path: string;
 }
 
+const orbitron = Orbitron({
+  subsets: ["latin"],
+  variable: "--font-orbitron",
+});
 const Navbar: FC = () => {
   const pathname = usePathname();
-  const router = useRouter();
   const [energyLevel, setEnergyLevel] = useState<number>(100);
 
   const navItems: NavItem[] = [
-    { id: "home", icon: Crosshair, label: "Home", path: "/ui/home" },
-    { id: "contests", icon: Trophy, label: "Contests", path: "/ui/contests" },
-    { id: "profile", icon: Users, label: "Profile", path: "/ui/profile" },
-    { id: "contact", icon: Mail, label: "Contact", path: "/ui/contact" },
+    { id: "home", icon: Crosshair, label: "Home", path: "/ui/dashboard/home" },
+    {
+      id: "contests",
+      icon: Trophy,
+      label: "Contests",
+      path: "/ui/dashboard/contests",
+    },
+    {
+      id: "profile",
+      icon: Users,
+      label: "Profile",
+      path: "/ui/dashboard/profile",
+    },
+    {
+      id: "contact",
+      icon: Mail,
+      label: "Contact",
+      path: "/ui/dashboard/contact",
+    },
   ];
 
   const isActive = (path: string) => {
-    if (path === "/ui/home") {
-      return pathname === "/" || pathname === "/ui/home" || pathname?.startsWith("/ui/home");
+    if (path === "/ui/dashboard/home") {
+      return (
+        pathname === "/" ||
+        pathname === "/ui/dashboard/home" ||
+        pathname?.startsWith("/ui/dashboard/home")
+      );
     }
     return pathname?.startsWith(path);
   };
@@ -55,12 +81,17 @@ const Navbar: FC = () => {
         {/* Brand Section */}
         <div className="flex items-center space-x-4">
           <div className="relative">
-            <Terminal className="w-10 h-10 text-emerald-400 animate-pulse" strokeWidth={2} />
+            <Terminal
+              className="w-10 h-10 text-emerald-400 animate-pulse"
+              strokeWidth={2}
+            />
             <div className="absolute inset-0 blur-xl bg-emerald-400 opacity-70 animate-ping"></div>
             <div className="absolute -inset-2 border-2 border-emerald-400/30 rounded-lg animate-ping"></div>
           </div>
           <div>
-            <GlitchText className="text-2xl font-black tracking-wider text-white font-mono">
+            <GlitchText
+              className={`${orbitron.className}text-2xl font-black tracking-wider text-white font-mono`}
+            >
               OPS. GLITCH
             </GlitchText>
             <div className="text-xs text-emerald-400 font-mono flex items-center space-x-2">
@@ -72,12 +103,25 @@ const Navbar: FC = () => {
 
         {/* Navigation Items */}
         <div className="flex space-x-2">
+          {/* Mobile Signout Button */}
+          <div className="lg:hidden">
+            <form action={signout}>
+              <button
+                type="submit"
+                className="group relative flex items-center space-x-2 px-4 py-2 transition-all duration-300 font-mono font-bold text-red-400 hover:text-red-300"
+                title="Sign Out"
+              >
+                <LogOut className="w-5 h-5" strokeWidth={2.5} />
+                <span className="absolute inset-0 rounded-md pointer-events-none border border-red-500/30 group-hover:border-red-400/50 group-hover:bg-red-400/5 group-hover:animate-glow"></span>
+              </button>
+            </form>
+          </div>
           {navItems.map(({ id, icon: Icon, label, path }) => {
             const active = isActive(path);
             return (
-              <button
+              <Link
                 key={id}
-                onClick={() => router.push(path)}
+                href={path}
                 className={`group relative flex items-center space-x-2 px-4 py-2 transition-all duration-300 font-mono font-bold ${
                   active
                     ? "text-emerald-400"
@@ -95,41 +139,60 @@ const Navbar: FC = () => {
                       : "border border-emerald-500/30 group-hover:border-emerald-400/50 group-hover:bg-emerald-400/5 group-hover:animate-glow"
                   }`}
                 ></span>
-              </button>
+              </Link>
             );
           })}
         </div>
 
         {/* Energy Bar */}
-        <div className="hidden lg:block w-32">
-          <div className="flex items-center space-x-2">
-            <Zap className="w-4 h-4 text-yellow-400 animate-pulse" />
-            <div className="flex-1 h-2 bg-gray-900 border border-emerald-500/50 overflow-hidden relative">
-              <div
-                className="h-full bg-gradient-to-r from-emerald-400 via-yellow-400 to-emerald-400 animate-energyBar"
-                style={{ width: `${energyLevel}%` }}
-              ></div>
+        <div className="hidden lg:flex items-center space-x-4">
+          <div className="w-32">
+            <div className="flex items-center space-x-2">
+              <Zap className="w-4 h-4 text-yellow-400 animate-pulse" />
+              <div className="flex-1 h-2 bg-gray-900 border border-emerald-500/50 overflow-hidden relative">
+                <div
+                  className="h-full bg-gradient-to-r from-emerald-400 via-yellow-400 to-emerald-400 animate-energyBar"
+                  style={{ width: `${energyLevel}%` }}
+                ></div>
+              </div>
+              <span className="text-xs font-mono text-emerald-400">
+                {energyLevel}%
+              </span>
             </div>
-            <span className="text-xs font-mono text-emerald-400">{energyLevel}%</span>
           </div>
+
+          {/* Signout Button */}
+          <form action={signout}>
+            <button
+              type="submit"
+              className="group relative cursor-pointer flex items-center space-x-2 px-4 py-2 transition-all duration-300 font-mono font-bold text-red-400 hover:text-red-300"
+              title="Sign Out"
+            >
+              <LogOut className="w-5 h-5" strokeWidth={2.5} />
+              <span className="text-xs hidden xl:inline">LOGOUT</span>
+
+              {/* Neon Glitch Animation */}
+              <span className="absolute inset-0 rounded-md pointer-events-none border border-red-500/30 group-hover:border-red-400/50 group-hover:bg-red-400/5 group-hover:animate-glow"></span>
+            </button>
+          </form>
         </div>
       </div>
 
       <style jsx>{`
         @keyframes glow {
-  0% {
-    box-shadow: 0 0 3px #00ff99, 0 0 6px #00ff99;
-  }
-  50% {
-    box-shadow: 0 0 8px #00ff99, 0 0 16px #00ff99;
-  }
-  100% {
-    box-shadow: 0 0 3px #00ff99, 0 0 6px #00ff99;
-  }
-}
-.animate-glow {
-  animation: glow 3s infinite; /* slower */
-}
+          0% {
+            box-shadow: 0 0 3px #00ff99, 0 0 6px #00ff99;
+          }
+          50% {
+            box-shadow: 0 0 8px #00ff99, 0 0 16px #00ff99;
+          }
+          100% {
+            box-shadow: 0 0 3px #00ff99, 0 0 6px #00ff99;
+          }
+        }
+        .animate-glow {
+          animation: glow 3s infinite; /* slower */
+        }
 
         @keyframes energyBar {
           0% {

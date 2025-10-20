@@ -1,8 +1,13 @@
-import GlitchText from '@/app/commonComponents/GlitchText/GlitchText';
-import WireframeSpheres from '@/app/commonComponents/Sphere/WireframeSphere';
-import TerminalWindows from '@/app/ui/home/components/TerminalWindows';
-import { motion } from 'framer-motion';
-    
+import GlitchText from "@/app/commonComponents/GlitchText/GlitchText";
+import WireframeSpheres from "@/app/commonComponents/Sphere/WireframeSphere";
+import TerminalWindows from "@/app/ui/dashboard/home/components/TerminalWindows";
+import { motion } from "framer-motion";
+import { Orbitron } from "next/font/google";
+
+const orbitron = Orbitron({
+  subsets: ["latin"],
+  variable: "--font-orbitron",
+});
 export default function HeroSection() {
   return (
     <section className="relative h-screen w-full bg-[#05060a] text-white flex flex-col items-center justify-center overflow-hidden font-mono">
@@ -19,14 +24,23 @@ export default function HeroSection() {
       <div className="relative z-10 flex flex-col md:flex-row items-center justify-between w-11/12 max-w-6xl">
         {/* Left Text Section */}
         <div className="flex flex-col gap-4 max-w-lg">
-          <p className="text-[#00d492] text-sm tracking-widest">// Welcome to</p>
-          <h1 className="text-5xl md:text-6xl font-extrabold leading-tight text-white glitch" data-text="OPS. GLITCH">
-            <GlitchText className="text-5xl md:text-6xl font-extrabold leading-tight text-white glitch" data-text="OPS. GLITCH">
+          <p className="text-[#00d492] text-sm tracking-widest">
+            // Welcome to
+          </p>
+          <h1
+            className="text-5xl md:text-6xl font-extrabold leading-tight text-white glitch"
+            data-text="OPS. GLITCH"
+          >
+            <GlitchText
+              className={`${orbitron.className} text-5xl md:text-6xl font-extrabold leading-tight text-white glitch`}
+              data-text="OPS. GLITCH"
+            >
               OPS. GLITCH
             </GlitchText>
           </h1>
           <p className="text-gray-400 text-lg max-w-md">
-            Find Bugs. Earn Rewards. Level up your debugging and hacking skills in our interactive playground.
+            Find Bugs. Earn Rewards. Level up your debugging and hacking skills
+            in our interactive playground.
           </p>
 
           {/* Buttons */}
@@ -50,7 +64,7 @@ export default function HeroSection() {
       <motion.div
         className="absolute bottom-10 left-1/2 transform -translate-x-1/2 opacity-60"
         animate={{ y: [0, -15, 0] }}
-        transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
       >
         <a
           href="#how-it-works" // link to next section
@@ -63,12 +77,21 @@ export default function HeroSection() {
 
       <style jsx>{`
         @keyframes matrixFlow {
-          0% { background-position: 0 0; }
-          100% { background-position: 0 1000px; }
+          0% {
+            background-position: 0 0;
+          }
+          100% {
+            background-position: 0 1000px;
+          }
         }
         @keyframes pulseGrid {
-          0%, 100% { opacity: 0.1; }
-          50% { opacity: 0.3; }
+          0%,
+          100% {
+            opacity: 0.1;
+          }
+          50% {
+            opacity: 0.3;
+          }
         }
 
         .glitch {
@@ -76,7 +99,8 @@ export default function HeroSection() {
           color: #fff;
           text-shadow: 0 0 5px #00d492, 0 0 10px #00d492;
         }
-        .glitch::before, .glitch::after {
+        .glitch::before,
+        .glitch::after {
           content: attr(data-text);
           position: absolute;
           left: 0;
@@ -96,14 +120,26 @@ export default function HeroSection() {
           animation: glitchBottom 2s infinite linear alternate-reverse;
         }
         @keyframes glitchTop {
-          0% { clip: rect(0, 9999px, 0, 0); }
-          50% { clip: rect(0, 9999px, 100%, 0); }
-          100% { clip: rect(0, 9999px, 0, 0); }
+          0% {
+            clip: rect(0, 9999px, 0, 0);
+          }
+          50% {
+            clip: rect(0, 9999px, 100%, 0);
+          }
+          100% {
+            clip: rect(0, 9999px, 0, 0);
+          }
         }
         @keyframes glitchBottom {
-          0% { clip: rect(0, 9999px, 100%, 0); }
-          50% { clip: rect(0, 9999px, 0, 0); }
-          100% { clip: rect(0, 9999px, 100%, 0); }
+          0% {
+            clip: rect(0, 9999px, 100%, 0);
+          }
+          50% {
+            clip: rect(0, 9999px, 0, 0);
+          }
+          100% {
+            clip: rect(0, 9999px, 100%, 0);
+          }
         }
       `}</style>
     </section>
