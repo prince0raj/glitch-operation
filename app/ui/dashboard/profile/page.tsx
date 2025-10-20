@@ -1,25 +1,109 @@
 "use client";
-import { useState } from "react";
-import { User, Target, Bug, Award, Zap, TrendingUp, Edit2, Save, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import {
+  User,
+  Target,
+  Bug,
+  Award,
+  Zap,
+  TrendingUp,
+  Edit2,
+  Save,
+  X,
+} from "lucide-react";
+import { useFetch } from "@/app/hook/useFetch";
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [username, setUsername] = useState("NeoHunter47");
-  const [title, setTitle] = useState("Elite Bug Hunter");
-  const [bio, setBio] = useState("Passionate security researcher specializing in web vulnerabilities and penetration testing. Love finding critical bugs and helping make the web more secure.");
-  
+  const [username, setUsername] = useState("");
+  const [title, setTitle] = useState("");
+  const [bio, setBio] = useState("");
+  const [level, setLevel] = useState<number>(1);
+  const [score, setScore] = useState<number>(0);
+  const [metrics, setMetrics] = useState<{
+    Challenges: number;
+    Bugs_found: number;
+    Achievements: number;
+    Level: number;
+    score: number;
+  } | null>(null);
+  const [activities, setActivities] = useState<
+    Array<{ text: string; xp?: number }>
+  >([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const BIO_CHAR_LIMIT = 150;
 
-  const activities = [
-    { text: "Completed SQL Injection Challenge", xp: 50 },
-    { text: "Found critical bug in Login Module", xp: 100 },
-    { text: "Unlocked Master Hacker badge", xp: 0 },
-  ];
+  const {
+    data: getData,
+    error: getError,
+    loading: getLoading,
+  } = useFetch<{ profile: any }>("/api/v1/profile");
 
-  const handleSave = () => {
+  useEffect(() => {
+    if (getError) setError(getError);
+  }, [getError]);
+
+  useEffect(() => {
+    if (!getData?.profile) return;
+    const profile = getData.profile;
+    setUsername(profile?.username || "");
+    setTitle(profile?.tag_line || "");
+    setBio(profile?.bio || "");
+    const m = profile?.metrics || null;
+    setMetrics(m);
+    const lvl = Number(m?.Level ?? 1);
+    setLevel(Number.isFinite(lvl) ? lvl : 1);
+    const scr =
+      typeof m?.score === "number"
+        ? m.score
+        : Number.parseInt(String(m?.score ?? 0));
+    setScore(Number.isFinite(scr) ? scr : 0);
+    const act = profile?.activity?.content ?? [];
+    setActivities(Array.isArray(act) ? act : []);
+  }, [getData]);
+
+  useEffect(() => {
+    setLoading(getLoading);
+  }, [getLoading]);
+
+  const xpTarget = 5000;
+  const progressPercent = useMemo(() => {
+    const pct = Math.max(0, Math.min(100, (score / xpTarget) * 100));
+    return `${pct}%`;
+  }, [score]);
+
+  const {
+    refetch: saveProfile,
+    loading: saving,
+    error: saveError,
+  } = useFetch<{ profile: any }>("/api/v1/profile", {
+    method: "PUT",
+    manual: true,
+  });
+
+  useEffect(() => {
+    if (saveError) setError(saveError);
+  }, [saveError]);
+
+  const handleSave = async () => {
+    const body = {
+      bio,
+      tag_line: title,
+      metrics: {
+        Challenges: metrics?.Challenges ?? 0,
+        Bugs_found: metrics?.Bugs_found ?? 0,
+        Achievements: metrics?.Achievements ?? 0,
+        Level: level,
+        score: Number(score) || 0,
+      },
+      activity: { content: activities },
+    };
+
+    await saveProfile({ body });
     setIsEditing(false);
-    // Here you would typically save to a backend/database
   };
 
   const handleCancel = () => {
@@ -29,6 +113,21 @@ export default function ProfilePage() {
 
   return (
     <section className="relative min-h-screen bg-[#05060a] text-white font-mono">
+      {saving && (
+        <div className="absolute top-0 left-0 right-0 z-40 h-1 overflow-hidden bg-[#00d492]/20">
+          <div className="h-full w-full bg-[#00d492] animate-progressLoader" />
+        </div>
+      )}
+      {loading && !error && (
+        <div className="absolute inset-0 z-30 flex items-center justify-center bg-[#05060a]/95">
+          <div className="flex flex-col items-center gap-4">
+            <div className="h-12 w-12 rounded-full border-4 border-[#00d492]/30 border-t-[#00d492] animate-spin" />
+            <span className="text-sm uppercase tracking-[0.3em] text-[#00d492]">
+              Loading profile
+            </span>
+          </div>
+        </div>
+      )}
       {/* Background neon grid */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_#0a0f1c_0%,_#000_100%)] overflow-hidden">
         <div className="absolute inset-0 bg-[linear-gradient(#00d49240_1px,transparent_1px),linear-gradient(90deg,#00d49240_1px,transparent_1px)] bg-[size:50px_50px] opacity-10 animate-[pulseGrid_4s_ease-in-out_infinite]" />
@@ -43,7 +142,7 @@ export default function ProfilePage() {
             {!isEditing ? (
               <button
                 onClick={() => setIsEditing(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-[#00d492]/10 border border-[#00d492]/30 rounded-lg text-[#00d492] hover:bg-[#00d492]/20 transition-all"
+                className="flex cursor-pointer items-center gap-2 px-4 py-2 bg-[#00d492]/10 border border-[#00d492]/30 rounded-lg text-[#00d492] hover:bg-[#00d492]/20 transition-all"
               >
                 <Edit2 className="w-4 h-4" />
                 Edit Profile
@@ -52,14 +151,15 @@ export default function ProfilePage() {
               <div className="flex gap-3">
                 <button
                   onClick={handleSave}
-                  className="flex items-center gap-2 px-4 py-2 bg-[#00d492] text-black rounded-lg hover:bg-[#00d492]/80 transition-all font-semibold"
+                  disabled={saving}
+                  className="flex cursor-pointer items-center gap-2 px-4 py-2 bg-[#00d492] text-black rounded-lg hover:bg-[#00d492]/80 transition-all font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   <Save className="w-4 h-4" />
                   Save
                 </button>
                 <button
                   onClick={handleCancel}
-                  className="flex items-center gap-2 px-4 py-2 bg-red-500/20 border border-red-500/30 rounded-lg text-red-400 hover:bg-red-500/30 transition-all"
+                  className="flex cursor-pointer items-center gap-2 px-4 py-2 bg-red-500/20 border border-red-500/30 rounded-lg text-red-400 hover:bg-red-500/30 transition-all"
                 >
                   <X className="w-4 h-4" />
                   Cancel
@@ -75,25 +175,16 @@ export default function ProfilePage() {
                 <User className="w-16 h-16 text-[#00d492]" />
               </div>
               <div className="absolute -bottom-2 -right-[-20px] bg-[#00d492] text-black font-bold px-3 py-1 rounded-lg text-sm shadow-[0_0_3px_#00d492]">
-                52
+                {level}
               </div>
             </div>
 
             {/* User Info */}
             <div className="flex-1 text-center md:text-left">
               {/* Username */}
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="text-5xl font-bold text-[#00d492] mb-2 bg-black/40 border border-[#00d492]/30 rounded-lg px-3 py-2 w-full focus:outline-none focus:border-[#00d492]"
-                />
-              ) : (
-                <h1 className="text-5xl font-bold text-[#00d492] mb-2">
-                  {username}
-                </h1>
-              )}
+              <h1 className="text-5xl font-bold text-[#00d492] mb-2">
+                {username}
+              </h1>
 
               {/* Title */}
               {isEditing ? (
@@ -123,8 +214,8 @@ export default function ProfilePage() {
               ) : (
                 <div className="mb-6 mx-auto md:mx-0">
                   <p className="text-gray-400 text-sm leading-relaxed">
-                    {bio.length > BIO_CHAR_LIMIT && !isExpanded 
-                      ? `${bio.substring(0, BIO_CHAR_LIMIT)}...` 
+                    {bio.length > BIO_CHAR_LIMIT && !isExpanded
+                      ? `${bio.substring(0, BIO_CHAR_LIMIT)}...`
                       : bio}
                   </p>
                   {bio.length > BIO_CHAR_LIMIT && (
@@ -141,13 +232,15 @@ export default function ProfilePage() {
               {/* XP Progress Bar with animation */}
               <div className="space-y-2 max-w-md mx-auto md:mx-0">
                 <div className="flex justify-between text-sm text-gray-400">
-                  <span>Level 52</span>
-                  <span className="text-[#8b5cf6]">4200 / 5000 XP</span>
+                  <span>Level {level}</span>
+                  <span className="text-[#8b5cf6]">
+                    {score} / {xpTarget} XP
+                  </span>
                 </div>
                 <div className="relative h-2 bg-black/60 rounded-full overflow-hidden border border-[#8b5cf6]/30">
-                  <div 
+                  <div
                     className="absolute inset-y-0 left-0 bg-gradient-to-r from-[#8b5cf6] to-[#3b82f6] rounded-full shadow-[0_0_10px_#8b5cf6] animate-progressBar"
-                    style={{ width: '84%' }}
+                    style={{ width: progressPercent }}
                   />
                 </div>
               </div>
@@ -157,34 +250,54 @@ export default function ProfilePage() {
 
         {/* Stats Cards with staggered animation */}
         <div className="grid md:grid-cols-3 gap-6 mb-12">
-          <div className="bg-black/30 border border-[#00d492]/30 rounded-xl p-6 backdrop-blur-sm hover:border-[#00d492]/60 hover:shadow-[0_0_20px_rgba(0,255,174,0.3)] transition-all animate-slideUp" style={{ animationDelay: '0.1s' }}>
+          <div
+            className="bg-black/30 border border-[#00d492]/30 rounded-xl p-6 backdrop-blur-sm hover:border-[#00d492]/60 hover:shadow-[0_0_20px_rgba(0,255,174,0.3)] transition-all animate-slideUp"
+            style={{ animationDelay: "0.1s" }}
+          >
             <div className="flex items-center justify-between mb-2">
               <Target className="w-8 h-8 text-[#00d492]" />
-              <span className="text-4xl font-bold text-[#00d492] animate-countUp">120</span>
+              <span className="text-4xl font-bold text-[#00d492] animate-countUp">
+                {metrics?.Challenges ?? 0}
+              </span>
             </div>
             <h3 className="text-sm text-gray-400">Challenges</h3>
           </div>
 
-          <div className="bg-black/30 border border-[#00d492]/30 rounded-xl p-6 backdrop-blur-sm hover:border-[#00d492]/60 hover:shadow-[0_0_20px_rgba(0,255,174,0.3)] transition-all animate-slideUp" style={{ animationDelay: '0.2s' }}>
+          <div
+            className="bg-black/30 border border-[#00d492]/30 rounded-xl p-6 backdrop-blur-sm hover:border-[#00d492]/60 hover:shadow-[0_0_20px_rgba(0,255,174,0.3)] transition-all animate-slideUp"
+            style={{ animationDelay: "0.2s" }}
+          >
             <div className="flex items-center justify-between mb-2">
               <Bug className="w-8 h-8 text-[#00d492]" />
-              <span className="text-4xl font-bold text-[#00d492] animate-countUp">78</span>
+              <span className="text-4xl font-bold text-[#00d492] animate-countUp">
+                {metrics?.Bugs_found ?? 0}
+              </span>
             </div>
             <h3 className="text-sm text-gray-400">Bugs Found</h3>
           </div>
 
-          <div className="bg-black/30 border border-[#00d492]/30 rounded-xl p-6 backdrop-blur-sm hover:border-[#00d492]/60 hover:shadow-[0_0_20px_rgba(0,255,174,0.3)] transition-all animate-slideUp" style={{ animationDelay: '0.3s' }}>
+          <div
+            className="bg-black/30 border border-[#00d492]/30 rounded-xl p-6 backdrop-blur-sm hover:border-[#00d492]/60 hover:shadow-[0_0_20px_rgba(0,255,174,0.3)] transition-all animate-slideUp"
+            style={{ animationDelay: "0.3s" }}
+          >
             <div className="flex items-center justify-between mb-2">
               <Award className="w-8 h-8 text-[#00d492]" />
-              <span className="text-4xl font-bold text-[#00d492] animate-countUp">15</span>
+              <span className="text-4xl font-bold text-[#00d492] animate-countUp">
+                {metrics?.Achievements ?? 0}
+              </span>
             </div>
             <h3 className="text-sm text-gray-400">Achievements</h3>
           </div>
         </div>
 
         {/* Recent Activity with fade animation */}
-        <div className="bg-black/30 border border-[#00d492]/30 rounded-2xl p-6 backdrop-blur-sm animate-fadeInUp" style={{ animationDelay: '0.4s' }}>
-          <h2 className="text-2xl font-bold text-[#00d492] mb-6">Recent Activity</h2>
+        <div
+          className="bg-black/30 border border-[#00d492]/30 rounded-2xl p-6 backdrop-blur-sm animate-fadeInUp"
+          style={{ animationDelay: "0.4s" }}
+        >
+          <h2 className="text-2xl font-bold text-[#00d492] mb-6">
+            Recent Activity
+          </h2>
           <div className="space-y-3">
             {activities.map((activity, idx) => (
               <div
@@ -193,10 +306,9 @@ export default function ProfilePage() {
                 style={{ animationDelay: `${0.5 + idx * 0.1}s` }}
               >
                 <span className="text-gray-300">{activity.text}</span>
-                {activity.xp > 0 && (
+                {(activity.xp ?? 0) > 0 && (
                   <span className="text-[#00d492] font-bold flex items-center gap-1">
-                    <Zap className="w-4 h-4" />
-                    +{activity.xp} XP
+                    <Zap className="w-4 h-4" />+{activity.xp ?? 0} XP
                   </span>
                 )}
               </div>
@@ -208,12 +320,21 @@ export default function ProfilePage() {
       {/* Animations */}
       <style jsx>{`
         @keyframes matrixFlow {
-          0% { background-position: 0 0; }
-          100% { background-position: 0 1000px; }
+          0% {
+            background-position: 0 0;
+          }
+          100% {
+            background-position: 0 1000px;
+          }
         }
         @keyframes pulseGrid {
-          0%, 100% { opacity: 0.1; }
-          50% { opacity: 0.3; }
+          0%,
+          100% {
+            opacity: 0.1;
+          }
+          50% {
+            opacity: 0.3;
+          }
         }
         @keyframes fadeIn {
           from {
@@ -264,7 +385,8 @@ export default function ProfilePage() {
           }
         }
         @keyframes glow {
-          0%, 100% {
+          0%,
+          100% {
             box-shadow: 0 0 5px #00d492;
           }
           50% {
@@ -287,6 +409,18 @@ export default function ProfilePage() {
           to {
             opacity: 1;
             transform: translateY(0);
+          }
+        }
+
+        @keyframes progressLoader {
+          0% {
+            transform: translateX(-100%);
+          }
+          50% {
+            transform: translateX(-10%);
+          }
+          100% {
+            transform: translateX(100%);
           }
         }
 
@@ -316,6 +450,9 @@ export default function ProfilePage() {
         }
         .animate-countUp {
           animation: countUp 0.8s ease-out forwards;
+        }
+        .animate-progressLoader {
+          animation: progressLoader 1.2s ease-in-out infinite;
         }
       `}</style>
     </section>
