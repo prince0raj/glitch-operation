@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import {Orbitron} from "next/font/google";
+import { Orbitron } from "next/font/google";
 import {
   Shield,
   Lock,
@@ -34,11 +34,12 @@ import {
   BinaryPattern,
   BinaryColumn,
 } from "./style";
-import { signInWithGoogle, signInWithGitHub } from "@/lib/auth-actions";
+import GoogleSignin from "./GoogleSignIn";
+import GithubSignIn from "./GithubSignIn";
 
-const orbitron = Orbitron({ 
+const orbitron = Orbitron({
   subsets: ["latin"],
-  variable: "--font-orbitron"
+  variable: "--font-orbitron",
 });
 
 const Page = () => {
@@ -108,20 +109,12 @@ const Page = () => {
           <FormSubtitle>
             Choose your authentication method to access the hacker playground
           </FormSubtitle>
-        
-            <SocialButtons onClick={() => signInWithGoogle()}>
-              <SocialButton type="button">
-                <Chrome size={16} />
-                Continue with Google
-              </SocialButton>
-            </SocialButtons>
-            
-            <SocialButtons onClick={() => signInWithGitHub()}>
-              <SocialButton type="button">
-                <Github size={16} />
-                Continue with GitHub
-              </SocialButton>
-            </SocialButtons>
+          <SocialButtons>
+            <GoogleSignin />
+          </SocialButtons>
+          <SocialButtons>
+            <GithubSignIn />
+          </SocialButtons>
         </FormContainer>
       </LeftSection>
 
