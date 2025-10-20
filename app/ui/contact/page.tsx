@@ -50,9 +50,9 @@ export default function ContactPage() {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid lg:grid-cols-2 gap-8 lg:items-stretch">
           {/* Contact Form */}
-          <div className="bg-black/30 border border-[#00d492]/30 rounded-2xl p-8 backdrop-blur-sm animate-slideUp">
+          <div className="bg-black/30 border border-[#00d492]/30 rounded-2xl p-8 backdrop-blur-sm animate-slideUp flex flex-col h-full">
             <h2 className="text-2xl font-bold text-[#00d492] mb-6">
               Send us a Message
             </h2>
@@ -148,9 +148,9 @@ export default function ContactPage() {
           </div>
 
           {/* Contact Information */}
-          <div className="space-y-6">
+          <div className="space-y-6 flex flex-col h-full">
             {/* Info Card */}
-            <div className="bg-black/30 border border-[#00d492]/30 rounded-2xl p-8 backdrop-blur-sm animate-slideUp" style={{ animationDelay: "0.1s" }}>
+            <div className="bg-black/30 border border-[#00d492]/30 rounded-2xl p-8 backdrop-blur-sm animate-slideUp flex-1" style={{ animationDelay: "0.1s" }}>
               <h2 className="text-2xl font-bold text-[#00d492] mb-6">
                 Contact Information
               </h2>
