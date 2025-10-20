@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect, FC } from "react";
+import { useFormStatus } from "react-dom";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import {
@@ -11,6 +12,7 @@ import {
   Trophy,
   Crosshair,
   LogOut,
+  Loader2,
   LucideIcon,
 } from "lucide-react";
 import GlitchText from "../GlitchText/GlitchText";
@@ -31,6 +33,31 @@ const orbitron = Orbitron({
 const Navbar: FC = () => {
   const pathname = usePathname();
   const [energyLevel, setEnergyLevel] = useState<number>(100);
+
+  const LogoutButton = ({ showLabel }: { showLabel?: boolean }) => {
+    const { pending } = useFormStatus();
+
+    return (
+      <button
+        type="submit"
+        disabled={pending}
+        className="group relative cursor-pointer flex items-center space-x-2 px-4 py-2 transition-all duration-300 font-mono font-bold text-red-400 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-60"
+        title="Sign Out"
+      >
+        {pending ? (
+          <Loader2 className="w-5 h-5 animate-spin" strokeWidth={2.5} />
+        ) : (
+          <LogOut className="w-5 h-5" strokeWidth={2.5} />
+        )}
+        {showLabel ? (
+          <span className="text-xs hidden xl:inline">
+            {pending ? "LOGGING OUT..." : "LOGOUT"}
+          </span>
+        ) : null}
+        <span className="absolute inset-0 rounded-md pointer-events-none border border-red-500/30 group-hover:border-red-400/50 group-hover:bg-red-400/5 group-hover:animate-glow"></span>
+      </button>
+    );
+  };
 
   const navItems: NavItem[] = [
     { id: "home", icon: Crosshair, label: "Home", path: "/ui/dashboard/home" },
@@ -106,14 +133,7 @@ const Navbar: FC = () => {
           {/* Mobile Signout Button */}
           <div className="lg:hidden">
             <form action={signout}>
-              <button
-                type="submit"
-                className="group relative flex items-center space-x-2 px-4 py-2 transition-all duration-300 font-mono font-bold text-red-400 hover:text-red-300"
-                title="Sign Out"
-              >
-                <LogOut className="w-5 h-5" strokeWidth={2.5} />
-                <span className="absolute inset-0 rounded-md pointer-events-none border border-red-500/30 group-hover:border-red-400/50 group-hover:bg-red-400/5 group-hover:animate-glow"></span>
-              </button>
+              <LogoutButton />
             </form>
           </div>
           {navItems.map(({ id, icon: Icon, label, path }) => {
@@ -163,17 +183,7 @@ const Navbar: FC = () => {
 
           {/* Signout Button */}
           <form action={signout}>
-            <button
-              type="submit"
-              className="group relative cursor-pointer flex items-center space-x-2 px-4 py-2 transition-all duration-300 font-mono font-bold text-red-400 hover:text-red-300"
-              title="Sign Out"
-            >
-              <LogOut className="w-5 h-5" strokeWidth={2.5} />
-              <span className="text-xs hidden xl:inline">LOGOUT</span>
-
-              {/* Neon Glitch Animation */}
-              <span className="absolute inset-0 rounded-md pointer-events-none border border-red-500/30 group-hover:border-red-400/50 group-hover:bg-red-400/5 group-hover:animate-glow"></span>
-            </button>
+            <LogoutButton showLabel />
           </form>
         </div>
       </div>

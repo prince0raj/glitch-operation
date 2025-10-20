@@ -43,10 +43,10 @@ export default function HeroSection() {
 
           {/* Buttons */}
           <div className="flex gap-4 mt-6">
-            <button className="px-6 py-3 bg-[#00d492] text-black font-bold rounded-xl shadow-[0_0_20px_#00d492] hover:scale-110 hover:shadow-[0_0_40px_#00d492] transition-transform">
+            <button className="px-6 py-3 cursor-pointer bg-[#00d492] text-black font-bold rounded-xl shadow-[0_0_20px_#00d492] hover:scale-110 hover:shadow-[0_0_40px_#00d492] transition-transform">
               Start Hunting
             </button>
-            <button className="px-6 py-3 border border-[#00d492] text-[#00d492] rounded-xl hover:bg-[#00d492]/10 hover:shadow-[0_0_15px_#00d492] transition-all">
+            <button className="px-6 py-3 cursor-pointer border border-[#00d492] text-[#00d492] rounded-xl hover:bg-[#00d492]/10 hover:shadow-[0_0_15px_#00d492] transition-all">
               Learn Debugging
             </button>
           </div>
