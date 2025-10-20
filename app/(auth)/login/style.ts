@@ -5,7 +5,7 @@ export const LoginContainer = styled.div`
   background: #000000;
   position: relative;
   display: flex;
-  font-family: 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+  font-family: "Fira Code", "JetBrains Mono", "Consolas", monospace;
   color: #00d492;
 `;
 
@@ -18,7 +18,7 @@ export const LeftSection = styled.div`
   position: relative;
   height: 100vh;
   overflow-y: auto;
-  background: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
+  background: none;
 `;
 
 export const RightSection = styled.div`
@@ -40,7 +40,13 @@ export const Separator = styled.div`
   bottom: 0;
   width: 1px;
   height: 100%;
-  background: linear-gradient(180deg, transparent 0%, #00d492 20%, #00d492 80%, transparent 100%);
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    #00d492 20%,
+    #00d492 80%,
+    transparent 100%
+  );
 `;
 
 export const FormContainer = styled.div`
@@ -55,9 +61,9 @@ export const Logo = styled.div`
   margin-bottom: 3rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  
+
   &::before {
-    content: '> ';
+    content: "> ";
     color: #00d492;
   }
 `;
@@ -94,7 +100,7 @@ export const TabButton = styled.button<{ $active: boolean }>`
   padding: 0.5rem 1rem;
   border: none;
   border-radius: 8px;
-  font-family: 'Fira Code', monospace;
+  font-family: "Fira Code", monospace;
   font-size: 0.875rem;
   font-weight: 600;
   font-size: 12px;
@@ -102,14 +108,14 @@ export const TabButton = styled.button<{ $active: boolean }>`
   letter-spacing: 0.08em;
   cursor: pointer;
   transition: all 0.2s ease;
-  color: ${props => (props.$active ? '#0c0a09' : '#a1a1aa')};
-  background: ${props =>
+  color: ${(props) => (props.$active ? "#0c0a09" : "#a1a1aa")};
+  background: ${(props) =>
     props.$active
-      ? 'linear-gradient(135deg,rgb(235, 237, 236) 0%,rgb(210, 212, 211) 100%)'
-      : 'transparent'};
+      ? "linear-gradient(135deg,rgb(235, 237, 236) 0%,rgb(210, 212, 211) 100%)"
+      : "transparent"};
 
   &:hover {
-    color: ${props => (props.$active ? '#000' : '#f4f4f5')};
+    color: ${(props) => (props.$active ? "#000" : "#f4f4f5")};
   }
 `;
 
@@ -134,7 +140,7 @@ export const SocialButton = styled.button`
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-family: 'Fira Code', monospace;
+  font-family: "Fira Code", monospace;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 
@@ -162,7 +168,7 @@ export const Divider = styled.div`
 
   &::before,
   &::after {
-    content: '';
+    content: "";
     flex: 1;
     height: 1px;
     background: #3f3f46;
@@ -197,7 +203,7 @@ export const Input = styled.input`
   border-radius: 8px;
   color: #f4f4f5;
   font-size: 0.875rem;
-  font-family: 'Fira Code', monospace;
+  font-family: "Fira Code", monospace;
   transition: all 0.2s ease;
   box-sizing: border-box;
 
@@ -224,7 +230,7 @@ export const SignUpButton = styled.button`
   cursor: pointer;
   margin: 1.5rem 0;
   transition: all 0.2s ease;
-  font-family: 'Fira Code', monospace;
+  font-family: "Fira Code", monospace;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 
@@ -266,7 +272,7 @@ export const SignInLink = styled.div`
     color: #f4f4f5;
     text-decoration: none;
     font-weight: 500;
-    
+
     &:hover {
       text-decoration: underline;
     }
@@ -334,7 +340,7 @@ export const Footer = styled.div`
   a {
     color: #a1a1aa;
     text-decoration: none;
-    
+
     &:hover {
       text-decoration: underline;
       color: #f4f4f5;
@@ -349,7 +355,7 @@ export const Terminal = styled.div`
   padding: 1.5rem;
   width: 100%;
   max-width: 600px;
-  font-family: 'Fira Code', monospace;
+  font-family: "Fira Code", monospace;
   z-index: 1;
   position: relative;
   backdrop-filter: blur(10px);
@@ -368,8 +374,8 @@ export const TerminalDot = styled.div<{ color: string }>`
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: ${props => props.color};
-  box-shadow: 0 0 5px ${props => props.color};
+  background: ${(props) => props.color};
+  box-shadow: 0 0 5px ${(props) => props.color};
 `;
 
 export const TerminalTitle = styled.div`
@@ -387,9 +393,9 @@ export const TerminalContent = styled.div`
 
 export const TerminalLine = styled.div`
   margin-bottom: 0.5rem;
-  
+
   &::before {
-    content: '$ ';
+    content: "$ ";
     color: #00d492;
   }
 `;
@@ -397,21 +403,27 @@ export const TerminalLine = styled.div`
 export const TypewriterText = styled.span`
   border-right: 2px solid #00d492;
   animation: blink 1s infinite;
-  
+
   @keyframes blink {
-    0%, 50% { border-color: #00d492; }
-    51%, 100% { border-color: transparent; }
+    0%,
+    50% {
+      border-color: #00d492;
+    }
+    51%,
+    100% {
+      border-color: transparent;
+    }
   }
 `;
 
 export const FloatingIcon = styled.div<{ top: string; left: string }>`
   position: absolute;
-  top: ${props => props.top};
-  left: ${props => props.left};
+  top: ${(props) => props.top};
+  left: ${(props) => props.left};
   color: rgba(0, 255, 0, 0.4);
   z-index: 0;
   transition: all 0.3s ease;
-  
+
   &:hover {
     color: rgba(0, 255, 0, 0.8);
     transform: scale(1.1);
@@ -426,10 +438,18 @@ export const BinaryPattern = styled.div`
   bottom: 0;
   overflow: hidden;
   z-index: 0;
-  background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.06) 0%, transparent 45%),
-              radial-gradient(circle at bottom right, rgba(0, 212, 146, 0.08) 0%, transparent 55%);
+  background: radial-gradient(
+      circle at top left,
+      rgba(255, 255, 255, 0.06) 0%,
+      transparent 45%
+    ),
+    radial-gradient(
+      circle at bottom right,
+      rgba(0, 212, 146, 0.08) 0%,
+      transparent 55%
+    );
   &::after {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
     pointer-events: none;
@@ -452,14 +472,18 @@ const rainFall = keyframes`
   }
 `;
 
-export const BinaryColumn = styled.div<{ left: string; delay: number; duration: number }>`
+export const BinaryColumn = styled.div<{
+  left: string;
+  delay: number;
+  duration: number;
+}>`
   position: absolute;
   top: 0;
-  left: ${props => props.left};
+  left: ${(props) => props.left};
   width: 20px;
   height: 100vh;
   color: rgba(0, 212, 146, 0.3);
-  font-family: 'Fira Code', monospace;
+  font-family: "Fira Code", monospace;
   font-size: 14px;
   line-height: 1.4;
   display: flex;
@@ -468,6 +492,12 @@ export const BinaryColumn = styled.div<{ left: string; delay: number; duration: 
   padding-top: 0rem;
   opacity: 1;
   animation: ${rainFall} linear infinite;
-  animation-duration: ${props => props.duration}s;
-  animation-delay: ${props => props.delay}s;
+  animation-duration: ${(props) => props.duration}s;
+  animation-delay: ${(props) => props.delay}s;
+`;
+
+export const LeftContainer = styled.section`
+  .wireFrameSphere {
+    opacity: 0.08;
+  }
 `;

@@ -33,9 +33,12 @@ import {
   FloatingIcon,
   BinaryPattern,
   BinaryColumn,
+  LeftContainer,
 } from "./style";
 import GoogleSignin from "./GoogleSignIn";
 import GithubSignIn from "./GithubSignIn";
+import GridPattern from "@/app/commonComponents/GridPattern/GridPattern";
+import WireframeSpheres from "@/app/commonComponents/Sphere/WireframeSphere";
 
 const orbitron = Orbitron({
   subsets: ["latin"],
@@ -100,23 +103,27 @@ const Page = () => {
 
   return (
     <LoginContainer>
-      <LeftSection>
-        <Separator />
-        <FormContainer>
-          <Logo className={orbitron.className}>OPS. GLITCH</Logo>
+      <LeftContainer className="relative h-screen w-full bg-[#05060a]">
+        <GridPattern />
+        <WireframeSpheres />
+        <LeftSection>
+          <Separator />
+          <FormContainer>
+            <Logo className={orbitron.className}>OPS. GLITCH</Logo>
 
-          <FormTitle className="font-mono">Access Terminal</FormTitle>
-          <FormSubtitle>
-            Choose your authentication method to access the hacker playground
-          </FormSubtitle>
-          <SocialButtons>
-            <GoogleSignin />
-          </SocialButtons>
-          <SocialButtons>
-            <GithubSignIn />
-          </SocialButtons>
-        </FormContainer>
-      </LeftSection>
+            <FormTitle className="font-mono">Access Terminal</FormTitle>
+            <FormSubtitle>
+              Choose your authentication method to access the hacker playground
+            </FormSubtitle>
+            <SocialButtons>
+              <GoogleSignin />
+            </SocialButtons>
+            <SocialButtons>
+              <GithubSignIn />
+            </SocialButtons>
+          </FormContainer>
+        </LeftSection>
+      </LeftContainer>
 
       <RightSection>
         <BinaryPattern>
