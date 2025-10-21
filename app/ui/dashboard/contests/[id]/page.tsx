@@ -34,7 +34,7 @@ export default function ContestDetailPage() {
   const [contest, setContest] = useState<Contest | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const [formData, setFormData] = useState({
+  const createInitialFormData = () => ({
     bugTitle: "",
     severity: "Medium",
     stepsFollowedToBreak: "",
@@ -43,9 +43,15 @@ export default function ContestDetailPage() {
     proofOfConcept: "",
   });
 
+  const [formData, setFormData] = useState(createInitialFormData);
+
   const [submitted, setSubmitted] = useState(false);
 
-  const { data, loading, error: fetchError } = useFetch<{
+  const {
+    data,
+    loading,
+    error: fetchError,
+  } = useFetch<{
     contest?: Contest;
     error?: string;
   }>(contestId ? `/api/v1/contests/${contestId}` : null);
@@ -68,7 +74,9 @@ export default function ContestDetailPage() {
 
   const requirements = useMemo(() => {
     return Array.isArray(contest?.requirements)
-      ? contest?.requirements.filter((req) => typeof req === "string" && req.trim().length > 0)
+      ? contest?.requirements.filter(
+          (req) => typeof req === "string" && req.trim().length > 0
+        )
       : [];
   }, [contest?.requirements]);
 
@@ -80,6 +88,11 @@ export default function ContestDetailPage() {
     setTimeout(() => {
       router.push("/ui/dashboard/contests");
     }, 2000);
+  };
+
+  const handleReset = () => {
+    setFormData(createInitialFormData());
+    setSubmitted(false);
   };
 
   const handleChange = (
@@ -146,7 +159,8 @@ export default function ContestDetailPage() {
                     {contest.title}
                   </h1>
                   <p className="text-gray-400 text-lg">
-                    {contest.description ?? "Join this contest to show your skills."}
+                    {contest.description ??
+                      "Join this contest to show your skills."}
                   </p>
                 </div>
                 <span
@@ -204,7 +218,9 @@ export default function ContestDetailPage() {
 
               {contest.target_url ? (
                 <div className="mt-6">
-                  <h3 className="text-lg font-bold text-[#00d492] mb-2">Target URL</h3>
+                  <h3 className="text-lg font-bold text-[#00d492] mb-2">
+                    Target URL
+                  </h3>
                   <a
                     href={contest.target_url}
                     target="_blank"
@@ -224,7 +240,10 @@ export default function ContestDetailPage() {
                 {requirements.length > 0 ? (
                   <ul className="space-y-2">
                     {requirements.map((req, idx) => (
-                      <li key={`${req}-${idx}`} className="flex items-start gap-2 text-gray-400">
+                      <li
+                        key={`${req}-${idx}`}
+                        className="flex items-start gap-2 text-gray-400"
+                      >
                         <span className="text-[#00d492] mt-1">▸</span>
                         <span>{req}</span>
                       </li>
@@ -306,7 +325,7 @@ export default function ContestDetailPage() {
                   </div>
 
                   {/* Proof of Concept */}
-                  <div>
+                  {/* <div>
                     <label className="block text-sm font-semibold text-gray-400 mb-2">
                       Proof of Concept (URL/Screenshots)
                     </label>
@@ -316,25 +335,25 @@ export default function ContestDetailPage() {
                       value={formData.proofOfConcept}
                       onChange={handleChange}
                       placeholder="Paste URL to screenshots, video, or additional proof..."
-                      className="w-full bg-black/40 border border-[#00d492]/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#00d492] transition-colors"
+                      className="w-full bg-black/40 border cursor-pointer border-[#00d492]/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#00d492] transition-colors"
                     />
-                  </div>
+                  </div> */}
 
                   {/* Submit Button */}
                   <div className="flex gap-4 pt-4">
                     <button
                       type="submit"
-                      className="flex-1 flex items-center justify-center gap-2 bg-[#00d492] text-black font-bold py-3 rounded-lg hover:bg-[#00d492]/80 transition-all"
+                      className="flex-1 flex cursor-pointer items-center justify-center gap-2 bg-[#00d492] text-black font-bold py-3 rounded-lg hover:bg-[#00d492]/80 transition-all"
                     >
                       <Send className="w-5 h-5" />
                       Submit Bug Report
                     </button>
                     <button
                       type="button"
-                      onClick={() => router.push("/ui/dashboard/contests")}
-                      className="px-6 py-3 bg-black/40 border border-[#00d492]/30 text-[#00d492] rounded-lg hover:bg-black/60 transition-all"
+                      onClick={handleReset}
+                      className="px-6 py-3 bg-black/40 cursor-pointer border border-[#00d492]/30 text-[#00d492] rounded-lg hover:bg-black/60 transition-all"
                     >
-                      Cancel
+                      Reset
                     </button>
                   </div>
                 </form>
