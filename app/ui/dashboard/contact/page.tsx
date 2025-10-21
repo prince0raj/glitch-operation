@@ -1,6 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Mail, MapPin, Phone, Send, Check, AlertCircle } from "lucide-react";
+import { createClient } from "@/utils/supabase/client";
+import { useFetch } from "@/app/hook/useFetch";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -10,6 +12,67 @@ export default function ContactPage() {
     message: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const {
+    data: submitData,
+    error: submitError,
+    loading: isSubmitting,
+    refetch: submitContact,
+  } = useFetch<{ message: string }>("/api/v1/contactus", {
+    method: "POST",
+    manual: true,
+  });
+
+  useEffect(() => {
+    const fetchUserEmail = async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.getUser();
+      console.log(data);
+
+      if (error) {
+        console.error("Error fetching user email", error);
+        return;
+      }
+
+      const user = data.user;
+
+      if (user) {
+        const userName =
+          (user.user_metadata?.name as string | undefined) ??
+          (user.user_metadata?.full_name as string | undefined) ??
+          (user.user_metadata?.username as string | undefined);
+
+        setFormData((prev) => ({
+          ...prev,
+          email: user.email ?? prev.email,
+          ...(userName ? { name: userName } : {}),
+        }));
+      }
+    };
+
+    fetchUserEmail();
+  }, []);
+
+  useEffect(() => {
+    setError(submitError ?? null);
+  }, [submitError]);
+
+  useEffect(() => {
+    if (submitData && !submitError) {
+      setSubmitted(true);
+      setFormData((prev) => ({
+        ...prev,
+        subject: "",
+        message: "",
+      }));
+
+      const timeout = setTimeout(() => {
+        setSubmitted(false);
+      }, 3000);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [submitData, submitError]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -18,16 +81,23 @@ export default function ContactPage() {
       ...formData,
       [e.target.name]: e.target.value,
     });
+    setError(null);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData({ name: "", email: "", subject: "", message: "" });
-    }, 3000);
+    if (isSubmitting) return;
+
+    setError(null);
+
+    await submitContact({
+      body: {
+        sender_name: formData.name,
+        sender_email: formData.email,
+        sender_subject: formData.subject,
+        sender_message: formData.message,
+      },
+    });
   };
 
   return (
@@ -83,7 +153,8 @@ export default function ContactPage() {
                     onChange={handleChange}
                     required
                     placeholder="John Doe"
-                    className="w-full bg-black/40 border border-[#00d492]/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#00d492] transition-colors"
+                    readOnly
+                    className="w-full bg-[#00d492]/10 border border-[#00d492]/40 rounded-lg px-4 py-3 text-[#9ef5d8] focus:outline-none focus:border-[#00d492]/30 transition-colors cursor-not-allowed"
                   />
                 </div>
 
@@ -99,9 +170,12 @@ export default function ContactPage() {
                     onChange={handleChange}
                     required
                     placeholder="john@example.com"
-                    className="w-full bg-black/40 border border-[#00d492]/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#00d492] transition-colors"
+                    readOnly
+                    className="w-full bg-[#00d492]/10 border border-[#00d492]/40 rounded-lg px-4 py-3 text-[#9ef5d8] focus:outline-none focus:border-[#00d492]/30 transition-colors cursor-not-allowed"
                   />
                 </div>
+
+                {error && <p className="text-red-500 text-sm">{error}</p>}
 
                 {/* Subject */}
                 <div>
@@ -138,10 +212,11 @@ export default function ContactPage() {
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  className="w-full flex items-center justify-center gap-2 bg-[#00d492] text-black font-bold py-3 rounded-lg hover:bg-[#00d492]/80 transition-all hover:shadow-[0_0_20px_#00d492]"
+                  disabled={isSubmitting}
+                  className="w-full cursor-pointer flex items-center justify-center gap-2 bg-[#00d492] text-black font-bold py-3 rounded-lg hover:bg-[#00d492]/80 transition-all hover:shadow-[0_0_20px_#00d492] disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   <Send className="w-5 h-5" />
-                  Send Message
+                  {isSubmitting ? "Sending..." : "Send Message"}
                 </button>
               </form>
             )}
@@ -150,7 +225,10 @@ export default function ContactPage() {
           {/* Contact Information */}
           <div className="space-y-6 flex flex-col h-full">
             {/* Info Card */}
-            <div className="bg-black/30 border border-[#00d492]/30 rounded-2xl p-8 backdrop-blur-sm animate-slideUp flex-1" style={{ animationDelay: "0.1s" }}>
+            <div
+              className="bg-black/30 border border-[#00d492]/30 rounded-2xl p-8 backdrop-blur-sm animate-slideUp flex-1"
+              style={{ animationDelay: "0.1s" }}
+            >
               <h2 className="text-2xl font-bold text-[#00d492] mb-6">
                 Contact Information
               </h2>
@@ -163,8 +241,12 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-bold text-white mb-1">Email</h3>
-                    <p className="text-gray-400 text-sm">support@opsglitch.com</p>
-                    <p className="text-gray-400 text-sm">contact@opsglitch.com</p>
+                    <p className="text-gray-400 text-sm">
+                      support@opsglitch.com
+                    </p>
+                    <p className="text-gray-400 text-sm">
+                      contact@opsglitch.com
+                    </p>
                   </div>
                 </div>
 
@@ -176,7 +258,9 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-bold text-white mb-1">Phone</h3>
                     <p className="text-gray-400 text-sm">+1 (555) 123-4567</p>
-                    <p className="text-gray-400 text-sm">Mon-Fri, 9AM-6PM EST</p>
+                    <p className="text-gray-400 text-sm">
+                      Mon-Fri, 9AM-6PM EST
+                    </p>
                   </div>
                 </div>
 
@@ -188,14 +272,19 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-bold text-white mb-1">Location</h3>
                     <p className="text-gray-400 text-sm">123 Cyber Street</p>
-                    <p className="text-gray-400 text-sm">Tech Valley, CA 94000</p>
+                    <p className="text-gray-400 text-sm">
+                      Tech Valley, CA 94000
+                    </p>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* FAQ Card */}
-            <div className="bg-black/30 border border-[#00d492]/30 rounded-2xl p-8 backdrop-blur-sm animate-slideUp" style={{ animationDelay: "0.2s" }}>
+            <div
+              className="bg-black/30 border border-[#00d492]/30 rounded-2xl p-8 backdrop-blur-sm animate-slideUp"
+              style={{ animationDelay: "0.2s" }}
+            >
               <h2 className="text-2xl font-bold text-[#00d492] mb-6">
                 Quick Help
               </h2>
