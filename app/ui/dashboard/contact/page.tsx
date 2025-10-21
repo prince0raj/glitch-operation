@@ -312,7 +312,7 @@ export default function ContactPage() {
                       Technical Support
                     </h3>
                     <p className="text-gray-400 text-sm">
-                      For urgent issues, use live chat support
+                      For urgent issues, please call us!
                     </p>
                   </div>
                 </div>
