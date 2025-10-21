@@ -88,7 +88,7 @@ const Footer = () => {
                     </div>
 
                     <div className="text-gray-500 text-center md:text-right font-semibold">
-                        © 2025 OPS. GLITCH. ALL RIGHTS RESERVED.
+                        © {new Date().getFullYear()} OPS. GLITCH. ALL RIGHTS RESERVED.
                     </div>
                 </div>
             </div>
