@@ -46,9 +46,9 @@ export async function POST(request: Request) {
     });
 
     const mailOptions = {
-      from: `"Orbit Linker" <${process.env.EMAIL_USER}>`,
+      from: `"OPS. GLITCH" <${process.env.EMAIL_USER}>`,
       to: sender_email,
-      subject: "Thank you for contacting Orbit Linker",
+      subject: "Thank you for contacting OPS. GLITCH",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
           <div style="background-color: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
@@ -75,13 +75,13 @@ export async function POST(request: Request) {
             
             <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0;">
               <p style="color: #333; line-height: 1.6; margin-bottom: 5px;">Best regards,</p>
-              <p style="color: #00d492; font-weight: bold; margin: 0;">The Orbit Linker Team</p>
+              <p style="color: #00d492; font-weight: bold; margin: 0;">The OPS. GLITCH Team</p>
             </div>
             
             <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; text-align: center;">
               <p style="color: #999; font-size: 12px; line-height: 1.4; margin: 0;">
                 This is an automated confirmation email. Please do not reply directly to this message.<br>
-                © ${new Date().getFullYear()} Orbit Linker. All rights reserved.
+                © ${new Date().getFullYear()} OPS. GLITCH. All rights reserved.
               </p>
             </div>
           </div>
@@ -99,11 +99,11 @@ Our team will carefully review your inquiry and get back to you as soon as possi
 If your matter is urgent, please feel free to reach out to us directly at ${process.env.EMAIL_USER}.
 
 Best regards,
-The Orbit Linker Team
+The OPS. GLITCH Team
 
 ---
 This is an automated confirmation email. Please do not reply directly to this message.
-${new Date().getFullYear()} Orbit Linker. All rights reserved.`,
+© ${new Date().getFullYear()} OPS. GLITCH. All rights reserved.`,
     };
 
     await transporter.sendMail(mailOptions);
