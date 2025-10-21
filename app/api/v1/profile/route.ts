@@ -75,7 +75,10 @@ export async function GET(request: Request) {
       { status: 200 }
     );
   } catch (e: any) {
-    return NextResponse.json({ error: e?.message ?? "Unknown error" }, { status: 500 });
+    return NextResponse.json(
+      { error: e?.message ?? "Unknown error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -109,25 +112,38 @@ export async function PUT(request: Request) {
         Challenges: Number.parseInt(String(m?.Challenges ?? 0)) || 0,
         Bugs_found: Number.parseInt(String(m?.Bugs_found ?? 0)) || 0,
         Achievements: Number.parseInt(String(m?.Achievements ?? 0)) || 0,
-        Level: Number.parseInt(String(m?.Level ?? 1)) || 1,
         score: Number.parseInt(String(m?.score ?? 0)) || 0,
+        Level: Math.max(
+          Math.floor(Number.parseInt(String(m?.score ?? 0)) / 1000),
+          1
+        ),
       };
     }
 
     if (activity && typeof activity === "object") {
       const content = Array.isArray(activity.content) ? activity.content : [];
-      updatePayload.activity = { content: content.map((a: any) => ({ text: String(a?.text ?? ""), xp: Number(a?.xp) || undefined })) };
+      updatePayload.activity = {
+        content: content.map((a: any) => ({
+          text: String(a?.text ?? ""),
+          xp: Number(a?.xp) || undefined,
+        })),
+      };
     }
 
     if (Object.keys(updatePayload).length === 0) {
-      return NextResponse.json({ error: "No valid fields to update" }, { status: 400 });
+      return NextResponse.json(
+        { error: "No valid fields to update" },
+        { status: 400 }
+      );
     }
 
     const { data, error } = await supabase
       .from("profiles")
       .update(updatePayload)
       .eq("id", user.id)
-      .select("id, full_name, username, email, avatar_url, bio, tag_line, metrics, activity")
+      .select(
+        "id, full_name, username, email, avatar_url, bio, tag_line, metrics, activity"
+      )
       .single();
 
     if (error) {
@@ -136,6 +152,9 @@ export async function PUT(request: Request) {
 
     return NextResponse.json({ profile: data }, { status: 200 });
   } catch (e: any) {
-    return NextResponse.json({ error: e?.message ?? "Unknown error" }, { status: 500 });
+    return NextResponse.json(
+      { error: e?.message ?? "Unknown error" },
+      { status: 500 }
+    );
   }
 }

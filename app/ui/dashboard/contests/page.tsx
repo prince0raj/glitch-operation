@@ -1,62 +1,56 @@
 "use client";
-import { Trophy, Calendar, Users, Zap, ChevronRight } from "lucide-react";
+import {
+  Trophy,
+  Calendar,
+  Users,
+  Zap,
+  ChevronRight,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useMemo } from "react";
+import { Preloader } from "@/app/commonComponents/Preloader/Preloader";
+import { useFetch } from "@/app/hook/useFetch";
+
+type Contest = {
+  id: string;
+  slug: string;
+  title: string;
+  difficulty: string;
+  participants: number;
+  deadline: string | null;
+  reward: number;
+  status: string;
+  short_desc: string | null;
+};
+
+type ContestsResponse = {
+  contests?: Contest[];
+  error?: string;
+};
 
 export default function ContestsPage() {
   const router = useRouter();
 
-  const contests = [
-    {
-      id: 1,
-      title: "SQL Injection Hunt",
-      difficulty: "Medium",
-      participants: 1234,
-      deadline: "2025-11-15",
-      reward: "500 XP",
-      status: "Active",
-      description: "Find SQL injection vulnerabilities in our mock e-commerce platform",
-    },
-    {
-      id: 2,
-      title: "XSS Challenge",
-      difficulty: "Hard",
-      participants: 892,
-      deadline: "2025-11-20",
-      reward: "750 XP",
-      status: "Active",
-      description: "Identify and exploit cross-site scripting vulnerabilities",
-    },
-    {
-      id: 3,
-      title: "API Security Test",
-      difficulty: "Easy",
-      participants: 2156,
-      deadline: "2025-11-10",
-      reward: "300 XP",
-      status: "Active",
-      description: "Test API endpoints for authentication and authorization flaws",
-    },
-    {
-      id: 4,
-      title: "Authentication Bypass",
-      difficulty: "Hard",
-      participants: 567,
-      deadline: "2025-11-25",
-      reward: "1000 XP",
-      status: "Active",
-      description: "Attempt to bypass authentication mechanisms in various scenarios",
-    },
-    {
-      id: 5,
-      title: "CSRF Exploitation",
-      difficulty: "Medium",
-      participants: 745,
-      deadline: "2025-10-05",
-      reward: "400 XP",
-      status: "Ended",
-      description: "Discover and exploit CSRF vulnerabilities in web applications",
-    },
-  ];
+  const { data, loading, error: fetchError } = useFetch<ContestsResponse>(
+    "/api/v1/contests"
+  );
+
+  const contests = useMemo(() => {
+    if (!data?.contests) {
+      return [] as Contest[];
+    }
+    return data.contests;
+  }, [data?.contests]);
+
+  const normalizedError = fetchError ?? data?.error ?? null;
+
+  const orderedContests = useMemo(() => {
+    return [...contests].sort((a, b) => {
+      const aTime = a.deadline ? new Date(a.deadline).getTime() : Infinity;
+      const bTime = b.deadline ? new Date(b.deadline).getTime() : Infinity;
+      return aTime - bTime;
+    });
+  }, [contests]);
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
@@ -92,68 +86,93 @@ export default function ContestsPage() {
 
         {/* Contests Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {contests.map((contest, idx) => (
-            <div
-              key={contest.id}
-              className="bg-black/30 border border-[#00d492]/30 rounded-xl p-6 backdrop-blur-sm hover:border-[#00d492]/60 hover:shadow-[0_0_20px_rgba(0,255,174,0.3)] transition-all cursor-pointer animate-slideUp"
-              style={{ animationDelay: `${idx * 0.1}s` }}
-              onClick={() => router.push(`/ui/contests/${contest.id}`)}
-            >
-              {/* Status Badge */}
-              <div className="flex justify-between items-start mb-4">
-                <span
-                  className={`px-3 py-1 rounded-full text-xs font-semibold border ${getDifficultyColor(
-                    contest.difficulty
-                  )}`}
-                >
-                  {contest.difficulty}
-                </span>
-                <span
-                  className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                    contest.status === "Active"
-                      ? "bg-[#00d492]/20 text-[#00d492]"
-                      : "bg-gray-500/20 text-gray-400"
-                  }`}
-                >
-                  {contest.status}
-                </span>
-              </div>
-
-              {/* Title */}
-              <h3 className="text-xl font-bold text-white mb-3">
-                {contest.title}
-              </h3>
-
-              {/* Description */}
-              <p className="text-gray-400 text-sm mb-4 line-clamp-2">
-                {contest.description}
-              </p>
-
-              {/* Stats */}
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center gap-2 text-sm text-gray-400">
-                  <Users className="w-4 h-4 text-[#00d492]" />
-                  <span>{contest.participants.toLocaleString()} participants</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-400">
-                  <Calendar className="w-4 h-4 text-[#00d492]" />
-                  <span>Ends: {contest.deadline}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-400">
-                  <Zap className="w-4 h-4 text-[#00d492]" />
-                  <span className="text-[#00d492] font-bold">
-                    {contest.reward}
+          {loading ? (
+            <div className="col-span-full">
+              <Preloader message="Fetching contests" />
+            </div>
+          ) : normalizedError ? (
+            <div className="col-span-full text-center text-red-400 text-sm">
+              {normalizedError}
+            </div>
+          ) : orderedContests.length === 0 ? (
+            <div className="col-span-full text-center text-gray-400 text-sm">
+              No contests available yet.
+            </div>
+          ) : (
+            orderedContests.map((contest, idx) => (
+              <div
+                key={contest.id}
+                className="bg-black/30 border border-[#00d492]/30 rounded-xl p-6 backdrop-blur-sm hover:border-[#00d492]/60 hover:shadow-[0_0_20px_rgba(0,255,174,0.3)] transition-all animate-slideUp"
+                style={{ animationDelay: `${idx * 0.1}s` }}
+                // onClick={() => router.push(`/ui/dashboard/contests/${contest.slug}`)}
+              >
+                {/* Status Badge */}
+                <div className="flex justify-between items-start mb-4">
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-semibold border ${getDifficultyColor(
+                      contest.difficulty
+                    )}`}
+                  >
+                    {contest.difficulty}
+                  </span>
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      contest.status === "Active"
+                        ? "bg-[#00d492]/20 text-[#00d492]"
+                        : "bg-gray-500/20 text-gray-400"
+                    }`}
+                  >
+                    {contest.status}
                   </span>
                 </div>
-              </div>
 
-              {/* View Details Button */}
-              <button className="w-full flex items-center justify-center gap-2 bg-[#00d492]/10 border border-[#00d492]/30 rounded-lg py-2 text-[#00d492] hover:bg-[#00d492]/20 transition-all">
-                <span className="text-sm font-semibold">View Details</span>
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-          ))}
+                {/* Title */}
+                <h3 className="text-xl font-bold text-white mb-3">
+                  {contest.title}
+                </h3>
+
+                {/* Description */}
+                <p className="text-gray-400 text-sm mb-4 line-clamp-2">
+                  {contest.short_desc ?? "Join to learn more about this contest."}
+                </p>
+
+                {/* Stats */}
+                <div className="space-y-2 mb-4">
+                  <div className="flex items-center gap-2 text-sm text-gray-400">
+                    <Users className="w-4 h-4 text-[#00d492]" />
+                    <span>
+                      {Number(contest.participants || 0).toLocaleString()} participants
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-400">
+                    <Calendar className="w-4 h-4 text-[#00d492]" />
+                    <span>
+                      Ends: {contest.deadline ? new Date(contest.deadline).toLocaleDateString() : "No deadline"}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-400">
+                    <Zap className="w-4 h-4 text-[#00d492]" />
+                    <span className="text-[#00d492] font-bold">
+                      {Number(contest.reward || 0)} XP
+                    </span>
+                  </div>
+                </div>
+
+                {/* View Details Button */}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    router.push(`/ui/dashboard/contests/${contest.slug}`);
+                  }}
+                  className="w-full cursor-pointer flex items-center justify-center gap-2 bg-[#00d492]/10 border border-[#00d492]/30 rounded-lg py-2 text-[#00d492] hover:bg-[#00d492]/20 transition-all"
+                >
+                  <span className="text-sm font-semibold">View Details</span>
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            ))
+          )}
         </div>
       </div>
 
