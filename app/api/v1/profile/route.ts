@@ -88,11 +88,17 @@ export async function GET(request: Request) {
       }
     }
 
-    const contestsWithMeta = contests.map((contest) => ({
-      ...contest,
-      title: contestMetaMap[contest.contest_id]?.title ?? null,
-      reward: contestMetaMap[contest.contest_id]?.reward ?? 0,
-    }));
+    const contestsWithMeta = contests.map((contest) => {
+      const meta = contestMetaMap[contest.contest_id];
+      const rawReward = Number(meta?.reward ?? 0) || 0;
+      const isPass = contest.status.toLowerCase() === "pass";
+
+      return {
+        ...contest,
+        title: meta?.title ?? null,
+        reward: isPass ? rawReward : 0,
+      };
+    });
 
     const totalScore = contestsWithMeta.reduce(
       (sum, contest) => sum + (Number(contest.reward) || 0),
