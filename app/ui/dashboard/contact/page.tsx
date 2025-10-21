@@ -241,12 +241,15 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-bold text-white mb-1">Email</h3>
-                    <p className="text-gray-400 text-sm">
-                      support@opsglitch.com
-                    </p>
-                    <p className="text-gray-400 text-sm">
+                    <a
+                      href="mailto:orbitlinker01@gmail.com"
+                      className="text-gray-400 text-sm hover:text-[#00d492] transition-colors"
+                    >
+                      orbitlinker01@gmail.com
+                    </a>
+                    {/* <p className="text-gray-400 text-sm">
                       contact@opsglitch.com
-                    </p>
+                    </p> */}
                   </div>
                 </div>
 
@@ -257,9 +260,9 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-bold text-white mb-1">Phone</h3>
-                    <p className="text-gray-400 text-sm">+1 (555) 123-4567</p>
+                    <p className="text-gray-400 text-sm">+91-9220994117</p>
                     <p className="text-gray-400 text-sm">
-                      Mon-Fri, 9AM-6PM EST
+                      Mon-Fri, 9AM-6PM IST
                     </p>
                   </div>
                 </div>
@@ -271,9 +274,9 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-bold text-white mb-1">Location</h3>
-                    <p className="text-gray-400 text-sm">123 Cyber Street</p>
+                    <p className="text-gray-400 text-sm">India, Delhi</p>
                     <p className="text-gray-400 text-sm">
-                      Tech Valley, CA 94000
+                      New Delhi, Delhi 110049
                     </p>
                   </div>
                 </div>
