@@ -5,11 +5,12 @@ import {
   Target,
   Bug,
   Award,
-  Zap,
   TrendingUp,
   Edit2,
   Save,
   X,
+  CheckCircle,
+  XCircle,
 } from "lucide-react";
 import { useFetch } from "@/app/hook/useFetch";
 import { Preloader } from "@/app/commonComponents/Preloader/Preloader";
@@ -25,12 +26,20 @@ export default function ProfilePage() {
   const [metrics, setMetrics] = useState<{
     Challenges: number;
     Bugs_found: number;
-    Achievements: number;
+    Unsuccessful_attempts: number;
     Level: number;
     score: number;
+    rank: number;
+    xpTarget: number;
   } | null>(null);
   const [activities, setActivities] = useState<
-    Array<{ text: string; xp?: number }>
+    Array<{
+      contest_id: string;
+      title: string | null;
+      status: string;
+      submission_time: string | null;
+      reward: number;
+    }>
   >([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -62,19 +71,49 @@ export default function ProfilePage() {
         ? m.score
         : Number.parseInt(String(m?.score ?? 0));
     setScore(Number.isFinite(scr) ? scr : 0);
-    const act = profile?.activity?.content ?? [];
-    setActivities(Array.isArray(act) ? act : []);
+    const act = profile?.activity?.contest ?? [];
+    const normalisedActivities = Array.isArray(act)
+      ? act.map((item: any) => ({
+          contest_id: String(item?.contest_id ?? ""),
+          title: item?.title ? String(item.title) : null,
+          status: String(item?.status ?? ""),
+          submission_time: item?.submission_time
+            ? String(item.submission_time)
+            : null,
+          reward: Number(item?.reward ?? 0) || 0,
+        }))
+      : [];
+    setActivities(normalisedActivities);
   }, [getData]);
 
   useEffect(() => {
     setLoading(getLoading);
   }, [getLoading]);
 
-  const xpTarget = 5000;
+  const xpTarget = Number(metrics?.xpTarget ?? 0);
   const progressPercent = useMemo(() => {
+    if (
+      !Number.isFinite(score) ||
+      !Number.isFinite(xpTarget) ||
+      xpTarget <= 0
+    ) {
+      return "0%";
+    }
     const pct = Math.max(0, Math.min(100, (score / xpTarget) * 100));
     return `${pct}%`;
-  }, [score]);
+  }, [score, xpTarget]);
+
+  const formatTimestamp = (value: string | null) => {
+    if (!value) return null;
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return null;
+    const pad = (input: number) => input.toString().padStart(2, "0");
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
+      date.getDate()
+    )} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(
+      date.getSeconds()
+    )}`;
+  };
 
   const {
     refetch: saveProfile,
@@ -93,14 +132,6 @@ export default function ProfilePage() {
     const body = {
       bio,
       tag_line: title,
-      metrics: {
-        Challenges: metrics?.Challenges ?? 0,
-        Bugs_found: metrics?.Bugs_found ?? 0,
-        Achievements: metrics?.Achievements ?? 0,
-        Level: level,
-        score: Number(score) || 0,
-      },
-      activity: { content: activities },
     };
 
     await saveProfile({ body });
@@ -119,7 +150,13 @@ export default function ProfilePage() {
           <div className="h-full w-full bg-[#00d492] animate-progressLoader" />
         </div>
       )}
-      {loading && !error && <Preloader variant="overlay" message="Loading profile" className="bg-[#05060a]/95" />}
+      {loading && !error && (
+        <Preloader
+          variant="overlay"
+          message="Loading profile"
+          className="bg-[#05060a]/95"
+        />
+      )}
       {/* Background neon grid */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_#0a0f1c_0%,_#000_100%)] overflow-hidden">
         <div className="absolute inset-0 bg-[linear-gradient(#00d49240_1px,transparent_1px),linear-gradient(90deg,#00d49240_1px,transparent_1px)] bg-[size:50px_50px] opacity-10 animate-[pulseGrid_4s_ease-in-out_infinite]" />
@@ -192,7 +229,9 @@ export default function ProfilePage() {
 
               <div className="flex items-center justify-center md:justify-start gap-2 text-[#00d492]/80 mb-4">
                 <TrendingUp className="w-4 h-4" />
-                <span className="text-sm">Rank #47 Globally</span>
+                <span className="text-sm">
+                  Rank #{metrics?.rank ?? 0} Globally
+                </span>
               </div>
 
               {/* Bio */}
@@ -231,7 +270,7 @@ export default function ProfilePage() {
                 </div>
                 <div className="relative h-2 bg-black/60 rounded-full overflow-hidden border border-[#8b5cf6]/30">
                   <div
-                    className="absolute inset-y-0 left-0 bg-gradient-to-r from-[#8b5cf6] to-[#3b82f6] rounded-full shadow-[0_0_10px_#8b5cf6] animate-progressBar"
+                    className="absolute inset-y-0 left-0 bg-gradient-to-r from-[#8b5cf6] to-[#3b82f6] rounded-full shadow-[0_0_10px_#8b5cf6]"
                     style={{ width: progressPercent }}
                   />
                 </div>
@@ -275,10 +314,10 @@ export default function ProfilePage() {
             <div className="flex items-center justify-between mb-2">
               <Award className="w-8 h-8 text-[#00d492]" />
               <span className="text-4xl font-bold text-[#00d492] animate-countUp">
-                {metrics?.Achievements ?? 0}
+                {metrics?.Unsuccessful_attempts ?? 0}
               </span>
             </div>
-            <h3 className="text-sm text-gray-400">Achievements</h3>
+            <h3 className="text-sm text-gray-400">Unsuccessful Attempts</h3>
           </div>
         </div>
 
@@ -291,20 +330,50 @@ export default function ProfilePage() {
             Recent Activity
           </h2>
           <div className="space-y-3">
-            {activities.map((activity, idx) => (
-              <div
-                key={idx}
-                className="bg-black/50 border border-[#00d492]/20 p-4 rounded-lg flex justify-between items-center hover:border-[#00d492]/50 hover:shadow-[0_0_10px_rgba(0,255,174,0.2)] transition-all animate-slideRight"
-                style={{ animationDelay: `${0.5 + idx * 0.1}s` }}
-              >
-                <span className="text-gray-300">{activity.text}</span>
-                {(activity.xp ?? 0) > 0 && (
-                  <span className="text-[#00d492] font-bold flex items-center gap-1">
-                    <Zap className="w-4 h-4" />+{activity.xp ?? 0} XP
+            {activities.map((activity, idx) => {
+              const isPass = activity.status.toLowerCase() === "pass";
+              const formattedTime = formatTimestamp(activity.submission_time);
+
+              return (
+                <div
+                  key={idx}
+                  className="bg-black/50 border border-[#00d492]/20 p-4 rounded-lg flex justify-between items-center hover:border-[#00d492]/50 hover:shadow-[0_0_10px_rgba(0,255,174,0.2)] transition-all animate-slideRight"
+                  style={{ animationDelay: `${0.5 + idx * 0.1}s` }}
+                >
+                  <div className="flex flex-col">
+                    <span className="text-gray-300 font-semibold">
+                      {activity.title || "Unknown Contest"}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      ID: {activity.contest_id || "Unknown"}
+                    </span>
+                    {Number.isFinite(activity.reward) &&
+                      activity.reward > 0 && (
+                        <span className="text-xs text-gray-500">
+                          Reward: {activity.reward}
+                        </span>
+                      )}
+                    {formattedTime && (
+                      <span className="text-xs text-gray-500">
+                        Submitted: {formattedTime}
+                      </span>
+                    )}
+                  </div>
+                  <span
+                    className={`text-sm font-semibold flex items-center gap-1 ${
+                      isPass ? "text-[#00d492]" : "text-red-400"
+                    }`}
+                  >
+                    {isPass ? (
+                      <CheckCircle className="w-4 h-4" />
+                    ) : (
+                      <XCircle className="w-4 h-4" />
+                    )}
+                    {activity.status || "Unknown"}
                   </span>
-                )}
-              </div>
-            ))}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

@@ -37,26 +37,102 @@ export async function GET(request: Request) {
     }
 
     const defaultMetrics = {
-      Challenges: 0,
-      Bugs_found: 0,
-      Achievements: 0,
-      Level: 1,
       score: 0,
+      rank: 0,
     } as const;
 
-    const defaultActivity = {
-      content: [] as Array<{ text: string; xp?: number }>,
-    };
-
     const rawMetrics = data.metrics ?? defaultMetrics;
+    const score = Number.parseInt(String(rawMetrics?.score ?? 0)) || 0;
+    const rank = Number.parseInt(String(rawMetrics?.rank ?? 0)) || 0;
+
+    const rawActivity = (data.activity ?? {}) as Record<string, any>;
+    const rawContests = Array.isArray(rawActivity?.contest)
+      ? rawActivity.contest
+      : [];
+
+    const contests = rawContests.map((contest: any) => ({
+      contest_id: String(contest?.contest_id ?? ""),
+      status: String(contest?.status ?? ""),
+      submission_time: contest?.submission_time
+        ? String(contest.submission_time)
+        : null,
+    }));
+
+    const contestIds = contests
+      .map((contest) => contest.contest_id)
+      .filter((id) => typeof id === "string" && id.length > 0);
+
+    let contestMetaMap: Record<string, { title: string | null; reward: number }> = {};
+
+    if (contestIds.length > 0) {
+      const { data: contestRows, error: contestError } = await supabase
+        .from("contests")
+        .select("id, title, reward")
+        .in("id", contestIds);
+
+      if (!contestError && Array.isArray(contestRows)) {
+        contestMetaMap = contestRows.reduce<
+          Record<string, { title: string | null; reward: number }>
+        >(
+          (acc, current) => {
+            if (current?.id) {
+              acc[String(current.id)] = {
+                title: current?.title ? String(current.title) : null,
+                reward: Number(current?.reward ?? 0) || 0,
+              };
+            }
+            return acc;
+          },
+          {}
+        );
+      }
+    }
+
+    const contestsWithMeta = contests.map((contest) => ({
+      ...contest,
+      title: contestMetaMap[contest.contest_id]?.title ?? null,
+      reward: contestMetaMap[contest.contest_id]?.reward ?? 0,
+    }));
+
+    const totalScore = contestsWithMeta.reduce(
+      (sum, contest) => sum + (Number(contest.reward) || 0),
+      0
+    );
+
+    let xpTarget = 0;
+
+    const { data: allContestRewards, error: rewardSumError } = await supabase
+      .from("contests")
+      .select("reward");
+
+    if (!rewardSumError && Array.isArray(allContestRewards)) {
+      xpTarget = allContestRewards.reduce((sum, current) => {
+        const rewardValue = Number(current?.reward ?? 0);
+        return sum + (Number.isFinite(rewardValue) ? rewardValue : 0);
+      }, 0);
+    }
+
+    const challenges = contestsWithMeta.length;
+    const bugsFound = contestsWithMeta.filter(
+      (contest) => contest.status.toLowerCase() === "pass"
+    ).length;
+    const unsuccessfulAttempts = contestsWithMeta.filter(
+      (contest) => contest.status.toLowerCase() === "fail"
+    ).length;
+    const level = Math.max(Math.floor(totalScore / 1000), 1);
+
     const metrics = {
-      Challenges: Number.parseInt(String(rawMetrics?.Challenges ?? 0)) || 0,
-      Bugs_found: Number.parseInt(String(rawMetrics?.Bugs_found ?? 0)) || 0,
-      Achievements: Number.parseInt(String(rawMetrics?.Achievements ?? 0)) || 0,
-      Level: Number.parseInt(String(rawMetrics?.Level ?? 1)) || 1,
-      score: Number.parseInt(String(rawMetrics?.score ?? 0)) || 0,
+      Challenges: challenges,
+      Bugs_found: bugsFound,
+      Unsuccessful_attempts: unsuccessfulAttempts,
+      Level: level,
+      score: totalScore,
+      rank,
+      xpTarget,
     };
-    const activity = data.activity ?? defaultActivity;
+    const activity = {
+      contest: contestsWithMeta,
+    };
 
     return NextResponse.json(
       {
@@ -109,14 +185,7 @@ export async function PUT(request: Request) {
     if (metrics && typeof metrics === "object") {
       const m = metrics as Record<string, any>;
       updatePayload.metrics = {
-        Challenges: Number.parseInt(String(m?.Challenges ?? 0)) || 0,
-        Bugs_found: Number.parseInt(String(m?.Bugs_found ?? 0)) || 0,
-        Achievements: Number.parseInt(String(m?.Achievements ?? 0)) || 0,
-        score: Number.parseInt(String(m?.score ?? 0)) || 0,
-        Level: Math.max(
-          Math.floor(Number.parseInt(String(m?.score ?? 0)) / 1000),
-          1
-        ),
+        rank: Number.parseInt(String(m?.rank ?? 0)) || 0,
       };
     }
 
