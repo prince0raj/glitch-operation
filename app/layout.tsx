@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "GlitchOps - Bug Bounty Platform",
   description: "Find bugs, earn rewards, and level up your debugging skills",
+  icons: {
+    icon: "/terminal-icon.svg",
+  },
 };
 
 export default function RootLayout({
