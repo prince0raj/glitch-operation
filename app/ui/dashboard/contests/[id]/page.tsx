@@ -16,11 +16,10 @@ import { useFetch } from "@/app/hook/useFetch";
 export default function ContestDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const contestSlug = params.id as string | undefined;
+  const contestId = params.id as string | undefined;
 
   type Contest = {
     id: string;
-    slug: string;
     title: string;
     difficulty: string;
     participants: number;
@@ -49,7 +48,7 @@ export default function ContestDetailPage() {
   const { data, loading, error: fetchError } = useFetch<{
     contest?: Contest;
     error?: string;
-  }>(contestSlug ? `/api/v1/contests/${contestSlug}` : null);
+  }>(contestId ? `/api/v1/contests/${contestId}` : null);
 
   useEffect(() => {
     if (data?.contest) {

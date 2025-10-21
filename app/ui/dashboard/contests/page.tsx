@@ -13,7 +13,6 @@ import { useFetch } from "@/app/hook/useFetch";
 
 type Contest = {
   id: string;
-  slug: string;
   title: string;
   difficulty: string;
   participants: number;
@@ -163,7 +162,7 @@ export default function ContestsPage() {
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
-                    router.push(`/ui/dashboard/contests/${contest.slug}`);
+                    router.push(`/ui/dashboard/contests/${contest.id}`);
                   }}
                   className="w-full cursor-pointer flex items-center justify-center gap-2 bg-[#00d492]/10 border border-[#00d492]/30 rounded-lg py-2 text-[#00d492] hover:bg-[#00d492]/20 transition-all"
                 >

@@ -3,15 +3,15 @@ import { createClient } from "@/utils/supabase/server";
 
 type RouteParams = {
   params: {
-    slug: string;
+    id: string;
   };
 };
 
 export async function GET(_request: Request, { params }: RouteParams) {
-  const slugParam = params?.slug;
+  const idParam = params?.id;
 
-  if (!slugParam) {
-    return NextResponse.json({ error: "Contest slug is required" }, { status: 400 });
+  if (!idParam) {
+    return NextResponse.json({ error: "Contest id is required" }, { status: 400 });
   }
 
   try {
@@ -20,9 +20,9 @@ export async function GET(_request: Request, { params }: RouteParams) {
     const { data, error } = await supabase
       .from("contests")
       .select(
-        "id, slug, title, difficulty, participants, deadline, reward, status, short_desc, description, requirements, target_url"
+        "id, title, difficulty, participants, deadline, reward, status, short_desc, description, requirements, target_url"
       )
-      .eq("slug", slugParam)
+      .eq("id", idParam)
       .maybeSingle();
 
     if (error) {
@@ -41,7 +41,6 @@ export async function GET(_request: Request, { params }: RouteParams) {
       {
         contest: {
           id: data.id,
-          slug: data.slug,
           title: data.title,
           difficulty: data.difficulty,
           participants: Number(data.participants ?? 0),

@@ -8,7 +8,7 @@ export async function GET() {
     const { data, error } = await supabase
       .from("contests")
       .select(
-        "id, slug, title, difficulty, participants, deadline, reward, status, short_desc"
+        "id, title, difficulty, participants, deadline, reward, status, short_desc"
       )
       .order("deadline", { ascending: true })
       .order("created_at", { ascending: false });

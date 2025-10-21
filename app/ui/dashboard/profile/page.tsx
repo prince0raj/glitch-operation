@@ -11,11 +11,15 @@ import {
   X,
   CheckCircle,
   XCircle,
+  ArrowRight,
+  RefreshCcw,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useFetch } from "@/app/hook/useFetch";
 import { Preloader } from "@/app/commonComponents/Preloader/Preloader";
 
 export default function ProfilePage() {
+  const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [username, setUsername] = useState("");
@@ -312,12 +316,12 @@ export default function ProfilePage() {
             style={{ animationDelay: "0.3s" }}
           >
             <div className="flex items-center justify-between mb-2">
-              <Award className="w-8 h-8 text-[#00d492]" />
+              <RefreshCcw className="w-8 h-8 text-[#00d492]" />
               <span className="text-4xl font-bold text-[#00d492] animate-countUp">
                 {metrics?.Unsuccessful_attempts ?? 0}
               </span>
             </div>
-            <h3 className="text-sm text-gray-400">Unsuccessful Attempts</h3>
+            <h3 className="text-sm text-gray-400">Retry Opportunities</h3>
           </div>
         </div>
 
@@ -329,52 +333,72 @@ export default function ProfilePage() {
           <h2 className="text-2xl font-bold text-[#00d492] mb-6">
             Recent Activity
           </h2>
-          <div className="space-y-3">
-            {activities.map((activity, idx) => {
-              const isPass = activity.status.toLowerCase() === "pass";
-              const formattedTime = formatTimestamp(activity.submission_time);
+          {activities.length === 0 ? (
+            <div className="bg-black/50 border border-dashed border-[#00d492]/30 p-6 rounded-lg text-center flex flex-col items-center gap-4">
+              <p className="text-gray-400 text-sm">
+                No recent activity yet. Join a contest to get started!
+              </p>
+              <button
+                type="button"
+                onClick={() => router.push("/ui/dashboard/contests")}
+                className="flex cursor-pointer items-center gap-2 px-4 py-2 bg-[#00d492]/10 border border-[#00d492]/30 rounded-lg text-[#00d492] hover:bg-[#00d492]/20 transition-all"
+              >
+                Explore Contests
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {activities.map((activity, idx) => {
+                const isPass = activity.status.toLowerCase() === "pass";
+                const formattedTime = formatTimestamp(activity.submission_time);
 
-              return (
-                <div
-                  key={idx}
-                  className="bg-black/50 border border-[#00d492]/20 p-4 rounded-lg flex justify-between items-center hover:border-[#00d492]/50 hover:shadow-[0_0_10px_rgba(0,255,174,0.2)] transition-all animate-slideRight"
-                  style={{ animationDelay: `${0.5 + idx * 0.1}s` }}
-                >
-                  <div className="flex flex-col">
-                    <span className="text-gray-300 font-semibold">
-                      {activity.title || "Unknown Contest"}
-                    </span>
-                    <span className="text-xs text-gray-500">
-                      ID: {activity.contest_id || "Unknown"}
-                    </span>
-                    {Number.isFinite(activity.reward) &&
-                      activity.reward > 0 && (
+                return (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() =>
+                      router.push(`/ui/dashboard/contests/${activity.contest_id}`)
+                    }
+                    className="w-full text-left bg-black/50 border border-[#00d492]/20 p-4 rounded-lg flex justify-between items-center hover:border-[#00d492]/50 hover:shadow-[0_0_10px_rgba(0,255,174,0.2)] transition-all animate-slideRight cursor-pointer"
+                    style={{ animationDelay: `${0.5 + idx * 0.1}s` }}
+                  >
+                    <div className="flex flex-col">
+                      <span className="text-gray-300 font-semibold">
+                        {activity.title || "Unknown Contest"}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        ID: {activity.contest_id || "Unknown"}
+                      </span>
+                      {Number.isFinite(activity.reward) &&
+                        activity.reward > 0 && (
+                          <span className="text-xs text-gray-500">
+                            Reward: {activity.reward}
+                          </span>
+                        )}
+                      {formattedTime && (
                         <span className="text-xs text-gray-500">
-                          Reward: {activity.reward}
+                          Submitted: {formattedTime}
                         </span>
                       )}
-                    {formattedTime && (
-                      <span className="text-xs text-gray-500">
-                        Submitted: {formattedTime}
-                      </span>
-                    )}
-                  </div>
-                  <span
-                    className={`text-sm font-semibold flex items-center gap-1 ${
-                      isPass ? "text-[#00d492]" : "text-red-400"
-                    }`}
-                  >
-                    {isPass ? (
-                      <CheckCircle className="w-4 h-4" />
-                    ) : (
-                      <XCircle className="w-4 h-4" />
-                    )}
-                    {activity.status || "Unknown"}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
+                    </div>
+                    <span
+                      className={`text-sm font-semibold flex items-center gap-1 ${
+                        isPass ? "text-[#00d492]" : "text-red-400"
+                      }`}
+                    >
+                      {isPass ? (
+                        <CheckCircle className="w-4 h-4" />
+                      ) : (
+                        <XCircle className="w-4 h-4" />
+                      )}
+                      {activity.status || "Unknown"}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
 
