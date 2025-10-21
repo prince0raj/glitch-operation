@@ -117,7 +117,7 @@ const Navbar: FC = () => {
           </div>
           <div>
             <GlitchText
-              className={`${orbitron.className}text-2xl font-black tracking-wider text-white font-mono`}
+              className={`${orbitron.className} text-2xl font-black tracking-wider text-white font-mono`}
             >
               OPS. GLITCH
             </GlitchText>

@@ -56,16 +56,18 @@ export const FormContainer = styled.div`
 
 export const Logo = styled.div`
   color: #f4f4f5;
-  font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 3rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 
-  &::before {
+  /* &::before {
     content: "> ";
     color: #00d492;
-  }
+  } */
 `;
 
 export const FormTitle = styled.h1`
@@ -420,13 +422,15 @@ export const FloatingIcon = styled.div<{ top: string; left: string }>`
   position: absolute;
   top: ${(props) => props.top};
   left: ${(props) => props.left};
-  color: rgba(0, 255, 0, 0.4);
+  color: #00d492;
   z-index: 0;
   transition: all 0.3s ease;
+  opacity: 0.6;
 
   &:hover {
     color: rgba(0, 255, 0, 0.8);
     transform: scale(1.1);
+    opacity: 1;
   }
 `;
 

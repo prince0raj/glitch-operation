@@ -39,6 +39,7 @@ import GoogleSignin from "./GoogleSignIn";
 import GithubSignIn from "./GithubSignIn";
 import GridPattern from "@/app/commonComponents/GridPattern/GridPattern";
 import WireframeSpheres from "@/app/commonComponents/Sphere/WireframeSphere";
+import GlitchText from "@/app/commonComponents/GlitchText/GlitchText";
 
 const orbitron = Orbitron({
   subsets: ["latin"],
@@ -109,7 +110,14 @@ const Page = () => {
         <LeftSection>
           <Separator />
           <FormContainer>
-            <Logo className={orbitron.className}>OPS. GLITCH</Logo>
+            <Logo className={orbitron.className}>
+              <TerminalIcon size={50} strokeWidth={2} color="#00d492" />
+              <GlitchText
+                className={`${orbitron.className} text-[2.5rem] font-black tracking-wider text-white font-mono`}
+              >
+                OPS. GLITCH
+              </GlitchText>
+            </Logo>
 
             <FormTitle className="font-mono">Access Terminal</FormTitle>
             <FormSubtitle>
@@ -140,7 +148,7 @@ const Page = () => {
         <FloatingIcon top="15%" left="15%">
           <Lock size={20} />
         </FloatingIcon>
-        <FloatingIcon top="25%" left="85%">
+        <FloatingIcon top="15%" left="85%">
           <TerminalIcon size={20} />
         </FloatingIcon>
         <FloatingIcon top="45%" left="10%">
@@ -149,7 +157,7 @@ const Page = () => {
         <FloatingIcon top="65%" left="80%">
           <Database size={20} />
         </FloatingIcon>
-        <FloatingIcon top="75%" left="20%">
+        <FloatingIcon top="85%" left="30%">
           <Wifi size={20} />
         </FloatingIcon>
         <FloatingIcon top="35%" left="90%">
