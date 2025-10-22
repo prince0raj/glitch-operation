@@ -5,6 +5,7 @@ import { Orbitron } from "next/font/google";
 import { Button } from "@/components/ui/button";
 import { useFetch } from "@/app/hook/useFetch";
 import { AdminLoginContainer, AdminLoginWrapper } from "./style";
+import { Constants } from "@/app/utils/Constants";
 
 const orbitron = Orbitron({ subsets: ["latin"], variable: "--font-orbitron" });
 
@@ -36,7 +37,7 @@ const page = () => {
 
   useEffect(() => {
     if (data?.token) {
-      localStorage.setItem("ops_glitch_token", data.token);
+      localStorage.setItem(Constants.OPS_GLITCH_TOKEN, data.token);
       router.push("/ui/controller/protected/admin-pannel");
     }
   }, [data?.token, router]);
