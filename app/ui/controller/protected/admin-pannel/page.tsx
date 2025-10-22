@@ -2,29 +2,17 @@
 
 import React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { LayoutDashboard, Target, Users2, Settings } from "lucide-react";
 import { Orbitron } from "next/font/google";
-import GridPattern from "@/app/commonComponents/GridPattern/GridPattern";
-import WireframeSpheres from "@/app/commonComponents/Sphere/WireframeSphere";
+import { BadgeCheck, CalendarClock, Coins } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
-  AdminPannelContainer,
-  AdminPannelWrapper,
-  AdminBackdrop,
-  AdminSidebar,
-  AdminSidebarHeader,
-  AdminSidebarTitle,
-  AdminSidebarSubtitle,
-  AdminSidebarNav,
-  AdminContent,
+  AdminContentDescription,
   AdminContentHeader,
   AdminContentTitle,
-  AdminContentDescription,
-  AdminQuickActions,
   AdminQuickActionCard,
-  AdminQuickActionTitle,
   AdminQuickActionDescription,
+  AdminQuickActionTitle,
+  AdminQuickActions,
 } from "./style";
 
 const orbitron = Orbitron({
@@ -32,115 +20,115 @@ const orbitron = Orbitron({
   variable: "--font-orbitron",
 });
 
-const navItems = [
+const contests = [
   {
-    label: "Overview",
-    href: "/ui/controller/protected/admin-pannel",
-    icon: LayoutDashboard,
-    description: "Monitor system health and recent activity.",
+    slug: "GH01",
+    title: "Ghost Hydra Breach",
+    difficulty: "Hard",
+    reward: 1500,
+    participants: 47,
+    deadline: "2025-11-12",
+    status: "Active",
   },
   {
-    label: "Create Challenge",
-    href: "/ui/controller/protected/admin-pannel/create-challenge",
-    icon: Target,
-    description: "Launch a new bug bounty challenge.",
+    slug: "NX42",
+    title: "Neon Nexus Firewall",
+    difficulty: "Medium",
+    reward: 900,
+    participants: 82,
+    deadline: "2025-10-05",
+    status: "Active",
   },
   {
-    label: "Manage Teams",
-    href: "/ui/controller/protected/admin-pannel/teams",
-    icon: Users2,
-    description: "Coordinate internal and external teams.",
-  },
-  {
-    label: "Settings",
-    href: "/ui/controller/protected/admin-pannel/settings",
-    icon: Settings,
-    description: "Configure access and platform preferences.",
+    slug: "CR27",
+    title: "Cipher Relay", 
+    difficulty: "Easy",
+    reward: 400,
+    participants: 120,
+    deadline: "2025-09-18",
+    status: "Closed",
   },
 ];
 
 const Page = () => {
-  const pathname = usePathname();
-
   return (
-    <AdminPannelContainer>
-      <AdminBackdrop>
-        <GridPattern />
-        <WireframeSpheres />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(0,212,146,0.12),rgba(5,6,10,0.85))] mix-blend-screen opacity-80" />
-      </AdminBackdrop>
-      <AdminPannelWrapper>
-        <AdminSidebar>
-          <AdminSidebarHeader>
-            <AdminSidebarTitle className={`${orbitron.className} uppercase tracking-[0.35em] text-[#00d492]`}>
-              Ops. Glitch
-            </AdminSidebarTitle>
-            <AdminSidebarSubtitle>
-              Navigate between core operations.
-            </AdminSidebarSubtitle>
-          </AdminSidebarHeader>
+    <>
+      <AdminContentHeader>
+        <AdminContentTitle
+          className={`${orbitron.className} uppercase tracking-[0.25em]`}
+        >
+          Contests Command Deck
+        </AdminContentTitle>
+        <AdminContentDescription>
+          Review active operations, monitor hunter activity, and deploy new
+          missions when ready. Maintain the neon edge and keep OPS GLITCH secure.
+        </AdminContentDescription>
+      </AdminContentHeader>
 
-          <AdminSidebarNav>
-            {navItems.map(({ label, href, icon: Icon }) => {
-              const isActive = pathname === href;
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <p className="text-sm tracking-[0.2em] text-emerald-200 uppercase">
+          Total contests: {contests.length}
+        </p>
+        <Button
+          asChild
+          className="gap-2 bg-emerald-500/20 text-emerald-200 hover:bg-emerald-400/30"
+        >
+          <Link href="/ui/controller/protected/admin-pannel/create-challenge">
+            Launch New Contest
+          </Link>
+        </Button>
+      </div>
 
-              return (
-                <Button
-                  key={href}
-                  asChild
-                  variant="ghost"
-                  size="lg"
-                  className={`justify-start gap-3 font-medium border border-transparent transition-all duration-200 ${
-                    isActive
-                      ? "bg-emerald-500/15 border-emerald-400/40 text-emerald-200 shadow-[0_0_18px_rgba(0,212,146,0.35)]"
-                      : "text-slate-200 hover:bg-emerald-400/10 hover:text-emerald-200 hover:border-emerald-400/40"
-                  }`}
-                >
-                  <Link href={href}>
-                    <Icon className="size-5" />
-                    {label}
-                  </Link>
-                </Button>
-              );
-            })}
-          </AdminSidebarNav>
-        </AdminSidebar>
+      <AdminQuickActions>
+        {contests.map(
+          ({ slug, title, difficulty, reward, participants, deadline, status }) => (
+            <AdminQuickActionCard key={slug}>
+              <div className="flex items-center justify-between">
+                <span className="text-xs uppercase tracking-[0.25em] text-emerald-300">
+                  #{slug}
+                </span>
+                <span className="rounded-full border border-emerald-400/30 px-2 py-0.5 text-xs uppercase tracking-[0.18em] text-emerald-200">
+                  {status}
+                </span>
+              </div>
 
-        <AdminContent>
-          <AdminContentHeader>
-            <AdminContentTitle className={`${orbitron.className} uppercase tracking-[0.25em]`}>
-              Welcome back, Commander.
-            </AdminContentTitle>
-            <AdminContentDescription>
-              Keep the platform secure, launch new challenges, and coordinate
-              your response units. Select an operation from the left to begin.
-            </AdminContentDescription>
-          </AdminContentHeader>
+              <div className="flex flex-col gap-1">
+                <AdminQuickActionTitle className="text-lg">
+                  {title}
+                </AdminQuickActionTitle>
+                <AdminQuickActionDescription className="flex items-center gap-2 text-sm text-slate-400">
+                  <BadgeCheck className="size-4 text-emerald-300" />
+                  Difficulty: {difficulty}
+                </AdminQuickActionDescription>
+              </div>
 
-          <AdminQuickActions>
-            {navItems.slice(1, 3).map(({ label, description, href, icon: Icon }) => (
-              <AdminQuickActionCard key={href}>
-                <Icon className="size-5 text-emerald-300" />
-                <div>
-                  <AdminQuickActionTitle>{label}</AdminQuickActionTitle>
-                  <AdminQuickActionDescription>
-                    {description}
-                  </AdminQuickActionDescription>
-                </div>
-                <Button
-                  asChild
-                  variant="secondary"
-                  size="sm"
-                  className="mt-auto w-fit bg-emerald-500/20 text-emerald-200 hover:bg-emerald-400/30"
-                >
-                  <Link href={href}>Open</Link>
-                </Button>
-              </AdminQuickActionCard>
-            ))}
-          </AdminQuickActions>
-        </AdminContent>
-      </AdminPannelWrapper>
-    </AdminPannelContainer>
+              <div className="flex flex-col gap-2 text-xs uppercase tracking-[0.18em] text-slate-400">
+                <span className="flex items-center gap-2">
+                  <Coins className="size-4 text-emerald-300" />
+                  Reward Pool: ${reward.toLocaleString()}
+                </span>
+                <span className="flex items-center gap-2">
+                  <CalendarClock className="size-4 text-emerald-300" />
+                  Deadline: {deadline}
+                </span>
+                <span>Active hunters: {participants}</span>
+              </div>
+
+              <Button
+                asChild
+                variant="secondary"
+                size="sm"
+                className="mt-auto w-fit bg-emerald-500/20 text-emerald-200 hover:bg-emerald-400/30"
+              >
+                <Link href={`/ui/controller/protected/admin-pannel/contests/${slug.toLowerCase()}`}>
+                  View Briefing
+                </Link>
+              </Button>
+            </AdminQuickActionCard>
+          ),
+        )}
+      </AdminQuickActions>
+    </>
   );
 };
 

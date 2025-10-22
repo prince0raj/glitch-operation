@@ -38,7 +38,11 @@ export const AdminSidebar = styled.aside`
   padding: 2rem 1.75rem;
   border-radius: 1.25rem;
   border: 1px solid rgba(0, 212, 146, 0.18);
-  background: radial-gradient(circle at top, rgba(0, 212, 146, 0.08), rgba(5, 6, 10, 0.92));
+  background: radial-gradient(
+    circle at top,
+    rgba(0, 212, 146, 0.08),
+    rgba(5, 6, 10, 0.92)
+  );
   box-shadow: 0 25px 50px rgba(5, 6, 10, 0.65);
   backdrop-filter: blur(16px);
 `;
@@ -75,8 +79,13 @@ export const AdminContent = styled.main`
   padding: 2.5rem;
   border-radius: 1.5rem;
   border: 1px solid rgba(0, 212, 146, 0.12);
-  background: linear-gradient(170deg, rgba(8, 11, 19, 0.92), rgba(6, 8, 14, 0.75));
-  box-shadow: inset 0 1px 0 rgba(148, 163, 184, 0.1), 0 28px 70px rgba(3, 7, 18, 0.4);
+  background: linear-gradient(
+    170deg,
+    rgba(8, 11, 19, 0.92),
+    rgba(6, 8, 14, 0.75)
+  );
+  box-shadow: inset 0 1px 0 rgba(148, 163, 184, 0.1),
+    0 28px 70px rgba(3, 7, 18, 0.4);
   backdrop-filter: blur(20px);
 `;
 
