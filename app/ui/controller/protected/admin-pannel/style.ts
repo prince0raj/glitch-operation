@@ -109,8 +109,8 @@ export const AdminContentDescription = styled.p`
 `;
 
 export const AdminQuickActions = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 1.25rem;
 `;
 
