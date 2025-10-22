@@ -50,10 +50,30 @@ export function useFetch<T = any>(
         });
 
         if (!res.ok) {
-          throw new Error(`Request failed with status ${res.status}`);
+          let errorMessage = `Request failed with status ${res.status}`;
+          try {
+            const errorBody = await res.clone().json();
+            if (errorBody && typeof errorBody === "object" && errorBody.error) {
+              errorMessage = String(errorBody.error);
+            }
+          } catch {
+            try {
+              const errorText = await res.clone().text();
+              if (errorText) {
+                errorMessage = errorText;
+              }
+            } catch {
+              // ignore secondary parsing failure
+            }
+          }
+
+          throw new Error(errorMessage);
         }
 
-        const json = await res.json();
+        const json = await res.json().catch(async () => {
+          const text = await res.text();
+          throw new Error(text || "Unexpected response format");
+        });
         setData(json);
       } catch (err: any) {
         setError(err.message || "Something went wrong");

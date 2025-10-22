@@ -1,12 +1,73 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Orbitron } from "next/font/google";
 import { Button } from "@/components/ui/button";
+import { useFetch } from "@/app/hook/useFetch";
 import { AdminLoginContainer, AdminLoginWrapper } from "./style";
 
 const orbitron = Orbitron({ subsets: ["latin"], variable: "--font-orbitron" });
 
+type AdminLoginResponse = {
+  token?: string;
+  expiresIn?: number;
+  error?: string;
+};
+
 const page = () => {
+  const router = useRouter();
+  const [formError, setFormError] = useState<string | null>(null);
+
+  const {
+    refetch: authenticate,
+    data,
+    error,
+    loading,
+  } = useFetch<AdminLoginResponse>("/api/v2/admin-login", {
+    method: "POST",
+    manual: true,
+  });
+
+  useEffect(() => {
+    if (error) {
+      setFormError(error);
+    }
+  }, [error]);
+
+  useEffect(() => {
+    if (data?.token) {
+      localStorage.setItem("ops_glitch_token", data.token);
+      router.push("/ui/controller/protected/admin-pannel");
+    }
+  }, [data?.token, router]);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    console.log("click handler");
+
+    if (loading) {
+      return;
+    }
+
+    setFormError(null);
+
+    const formData = new FormData(event.currentTarget);
+    const adminId = formData.get("adminId")?.toString().trim();
+    const secretKey = formData.get("secretKey")?.toString().trim();
+
+    if (!adminId || !secretKey) {
+      setFormError("Both Admin ID and Secret Key are required");
+      return;
+    }
+
+    await authenticate({
+      body: {
+        adminId,
+        secretKey,
+      },
+    });
+  };
+
   return (
     <AdminLoginContainer>
       <AdminLoginWrapper>
@@ -24,7 +85,7 @@ const page = () => {
               </p>
             </div>
 
-            <form className="space-y-6">
+            <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="space-y-2">
                 <label
                   htmlFor="adminId"
@@ -34,6 +95,7 @@ const page = () => {
                 </label>
                 <input
                   id="adminId"
+                  name="adminId"
                   type="text"
                   placeholder="GLITCH-OPS-0001"
                   className="h-12 w-full rounded-md border border-emerald-400/30 bg-slate-950/80 px-4 font-mono text-emerald-100 outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/40"
@@ -49,6 +111,7 @@ const page = () => {
                 </label>
                 <input
                   id="secretKey"
+                  name="secretKey"
                   type="password"
                   placeholder="••••••••"
                   className="h-12 w-full rounded-md border border-emerald-400/30 bg-slate-950/80 px-4 font-mono text-emerald-100 outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/40"
@@ -58,10 +121,17 @@ const page = () => {
 
               <Button
                 type="submit"
-                className="w-full bg-emerald-500 text-black shadow-sm shadow-black/20 transition-colors hover:bg-emerald-400"
+                disabled={loading}
+                className="w-full bg-emerald-500 text-black shadow-sm shadow-black/20 transition-colors hover:bg-emerald-400 disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                Authenticate Access
+                {loading ? "Authorizing..." : "Authenticate Access"}
               </Button>
+
+              {formError ? (
+                <p className="text-xs font-mono text-red-400 text-center uppercase tracking-[0.2em]">
+                  {formError}
+                </p>
+              ) : null}
             </form>
 
             <div className="space-y-2 text-center">
