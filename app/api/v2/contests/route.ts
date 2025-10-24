@@ -3,6 +3,44 @@ import { requireAdminTokenFromRequest } from "@/lib/admin-jwt";
 import { createClient } from "@/utils/supabase/server";
 import { createAdminClient } from "@/utils/supabase/admin";
 
+type CreatorEntry = {
+  creator_name: string;
+  social_Id: string;
+};
+
+const normalizeCreators = (input: unknown): CreatorEntry[] => {
+  if (!Array.isArray(input)) {
+    return [];
+  }
+
+  return input
+    .map((item) => {
+      if (!item || typeof item !== "object") {
+        return null;
+      }
+
+      const { creator_name, social_Id } = item as {
+        creator_name?: unknown;
+        social_Id?: unknown;
+      };
+
+      const name =
+        typeof creator_name === "string" ? creator_name.trim() : "";
+      const social =
+        typeof social_Id === "string" ? social_Id.trim() : "";
+
+      if (!name && !social) {
+        return null;
+      }
+
+      return {
+        creator_name: name,
+        social_Id: social,
+      };
+    })
+    .filter((entry): entry is CreatorEntry => Boolean(entry));
+};
+
 export async function GET(request: Request) {
   try {
     requireAdminTokenFromRequest(request);
@@ -15,7 +53,7 @@ export async function GET(request: Request) {
       const { data, error } = await supabase
         .from("contests")
         .select(
-          `id, slug, title, difficulty, reward, participants, deadline, status, short_desc, description, requirements, target_url, created_at, updated_at`
+          `id, slug, title, difficulty, reward, participants, deadline, status, short_desc, description, requirements, target_url, creator, created_at, updated_at`
         )
         .eq("id", contestId)
         .single();
@@ -41,7 +79,7 @@ export async function GET(request: Request) {
     const { data, error } = await supabase
       .from("contests")
       .select(
-        `id, slug, title, difficulty, reward, participants, deadline, status, short_desc, description, requirements, target_url, created_at, updated_at`
+        `id, slug, title, difficulty, reward, participants, deadline, status, short_desc, description, requirements, target_url, creator, created_at, updated_at`
       )
       .order("created_at", { ascending: false });
 
@@ -131,6 +169,7 @@ export async function POST(request: Request) {
       description,
       requirements,
       target_url,
+      creator,
     } = body as Record<string, unknown>;
 
     const missingFields: string[] = [];
@@ -192,6 +231,7 @@ export async function POST(request: Request) {
       typeof target_url === "string" && target_url.trim().length > 0
         ? target_url.trim()
         : null;
+    const creatorList = normalizeCreators(creator);
 
     const supabase = createAdminClient();
     const { data, error } = await supabase
@@ -208,9 +248,10 @@ export async function POST(request: Request) {
         description: descriptionValue,
         requirements: requirementList,
         target_url: targetUrlValue,
+        creator: creatorList,
       })
       .select(
-        `id, slug, title, difficulty, reward, participants, deadline, status, short_desc, description, requirements, target_url, created_at, updated_at`
+        `id, slug, title, difficulty, reward, participants, deadline, status, short_desc, description, requirements, target_url, creator, created_at, updated_at`
       )
       .single();
 
@@ -256,6 +297,7 @@ export async function PUT(request: Request) {
       description,
       requirements,
       target_url,
+      creator,
     } = body as Record<string, unknown>;
 
     if (!id || typeof id !== "string") {
@@ -297,13 +339,17 @@ export async function PUT(request: Request) {
       );
     }
 
+    if (Array.isArray(creator)) {
+      updateData.creator = normalizeCreators(creator);
+    }
+
     const supabase = createAdminClient();
     const { data, error } = await supabase
       .from("contests")
       .update(updateData)
       .eq("id", id)
       .select(
-        `id, slug, title, difficulty, reward, participants, deadline, status, short_desc, description, requirements, target_url, created_at, updated_at`
+        `id, slug, title, difficulty, reward, participants, deadline, status, short_desc, description, requirements, target_url, creator, created_at, updated_at`
       )
       .single();
 

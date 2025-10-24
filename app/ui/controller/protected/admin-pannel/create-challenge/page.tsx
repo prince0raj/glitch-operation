@@ -43,6 +43,21 @@ const statuses = ["Active", "Closed", "Draft"] as const;
 type Difficulty = (typeof difficulties)[number];
 type Status = (typeof statuses)[number];
 
+type CreatorInput = {
+  creator_name: string;
+  social_Id: string;
+};
+
+type CreatorResponseItem = {
+  creator_name: string | null;
+  social_Id: string | null;
+};
+
+const createEmptyCreator = (): CreatorInput => ({
+  creator_name: "",
+  social_Id: "",
+});
+
 interface ContestFormState {
   slug: string;
   title: string;
@@ -83,6 +98,7 @@ type ContestResponse = {
     description: string | null;
     requirements: string[] | null;
     target_url: string | null;
+    creator: CreatorResponseItem[] | CreatorResponseItem | null;
     created_at: string;
     updated_at: string;
   };
@@ -96,6 +112,7 @@ const CreateChallengePage = () => {
   const [formState, setFormState] = useState<ContestFormState>(initialState);
   const [requirements, setRequirements] = useState<string[]>([]);
   const [requirementDraft, setRequirementDraft] = useState("");
+  const [creators, setCreators] = useState<CreatorInput[]>([createEmptyCreator()]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [token, setToken] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -170,6 +187,25 @@ const CreateChallengePage = () => {
         : []
     );
     setRequirementDraft("");
+
+    const rawCreators = Array.isArray(contest.creator)
+      ? contest.creator
+      : contest.creator
+      ? [contest.creator]
+      : [];
+
+    const mappedCreators = rawCreators
+      .map((entry) => ({
+        creator_name:
+          typeof entry?.creator_name === "string" ? entry.creator_name : "",
+        social_Id:
+          typeof entry?.social_Id === "string" ? entry.social_Id : "",
+      }))
+      .filter((item) => item.creator_name || item.social_Id);
+
+    setCreators(
+      mappedCreators.length > 0 ? mappedCreators : [createEmptyCreator()]
+    );
   }, [contestResponse?.contest]);
 
   const handleSlugChange = (value: string) => {
@@ -209,6 +245,34 @@ const CreateChallengePage = () => {
     }
   };
 
+  const handleCreatorChange = (
+    index: number,
+    key: keyof CreatorInput,
+    value: string
+  ) => {
+    setCreators((prev) =>
+      prev.map((item, idx) =>
+        idx === index
+          ? {
+              ...item,
+              [key]: value,
+            }
+          : item
+      )
+    );
+  };
+
+  const addCreator = () => {
+    setCreators((prev) => [...prev, createEmptyCreator()]);
+  };
+
+  const removeCreator = (index: number) => {
+    setCreators((prev) => {
+      const next = prev.filter((_, idx) => idx !== index);
+      return next.length > 0 ? next : [createEmptyCreator()];
+    });
+  };
+
   const isValid = useMemo(() => {
     if (formState.slug.length !== 4) return false;
     if (!formState.title.trim()) return false;
@@ -234,6 +298,12 @@ const CreateChallengePage = () => {
       description: formState.description.trim(),
       requirements,
       target_url: formState.target_url.trim() || null,
+      creator: creators
+        .map((entry) => ({
+          creator_name: entry.creator_name.trim(),
+          social_Id: entry.social_Id.trim(),
+        }))
+        .filter((entry) => entry.creator_name || entry.social_Id),
     };
   };
 
@@ -574,6 +644,73 @@ const CreateChallengePage = () => {
         </div>
 
         <div className="space-y-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="space-y-1">
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-300">
+                Creators
+              </p>
+              <p className="text-xs text-slate-400">
+                Credit the operatives powering this mission.
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              className="self-start gap-2 border-emerald-500/40 bg-emerald-500/10 text-emerald-100 hover:bg-emerald-400/25 sm:self-auto"
+              onClick={addCreator}
+            >
+              <BadgePlus className="size-4" />
+              Add creator
+            </Button>
+          </div>
+
+          <div className="space-y-3">
+            {creators.map((creator, index) => (
+              <div
+                key={`creator-${index}`}
+                className="relative grid gap-4 rounded-xl border border-emerald-500/25 bg-slate-950/60 p-5 sm:grid-cols-2"
+              >
+                <div className="space-y-2">
+                  <label className="text-[0.6rem] font-semibold uppercase tracking-[0.22em] text-slate-400">
+                    Name
+                  </label>
+                  <Input
+                    value={creator.creator_name}
+                    onChange={(event) =>
+                      handleCreatorChange(index, "creator_name", event.target.value)
+                    }
+                    placeholder="Creator display name"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[0.6rem] font-semibold uppercase tracking-[0.22em] text-slate-400">
+                    Social handle / ID
+                  </label>
+                  <Input
+                    value={creator.social_Id}
+                    onChange={(event) =>
+                      handleCreatorChange(index, "social_Id", event.target.value)
+                    }
+                    placeholder="@creator_handle"
+                  />
+                </div>
+
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-3 top-3 cursor-pointer rounded-full text-emerald-200 hover:text-emerald-100"
+                  onClick={() => removeCreator(index)}
+                  disabled={creators.length === 1 && !creator.creator_name && !creator.social_Id}
+                >
+                  <X className="size-4" />
+                  <span className="sr-only">Remove creator</span>
+                </Button>
+              </div>
+            ))}
+          </div>
+
           <div className="space-y-2">
             <label className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-300">
               Requirements
