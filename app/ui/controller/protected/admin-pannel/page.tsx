@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Orbitron } from "next/font/google";
 import { useRouter } from "next/navigation";
-import { Pencil, Search, Trash2 } from "lucide-react";
+import { CirclePlus, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useFetch } from "@/app/hook/useFetch";
@@ -184,16 +184,8 @@ const Page = () => {
             className="gap-2 bg-emerald-500/20 text-emerald-200 hover:bg-emerald-400/30"
           >
             <Link href="/ui/controller/protected/admin-pannel/create-challenge">
+              <CirclePlus className="size-4" />
               Launch New Contest
-            </Link>
-          </Button>
-          <Button
-            asChild
-            variant="outline"
-            className="gap-2 border-emerald-500/40 text-emerald-200 hover:bg-emerald-500/10"
-          >
-            <Link href="/ui/controller/protected/admin-pannel/contact-messages">
-              View Contact Messages
             </Link>
           </Button>
         </div>
@@ -339,7 +331,9 @@ const Page = () => {
                                     }
                                   >
                                     <Pencil className="size-4" />
-                                    <span className="sr-only">Edit contest</span>
+                                    <span className="sr-only">
+                                      Edit contest
+                                    </span>
                                   </Button>
                                 </TooltipTrigger>
                                 <TooltipContent side="bottom">
