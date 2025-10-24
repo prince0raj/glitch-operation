@@ -19,7 +19,6 @@ import { Constants } from "@/app/utils/Constants";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
@@ -244,149 +243,143 @@ const ContactMessagesPage = () => {
           </div>
 
           <div className="overflow-x-auto">
-            <TooltipProvider delayDuration={200}>
-              <table className="min-w-[720px] w-full table-fixed border-collapse text-left text-sm text-slate-200">
-                <thead className="bg-emerald-500/10 text-xs uppercase tracking-[0.18em] text-emerald-200">
-                  <tr>
-                    <th className="rounded-l-lg px-4 py-3">Sender</th>
-                    <th className="px-4 py-3">Email</th>
-                    <th className="px-4 py-3">Subject</th>
-                    <th className="px-4 py-3 text-right">Received</th>
-                    <th className="rounded-r-lg px-4 py-3 text-right">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="border border-emerald-500/20">
-                  {paginatedMessages.length > 0 ? (
-                    paginatedMessages.map((message) => {
-                      const {
-                        id,
-                        sender_name,
-                        sender_email,
-                        sender_subject,
-                        created_at,
-                      } = message;
+            <table className="min-w-[720px] w-full table-fixed border-collapse text-left text-sm text-slate-200">
+              <thead className="bg-emerald-500/10 text-xs uppercase tracking-[0.18em] text-emerald-200">
+                <tr>
+                  <th className="rounded-l-lg px-4 py-3">Sender</th>
+                  <th className="px-4 py-3">Email</th>
+                  <th className="px-4 py-3">Subject</th>
+                  <th className="px-4 py-3 text-right">Received</th>
+                  <th className="rounded-r-lg px-4 py-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="border border-emerald-500/20">
+                {paginatedMessages.length > 0 ? (
+                  paginatedMessages.map((message) => {
+                    const {
+                      id,
+                      sender_name,
+                      sender_email,
+                      sender_subject,
+                      created_at,
+                    } = message;
 
-                      return (
-                        <tr
-                          key={id}
-                          className="group cursor-pointer border-b border-emerald-500/20 bg-slate-950/80 transition hover:bg-emerald-500/10"
-                          onClick={() => handleRowClick(message)}
-                        >
-                          <td className="rounded-l-lg px-4 py-3 font-medium text-slate-100">
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <span className="inline-flex items-center gap-2">
-                                  <User className="size-4 shrink-0 text-emerald-300" />
-                                  <span
-                                    className="signal-ellipsis"
-                                    title={sender_name}
-                                  >
-                                    {sender_name}
-                                  </span>
+                    return (
+                      <tr
+                        key={id}
+                        className="group cursor-pointer border-b border-emerald-500/20 bg-slate-950/80 transition hover:bg-emerald-500/10"
+                        onClick={() => handleRowClick(message)}
+                      >
+                        <td className="rounded-l-lg px-4 py-3 font-medium text-slate-100">
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="inline-flex items-center gap-2">
+                                <User className="size-4 shrink-0 text-emerald-300" />
+                                <span
+                                  className="signal-ellipsis"
+                                  title={sender_name}
+                                >
+                                  {sender_name}
                                 </span>
-                              </TooltipTrigger>
-                              <TooltipContent
-                                side="bottom"
-                                className="max-w-xs break-words text-center"
-                              >
-                                {sender_name}
-                              </TooltipContent>
-                            </Tooltip>
-                          </td>
-                          <td className="px-4 py-3 text-slate-300">
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <span className="inline-flex items-center gap-2">
-                                  <Mail className="size-4 shrink-0 text-emerald-300" />
-                                  <span
-                                    className="max-w-[130px] overflow-hidden text-ellipsis whitespace-nowrap block"
-                                    title={sender_email}
-                                  >
-                                    {sender_email}
-                                  </span>
-                                </span>
-                              </TooltipTrigger>
-                              <TooltipContent
-                                side="bottom"
-                                className="max-w-xs break-words text-center"
-                              >
-                                {sender_email}
-                              </TooltipContent>
-                            </Tooltip>
-                          </td>
-                          <td className="px-4 py-3 text-slate-300">
-                            <Tooltip>
-                              <TooltipTrigger asChild>
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent
+                              side="bottom"
+                              className="max-w-xs break-words text-center"
+                            >
+                              {sender_name}
+                            </TooltipContent>
+                          </Tooltip>
+                        </td>
+                        <td className="px-4 py-3 text-slate-300">
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="inline-flex items-center gap-2">
+                                <Mail className="size-4 shrink-0 text-emerald-300" />
                                 <span
                                   className="max-w-[130px] overflow-hidden text-ellipsis whitespace-nowrap block"
-                                  title={sender_subject}
+                                  title={sender_email}
                                 >
-                                  {sender_subject}
+                                  {sender_email}
                                 </span>
-                              </TooltipTrigger>
-                              <TooltipContent
-                                side="bottom"
-                                className="max-w-sm break-words text-center"
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent
+                              side="bottom"
+                              className="max-w-xs break-words text-center"
+                            >
+                              {sender_email}
+                            </TooltipContent>
+                          </Tooltip>
+                        </td>
+                        <td className="px-4 py-3 text-slate-300">
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span
+                                className="max-w-[130px] overflow-hidden text-ellipsis whitespace-nowrap block"
+                                title={sender_subject}
                               >
                                 {sender_subject}
-                              </TooltipContent>
-                            </Tooltip>
-                          </td>
-                          <td className="px-4 py-3 text-right text-slate-300">
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <span className="inline-flex items-center gap-2">
-                                  <Calendar className="size-4 shrink-0 text-emerald-300" />
-                                  <span
-                                    className="signal-ellipsis"
-                                    title={new Date(
-                                      created_at
-                                    ).toLocaleString()}
-                                  >
-                                    {new Date(created_at).toLocaleString()}
-                                  </span>
-                                </span>
-                              </TooltipTrigger>
-                              <TooltipContent side="bottom">
-                                Received at{" "}
-                                {new Date(created_at).toLocaleString()}
-                              </TooltipContent>
-                            </Tooltip>
-                          </td>
-                          <td className="rounded-r-lg px-4 py-3 text-right">
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="gap-1 text-red-300 hover:text-red-200 bg-red-500/10 border border-red-500/20"
-                              onClick={(event) =>
-                                handleDeleteClick(event, message)
-                              }
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent
+                              side="bottom"
+                              className="max-w-sm break-words text-center"
                             >
-                              <Trash2 className="size-4" />
-                              <span className="sr-only">Delete message</span>
-                            </Button>
-                          </td>
-                        </tr>
-                      );
-                    })
-                  ) : (
-                    <tr className="border-b border-emerald-500/20 bg-slate-950/80">
-                      <td
-                        className="px-4 py-6 text-center text-slate-400"
-                        colSpan={5}
-                      >
-                        {loading
-                          ? "Loading messages..."
-                          : error || "No contact submissions available"}
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </TooltipProvider>
+                              {sender_subject}
+                            </TooltipContent>
+                          </Tooltip>
+                        </td>
+                        <td className="px-4 py-3 text-right text-slate-300">
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="inline-flex items-center gap-2">
+                                <Calendar className="size-4 shrink-0 text-emerald-300" />
+                                <span
+                                  className="signal-ellipsis"
+                                  title={new Date(created_at).toLocaleString()}
+                                >
+                                  {new Date(created_at).toLocaleString()}
+                                </span>
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent side="bottom">
+                              Received at{" "}
+                              {new Date(created_at).toLocaleString()}
+                            </TooltipContent>
+                          </Tooltip>
+                        </td>
+                        <td className="rounded-r-lg px-4 py-3 text-right">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="gap-1 text-red-300 hover:text-red-200 bg-red-500/10 border border-red-500/20"
+                            onClick={(event) =>
+                              handleDeleteClick(event, message)
+                            }
+                          >
+                            <Trash2 className="size-4" />
+                            <span className="sr-only">Delete message</span>
+                          </Button>
+                        </td>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr className="border-b border-emerald-500/20 bg-slate-950/80">
+                    <td
+                      className="px-4 py-6 text-center text-slate-400"
+                      colSpan={5}
+                    >
+                      {loading
+                        ? "Loading messages..."
+                        : error || "No contact submissions available"}
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
 
           <div className="flex items-center justify-between gap-4 border-t border-emerald-500/20 pt-4 text-xs uppercase tracking-[0.2em] text-slate-400">

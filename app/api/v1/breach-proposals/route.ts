@@ -3,8 +3,8 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 
 const STATUS_VALUES = [
+  "In Review",
   "Needs Info",
-  "Under Review",
   "Approved",
   "Rejected",
 ] as const;
@@ -33,7 +33,7 @@ export async function GET(request: Request) {
   if (!email) {
     return NextResponse.json(
       { error: "Query parameter 'email' is required" },
-      { status: 400 },
+      { status: 400 }
     );
   }
 
@@ -43,7 +43,7 @@ export async function GET(request: Request) {
     const { data, error } = await supabase
       .from("breach_proposal")
       .select(
-        "id, title, status, created_at, document_link, reference_url, proposal_link, full_name, email",
+        "id, title, status, created_at, document_link, reference_url, proposal_link, full_name, email"
       )
       .eq("email", email)
       .order("created_at", { ascending: false });
@@ -56,7 +56,7 @@ export async function GET(request: Request) {
   } catch (error: any) {
     return NextResponse.json(
       { error: error?.message ?? "Unexpected error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -67,47 +67,52 @@ export async function POST(request: Request) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json(
-      { error: "Invalid JSON body" },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
   const title = body?.title;
   const documentLink = body?.document_link ?? body?.documentLink;
   const fullName = body?.full_name ?? body?.fullName;
-  const referenceUrl = sanitizeOptionalString(body?.reference_url ?? body?.referenceUrl);
-  const proposalLink = sanitizeOptionalString(body?.proposal_link ?? body?.proposalLink);
+  const email = body?.email;
+  const referenceUrl = sanitizeOptionalString(
+    body?.reference_url ?? body?.referenceUrl
+  );
+  const proposalLink = sanitizeOptionalString(
+    body?.proposal_link ?? body?.proposalLink
+  );
   const statusRaw = body?.status;
 
   if (!isNonEmptyString(title)) {
     return NextResponse.json(
       { error: "Field 'title' is required" },
-      { status: 400 },
+      { status: 400 }
     );
   }
 
   if (!isNonEmptyString(documentLink)) {
     return NextResponse.json(
       { error: "Field 'document_link' is required" },
-      { status: 400 },
+      { status: 400 }
     );
   }
 
   if (!isNonEmptyString(fullName)) {
     return NextResponse.json(
       { error: "Field 'full_name' is required" },
-      { status: 400 },
+      { status: 400 }
     );
   }
 
-  let status: ProposalStatus = "Needs Info";
+  let status: ProposalStatus = "In Review";
   if (typeof statusRaw === "string") {
     const trimmedStatus = statusRaw.trim();
     if (!ALLOWED_STATUSES.has(trimmedStatus as ProposalStatus)) {
       return NextResponse.json(
-        { error: "Field 'status' must be one of Needs Info, Under Review, Approved, Rejected" },
-        { status: 400 },
+        {
+          error:
+            "Field 'status' must be one of In Review, Needs Info, Approved, Rejected",
+        },
+        { status: 400 }
       );
     }
     status = trimmedStatus as ProposalStatus;
@@ -122,17 +127,20 @@ export async function POST(request: Request) {
     } = await supabase.auth.getUser();
 
     if (authError) {
-      console.error("Failed to resolve authenticated user for breach proposal", authError);
+      console.error(
+        "Failed to resolve authenticated user for breach proposal",
+        authError
+      );
       return NextResponse.json(
         { error: "Unable to verify current user" },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
     if (!user) {
       return NextResponse.json(
         { error: "Authentication required" },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -141,7 +149,17 @@ export async function POST(request: Request) {
     if (!sessionEmail) {
       return NextResponse.json(
         { error: "Your account is missing a verified email address" },
-        { status: 400 },
+        { status: 400 }
+      );
+    }
+
+    if (
+      isNonEmptyString(email) &&
+      email.trim().toLowerCase() !== sessionEmail.toLowerCase()
+    ) {
+      return NextResponse.json(
+        { error: "Email does not match authenticated user" },
+        { status: 403 }
       );
     }
 
@@ -159,7 +177,7 @@ export async function POST(request: Request) {
       .from("breach_proposal")
       .insert(insertPayload)
       .select(
-        "id, title, status, created_at, document_link, reference_url, proposal_link, full_name, email",
+        "id, title, status, created_at, document_link, reference_url, proposal_link, full_name, email"
       )
       .single();
 
@@ -171,7 +189,7 @@ export async function POST(request: Request) {
   } catch (error: any) {
     return NextResponse.json(
       { error: error?.message ?? "Unexpected error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

@@ -18,6 +18,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { createClient } from "@/utils/supabase/client";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@radix-ui/react-tooltip";
 
 type FormState = {
   name: string;
@@ -78,39 +83,6 @@ const BreachProposalPage = () => {
       proposalLink: proposal?.proposal_link ?? proposal?.proposalLink ?? null,
     };
   }, []);
-
-  const dummyProposals = useMemo<ProposalSummary[]>(
-    () => [
-      {
-        id: "demo-1",
-        title: "Ransomware Evasion on Smart Grid",
-        status: "Under Review",
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
-        documentLink: "https://example.com/ransomware-brief",
-        referenceUrl: "https://github.com/org/smart-grid",
-        proposalLink: "https://cal.com/glitchops/review",
-      },
-      {
-        id: "demo-2",
-        title: "Zero Trust Collapse in Edge Network",
-        status: "Pending Review",
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(),
-        documentLink: "https://example.com/zerotrust-doc",
-        referenceUrl: "https://github.com/org/edge-zero-trust",
-        proposalLink: "https://notion.so/edge-breach",
-      },
-      {
-        id: "demo-3",
-        title: "Phishing-as-Code Marketplace",
-        status: "Needs Info",
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
-        documentLink: null,
-        referenceUrl: "https://demo.io/phishing-market",
-        proposalLink: null,
-      },
-    ],
-    []
-  );
 
   const fetchProposals = useCallback(
     async (email: string) => {
@@ -206,13 +178,13 @@ const BreachProposalPage = () => {
     const resolvedEmail = userDefaults.email.trim();
 
     if (!userId || !resolvedEmail) {
-      setProposalHistory(dummyProposals);
+      setProposalHistory([]);
       return;
     }
     fetchProposals(resolvedEmail).catch(() => {
-      setProposalHistory(dummyProposals);
+      setProposalHistory([]);
     });
-  }, [userId, userDefaults.email, fetchProposals, dummyProposals]);
+  }, [userId, userDefaults.email, fetchProposals]);
 
   const guidelines = useMemo(
     () => [
@@ -311,7 +283,7 @@ const BreachProposalPage = () => {
         <div className="absolute inset-0 opacity-10 bg-[linear-gradient(#00d49230_1px,transparent_1px),linear-gradient(90deg,#00d49230_1px,transparent_1px)] bg-[size:42px_42px]" />
       </div>
 
-      <div className="relative z-10 max-w-6xl mx-auto px-6 space-y-10">
+      <div className="relative z-10 w-[95%] mx-auto px-6 space-y-10">
         <header className="bg-black/40 border border-[#00d492]/30 rounded-2xl p-8 backdrop-blur-md">
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-3 text-[#00d492]">
@@ -342,8 +314,8 @@ const BreachProposalPage = () => {
           </div>
         </header>
 
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(320px,360px)]">
-          <div className="bg-black/40 border border-[#00d492]/30 rounded-2xl p-8 lg:p-10 backdrop-blur-md">
+        <div className="flex flex-row gap-8">
+          <div className="bg-black/40 border w-[60%] border-[#00d492]/30 rounded-2xl p-8 lg:p-10 backdrop-blur-md">
             {submitted ? (
               <div className="text-center space-y-4">
                 <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-[#00d492]/20">
@@ -514,7 +486,7 @@ const BreachProposalPage = () => {
             )}
           </div>
 
-          <aside className="bg-black/40 border border-[#00d492]/30 rounded-2xl p-6 lg:p-7 backdrop-blur-md">
+          <aside className="bg-black/40 border w-[40%] border-[#00d492]/30 rounded-2xl p-6 lg:p-7 backdrop-blur-md">
             <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
               <div className="flex items-center gap-3 text-[#00d492]">
                 <Clock className="w-5 h-5" />
@@ -577,21 +549,12 @@ const BreachProposalPage = () => {
                   const key = normalisedStatus.toLowerCase();
 
                   const statusClasses: Record<string, string> = {
-                    accepted:
+                    Rejected: "bg-rose-500/15 text-rose-300 border-rose-500/30",
+                    Approved:
                       "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
-                    "needs info":
-                      "bg-amber-500/15 text-amber-300 border-amber-500/30",
-                    "needs information":
-                      "bg-amber-500/15 text-amber-300 border-amber-500/30",
-                    "under review":
-                      "bg-sky-500/15 text-sky-300 border-sky-500/30",
-                    "in review": "bg-sky-500/15 text-sky-300 border-sky-500/30",
-                    rejected: "bg-rose-500/15 text-rose-300 border-rose-500/30",
-                    declined: "bg-rose-500/15 text-rose-300 border-rose-500/30",
-                    "pending review":
-                      "bg-slate-500/20 text-slate-200 border-slate-500/30",
-                    pending:
-                      "bg-slate-500/20 text-slate-200 border-slate-500/30",
+                    "In Review": "bg-sky-500/15 text-sky-300 border-sky-500/30",
+                    "Needs Info":
+                      "bg-orange-500/15 text-orange-300 border-orange-500/30",
                   };
 
                   const badgeClass =
@@ -631,9 +594,21 @@ const BreachProposalPage = () => {
                       <div className="flex flex-col gap-4">
                         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                           <div className="space-y-2">
-                            <h3 className="text-lg font-semibold text-white">
-                              {proposal.title}
-                            </h3>
+                            <p className="rounded-l-lg text-xs uppercase tracking-[0.22em] text-emerald-300">
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <span className="block max-w-[6rem] truncate text-white text-[14px] font-semibold text-ellipsis">
+                                    {proposal.title}
+                                  </span>
+                                </TooltipTrigger>
+                                <TooltipContent
+                                  side="bottom"
+                                  className="bg-black/80 p-2"
+                                >
+                                  Contest title: {proposal.title}
+                                </TooltipContent>
+                              </Tooltip>
+                            </p>
                             <p className="text-xs uppercase tracking-[0.32em] text-gray-500">
                               {formatTimestamp(proposal.createdAt)}
                             </p>
@@ -653,7 +628,7 @@ const BreachProposalPage = () => {
                                 href={item.href}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-2 rounded-md border border-[#00d492]/30 bg-black/40 px-3 py-2 text-xs font-semibold text-[#00d492] transition-colors hover:border-[#00d492]/60 hover:text-[#00d492]/90"
+                                className="inline-flex items-center gap-2 rounded-md border border-[#00d492]/30 bg-black/40 px-3 py-2 text-[11px] font-semibold text-[#00d492] transition-colors hover:border-[#00d492]/60 hover:text-[#00d492]/90"
                               >
                                 <ExternalLink className="w-3.5 h-3.5" />
                                 {item.label}
