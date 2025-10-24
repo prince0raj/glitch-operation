@@ -52,6 +52,9 @@ const Page = () => {
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
   const [token, setToken] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Contest | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -73,7 +76,7 @@ const Page = () => {
     [token]
   );
 
-  const { data, error, loading } = useFetch<ContestsResponse>(
+  const { data, error, loading, refetch } = useFetch<ContestsResponse>(
     requestUrl,
     fetchOptions
   );
@@ -102,6 +105,58 @@ const Page = () => {
   const handlePageChange = (nextPage: number) => {
     const clamped = Math.max(1, Math.min(totalPages, nextPage));
     setPage(clamped);
+  };
+
+  const handleDeleteClick = (contest: Contest) => {
+    setDeleteTarget(contest);
+    setDeleteError(null);
+  };
+
+  const closeDeleteDialog = () => {
+    if (isDeleting) return;
+    setDeleteTarget(null);
+    setDeleteError(null);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget || !token) {
+      setDeleteError("Missing contest or admin token");
+      return;
+    }
+
+    setIsDeleting(true);
+    setDeleteError(null);
+
+    try {
+      const response = await fetch(`/api/v2/contests?id=${deleteTarget.id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        let message = "Failed to delete contest";
+        try {
+          const errorBody = await response.json();
+          if (errorBody && typeof errorBody.error === "string") {
+            message = errorBody.error;
+          }
+        } catch {
+          // ignore json parse issues
+        }
+        throw new Error(message);
+      }
+
+      await refetch();
+      setDeleteTarget(null);
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Unexpected delete failure";
+      setDeleteError(message);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -176,8 +231,8 @@ const Page = () => {
                 </thead>
                 <tbody className="border border-emerald-500/20">
                   {paginatedContests.length > 0 ? (
-                    paginatedContests.map(
-                      ({
+                    paginatedContests.map((contest) => {
+                      const {
                         id,
                         slug,
                         title,
@@ -186,7 +241,9 @@ const Page = () => {
                         participants,
                         deadline,
                         status,
-                      }) => (
+                      } = contest;
+
+                      return (
                         <tr
                           key={id}
                           className="group border-b border-emerald-500/20 bg-slate-950/80 transition hover:bg-emerald-500/10"
@@ -283,7 +340,7 @@ const Page = () => {
                                 variant="ghost"
                                 size="sm"
                                 className="gap-2 text-red-300 hover:text-red-200 cursor-pointer bg-red-500/10 border border-red-500/20"
-                                onClick={() => console.log(`Delete ${slug}`)}
+                                onClick={() => handleDeleteClick(contest)}
                               >
                                 <Trash2 className="size-4" />
                                 {/* Delete */}
@@ -291,8 +348,8 @@ const Page = () => {
                             </div>
                           </td>
                         </tr>
-                      )
-                    )
+                      );
+                    })
                   ) : (
                     <tr className="border-b border-emerald-500/20 bg-slate-950/80">
                       <td
@@ -350,6 +407,45 @@ const Page = () => {
           </div>
         </div>
       </AdminQuickActions>
+
+      {deleteTarget ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-xl border border-emerald-500/30 bg-slate-950/90 p-6 shadow-[0_20px_60px_rgba(2,6,23,0.7)]">
+            <h2
+              className={`${orbitron.className} mb-4 text-xl uppercase tracking-[0.2em] text-emerald-100`}
+            >
+              Confirm Delete
+            </h2>
+            <p className="text-sm text-slate-300">
+              Are you sure you want to delete the contest "
+              <span className="text-emerald-200">{deleteTarget.title}</span>"?
+              This action cannot be undone.
+            </p>
+            {deleteError ? (
+              <p className="mt-3 text-sm text-red-400">{deleteError}</p>
+            ) : null}
+            <div className="mt-6 flex items-center justify-end gap-3">
+              <Button
+                type="button"
+                variant="ghost"
+                className="text-emerald-200 hover:text-emerald-100"
+                onClick={closeDeleteDialog}
+                disabled={isDeleting}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                className="gap-2 bg-red-500/20 text-red-200 hover:bg-red-500/30"
+                onClick={confirmDelete}
+                disabled={isDeleting}
+              >
+                {isDeleting ? "Deleting..." : "Delete"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </>
   );
 };

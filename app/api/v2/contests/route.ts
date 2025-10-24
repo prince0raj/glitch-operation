@@ -61,6 +61,51 @@ export async function GET(request: Request) {
   }
 }
 
+export async function DELETE(request: Request) {
+  try {
+    requireAdminTokenFromRequest(request);
+
+    const { searchParams } = new URL(request.url);
+    const contestId = searchParams.get("id");
+
+    if (!contestId) {
+      return NextResponse.json(
+        { error: "Contest id is required" },
+        { status: 400 }
+      );
+    }
+
+    const supabase = createAdminClient();
+    const { data, error } = await supabase
+      .from("contests")
+      .delete()
+      .eq("id", contestId)
+      .select("id")
+      .single();
+
+    if (error) {
+      console.error(`Failed to delete contest ${contestId}`, error);
+      return NextResponse.json(
+        { error: "Failed to delete contest" },
+        { status: 500 }
+      );
+    }
+
+    if (!data) {
+      return NextResponse.json(
+        { error: "Contest not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Unable to delete contest";
+    return NextResponse.json({ error: message }, { status: 401 });
+  }
+}
+
 export async function POST(request: Request) {
   try {
     requireAdminTokenFromRequest(request);
