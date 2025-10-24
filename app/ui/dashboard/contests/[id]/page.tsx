@@ -15,13 +15,53 @@ import { Preloader } from "@/app/commonComponents/Preloader/Preloader";
 import { useFetch } from "@/app/hook/useFetch";
 import Link from "next/link";
 
+type Creator = {
+  creator_name?: string;
+  social_Id?: string;
+};
+
+const normalizeProfileUrl = (value: string) => {
+  if (!value) return "";
+  const trimmed = value.trim();
+  if (!trimmed) return "";
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed;
+  }
+  return `https://${trimmed}`;
+};
+
+const extractInitials = (value: string) => {
+  const initials = value
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part.charAt(0).toUpperCase())
+    .join("");
+
+  if (initials) {
+    return initials;
+  }
+
+  return value.slice(0, 2).toUpperCase() || "??";
+};
+
+const extractHostname = (value: string) => {
+  if (!value) return "";
+  try {
+    const hostname = new URL(value).hostname.replace(/^www\./, "");
+    return hostname;
+  } catch (error) {
+    return value.replace(/^https?:\/\//i, "");
+  }
+};
+
 export default function ContestDetailPage() {
   const params = useParams();
   const router = useRouter();
   const contestId = params.id as string | undefined;
 
   type Contest = {
-    creator: any;
+    creator: Creator[] | Creator | null;
     id: string;
     title: string;
     difficulty: string;
@@ -82,6 +122,35 @@ export default function ContestDetailPage() {
         )
       : [];
   }, [contest?.requirements]);
+
+  const creatorProfiles = useMemo(() => {
+    const rawCreators = Array.isArray(contest?.creator)
+      ? contest?.creator
+      : contest?.creator
+      ? [contest.creator]
+      : [];
+
+    return rawCreators
+      .map((rawCreator) => {
+        const name =
+          typeof rawCreator?.creator_name === "string"
+            ? rawCreator.creator_name.trim()
+            : "";
+        const rawUrl =
+          typeof rawCreator?.social_Id === "string"
+            ? rawCreator.social_Id.trim()
+            : "";
+        const href = normalizeProfileUrl(rawUrl);
+
+        return {
+          name,
+          initials: name ? extractInitials(name) : "??",
+          href,
+          hostname: href ? extractHostname(href) : "",
+        };
+      })
+      .filter((profile) => profile.name || profile.href);
+  }, [contest?.creator]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -258,24 +327,52 @@ export default function ContestDetailPage() {
                   </p>
                 )}
               </div>
-
-              <div className="flex items-center gap-2 mt-6">
-                {contest.creator.map(
-                  (
-                    creator_data: { creator_name: string; social_Id: string },
-                    index: number
-                  ) =>
-                    creator_data.social_Id || creator_data.creator_name ? (
-                      <Link
-                        key={index}
-                        href={creator_data.social_Id}
-                        className="flex items-center gap-2"
-                        target="_blank"
-                        rel="noopener noreferrer"
+              <div className="mt-8">
+                <h3 className="text-lg font-bold text-[#00d492] mb-3 flex items-center gap-2">
+                  <Users className="w-4 h-4 text-[#00d492]" />
+                  Contest Creators
+                </h3>
+                {creatorProfiles.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {creatorProfiles.map((profile, index) => (
+                      <div
+                        key={`${profile.name}-${profile.href}-${index}`}
+                        className="group relative w-full overflow-hidden rounded-xl border border-[#00d492]/20 bg-black/40 p-2 transition-colors hover:border-[#00d492]/40 max-w-[340px]"
                       >
-                        <Linkedin width={21} /> {creator_data.creator_name}
-                      </Link>
-                    ) : null
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#00d492]/10 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+                        <div className="relative flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-12 w-14 shrink-0 items-center justify-center rounded-full border border-[#00d492]/30 bg-[#00d492]/10 text-lg font-semibold text-[#00d492]">
+                              {profile.initials}
+                            </div>
+                            <div>
+                              <p className="text-sm font-semibold text-white">
+                                {profile.name || "Anonymous Creator"}
+                              </p>
+                              <p className="text-xs text-gray-400">
+                                {profile.hostname || "Profile details"}
+                              </p>
+                            </div>
+                          </div>
+                          {profile.href ? (
+                            <Link
+                              href={profile.href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2 rounded-lg border border-[#00d492]/40 bg-[#00d492]/10 px-3 py-2 text-[10px] font-semibold uppercase tracking-wide text-[#00d492] transition-colors hover:bg-[#00d492]/20"
+                            >
+                              <Linkedin className="h-4 w-4" />
+                              View Profile
+                            </Link>
+                          ) : null}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-400">
+                    Creator information is not available for this contest.
+                  </p>
                 )}
               </div>
             </div>
