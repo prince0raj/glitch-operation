@@ -11,7 +11,10 @@ export async function GET(_request: Request, { params }: RouteParams) {
   const idParam = params?.id;
 
   if (!idParam) {
-    return NextResponse.json({ error: "Contest id is required" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Contest id is required" },
+      { status: 400 }
+    );
   }
 
   try {
@@ -20,7 +23,7 @@ export async function GET(_request: Request, { params }: RouteParams) {
     const { data, error } = await supabase
       .from("contests")
       .select(
-        "id, title, difficulty, participants, deadline, reward, status, short_desc, description, requirements, target_url"
+        "id, title, difficulty, participants, deadline, reward, status, short_desc, description, requirements, target_url, creator"
       )
       .eq("id", idParam)
       .maybeSingle();
@@ -34,7 +37,10 @@ export async function GET(_request: Request, { params }: RouteParams) {
     }
 
     const requirements = Array.isArray(data.requirements)
-      ? data.requirements.filter((req): req is string => typeof req === "string" && req.trim().length > 0)
+      ? data.requirements.filter(
+          (req): req is string =>
+            typeof req === "string" && req.trim().length > 0
+        )
       : [];
 
     return NextResponse.json(
@@ -51,6 +57,7 @@ export async function GET(_request: Request, { params }: RouteParams) {
           description: data.description,
           requirements,
           target_url: data.target_url,
+          creator: data.creator,
         },
       },
       { status: 200 }

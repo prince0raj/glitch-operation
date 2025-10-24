@@ -9,9 +9,11 @@ import {
   ArrowLeft,
   Send,
   AlertCircle,
+  Linkedin,
 } from "lucide-react";
 import { Preloader } from "@/app/commonComponents/Preloader/Preloader";
 import { useFetch } from "@/app/hook/useFetch";
+import Link from "next/link";
 
 export default function ContestDetailPage() {
   const params = useParams();
@@ -19,6 +21,7 @@ export default function ContestDetailPage() {
   const contestId = params.id as string | undefined;
 
   type Contest = {
+    creator: any;
     id: string;
     title: string;
     difficulty: string;
@@ -233,7 +236,7 @@ export default function ContestDetailPage() {
               ) : null}
 
               {/* Requirements */}
-              <div className="mt-6">
+              <div className="mt-6 mb-6">
                 <h3 className="text-lg font-bold text-[#00d492] mb-3">
                   Requirements
                 </h3>
@@ -242,9 +245,9 @@ export default function ContestDetailPage() {
                     {requirements.map((req, idx) => (
                       <li
                         key={`${req}-${idx}`}
-                        className="flex items-start gap-2 text-gray-400"
+                        className="flex items-baseline gap-2 text-gray-400"
                       >
-                        <span className="text-[#00d492] mt-1">▸</span>
+                        <span className="text-[#00d492] mb-1">▸</span>
                         <span>{req}</span>
                       </li>
                     ))}
@@ -253,6 +256,26 @@ export default function ContestDetailPage() {
                   <p className="text-gray-400 text-sm">
                     No specific requirements provided.
                   </p>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2 mt-6">
+                {contest.creator.map(
+                  (
+                    creator_data: { creator_name: string; social_Id: string },
+                    index: number
+                  ) =>
+                    creator_data.social_Id || creator_data.creator_name ? (
+                      <Link
+                        key={index}
+                        href={creator_data.social_Id}
+                        className="flex items-center gap-2"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <Linkedin width={21} /> {creator_data.creator_name}
+                      </Link>
+                    ) : null
                 )}
               </div>
             </div>
