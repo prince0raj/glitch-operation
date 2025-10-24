@@ -58,7 +58,7 @@ const ContactMessagesPage = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
-  const pageSize = 8;
+  const pageSize = 3;
 
   useEffect(() => {
     const storedToken = localStorage.getItem(Constants.OPS_GLITCH_TOKEN);
