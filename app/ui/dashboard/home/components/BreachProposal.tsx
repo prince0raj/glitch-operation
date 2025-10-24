@@ -78,7 +78,7 @@ export default function BreachProposal() {
             </p>
           </div>
           <a
-            href="/ui/dashboard/contests"
+            href="/ui/dashboard/breach-proposal"
             className="inline-flex items-center justify-center rounded-xl border border-[#00d492] px-6 py-3 font-semibold text-[#00d492] transition hover:bg-[#00d492]/10"
           >
             Build a Proposal
