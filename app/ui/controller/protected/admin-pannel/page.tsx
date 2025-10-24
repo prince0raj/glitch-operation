@@ -7,6 +7,12 @@ import { Pencil, Search, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   AdminContentDescription,
   AdminContentHeader,
   AdminContentTitle,
@@ -130,90 +136,124 @@ const Page = () => {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="min-w-[720px] w-full table-fixed border-collapse text-left text-sm text-slate-200">
-              <thead className="bg-emerald-500/10 text-xs uppercase tracking-[0.18em] text-emerald-200">
-                <tr>
-                  <th className="rounded-l-lg px-4 py-3">Slug</th>
-                  <th className="px-4 py-3">Title</th>
-                  <th className="px-4 py-3">Difficulty</th>
-                  <th className="px-4 py-3">Reward (XP)</th>
-                  <th className="px-4 py-3">Participants</th>
-                  <th className="px-4 py-3">Deadline</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="rounded-r-lg px-4 py-3 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="border border-emerald-500/20">
-                {paginatedContests.map(
-                  ({
-                    slug,
-                    title,
-                    difficulty,
-                    reward,
-                    participants,
-                    deadline,
-                    status,
-                  }) => (
-                    <tr
-                      key={slug}
-                      className="group border-b border-emerald-500/20 bg-slate-950/80 transition hover:bg-emerald-500/10"
-                    >
-                      <td className="rounded-l-lg px-4 py-3 text-xs uppercase tracking-[0.22em] text-emerald-300">
-                        <span className="block max-w-[6rem] truncate">
-                          #{slug}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 font-medium text-slate-100">
-                        <span className="block max-w-[18rem] truncate">
-                          {title}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-slate-300">{difficulty}</td>
-                      <td className="px-4 py-3 text-slate-300">
-                        {reward.toLocaleString()} XP
-                      </td>
-                      <td className="px-4 py-3 text-slate-300">
-                        {participants}
-                      </td>
-                      <td className="px-4 py-3 text-slate-300">
-                        <span className="block max-w-[10rem] truncate">
-                          {deadline}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className="rounded-full border border-emerald-400/30 bg-emerald-500/10 px-2 py-0.5 text-xs uppercase tracking-[0.18em] text-emerald-200">
-                          {status}
-                        </span>
-                      </td>
-                      <td className="rounded-r-lg px-4 py-3 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className="gap-2 text-emerald-200 hover:text-emerald-100 cursor-pointer bg-emerald-500/10 border border-emerald-500/20"
-                            onClick={() => console.log(`Edit ${slug}`)}
-                          >
-                            <Pencil className="size-4" />
-                            {/* Edit */}
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className="gap-2 text-red-300 hover:text-red-200 cursor-pointer bg-red-500/10 border border-red-500/20"
-                            onClick={() => console.log(`Delete ${slug}`)}
-                          >
-                            <Trash2 className="size-4" />
-                            {/* Delete */}
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  )
-                )}
-              </tbody>
-            </table>
+            <TooltipProvider delayDuration={200}>
+              <table className="min-w-[720px] w-full table-fixed border-collapse text-left text-sm text-slate-200">
+                <thead className="bg-emerald-500/10 text-xs uppercase tracking-[0.18em] text-emerald-200">
+                  <tr>
+                    <th className="rounded-l-lg px-4 py-3">Slug</th>
+                    <th className="px-4 py-3">Title</th>
+                    <th className="px-4 py-3">Difficulty</th>
+                    <th className="px-4 py-3">Reward (XP)</th>
+                    <th className="px-4 py-3">Participants</th>
+                    <th className="px-4 py-3">Deadline</th>
+                    <th className="px-4 py-3">Status</th>
+                    <th className="rounded-r-lg px-4 py-3 text-right">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="border border-emerald-500/20">
+                  {paginatedContests.map(
+                    ({
+                      slug,
+                      title,
+                      difficulty,
+                      reward,
+                      participants,
+                      deadline,
+                      status,
+                    }) => (
+                      <tr
+                        key={slug}
+                        className="group border-b border-emerald-500/20 bg-slate-950/80 transition hover:bg-emerald-500/10"
+                      >
+                        <td className="rounded-l-lg px-4 py-3 text-xs uppercase tracking-[0.22em] text-emerald-300">
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="block max-w-[6rem] truncate">
+                                #{slug}
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent side="bottom">
+                              Contest slug #{slug}
+                            </TooltipContent>
+                          </Tooltip>
+                        </td>
+                        <td className="px-4 py-3 font-medium text-slate-100">
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="block max-w-[18rem] truncate">
+                                {title}
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent side="bottom">
+                              {title}
+                            </TooltipContent>
+                          </Tooltip>
+                        </td>
+                        <td className="px-4 py-3 text-slate-300">
+                          {difficulty}
+                        </td>
+                        <td className="px-4 py-3 text-slate-300">
+                          {reward.toLocaleString()} XP
+                        </td>
+                        <td className="px-4 py-3 text-slate-300">
+                          {participants}
+                        </td>
+                        <td className="px-4 py-3 text-slate-300">
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="block max-w-[10rem] truncate">
+                                {deadline}
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent side="bottom">
+                              Reporting deadline {deadline}
+                            </TooltipContent>
+                          </Tooltip>
+                        </td>
+                        <td className="px-4 py-3">
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="rounded-full border border-emerald-400/30 bg-emerald-500/10 px-2 py-0.5 text-xs uppercase tracking-[0.18em] text-emerald-200">
+                                {status}
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent side="bottom">
+                              Contest status: {status}
+                            </TooltipContent>
+                          </Tooltip>
+                        </td>
+                        <td className="rounded-r-lg px-4 py-3 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="gap-2 text-emerald-200 hover:text-emerald-100 cursor-pointer bg-emerald-500/10 border border-emerald-500/20"
+                              onClick={() => console.log(`Edit ${slug}`)}
+                            >
+                              <Pencil className="size-4" />
+                              {/* Edit */}
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="gap-2 text-red-300 hover:text-red-200 cursor-pointer bg-red-500/10 border border-red-500/20"
+                              onClick={() => console.log(`Delete ${slug}`)}
+                            >
+                              <Trash2 className="size-4" />
+                              {/* Delete */}
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  )}
+                </tbody>
+              </table>
+            </TooltipProvider>
           </div>
 
           <div className="flex items-center justify-between gap-4 border-t border-emerald-500/20 pt-4 text-xs uppercase tracking-[0.18em] text-slate-400">
