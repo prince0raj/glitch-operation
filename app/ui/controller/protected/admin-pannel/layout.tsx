@@ -2,7 +2,8 @@
 
 import React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useFormStatus } from "react-dom";
 import { Orbitron } from "next/font/google";
 import {
   LayoutDashboard,
@@ -10,6 +11,8 @@ import {
   Target,
   Users2,
   Settings,
+  Loader2,
+  LogOut,
   type LucideIcon,
 } from "lucide-react";
 import GridPattern from "@/app/commonComponents/GridPattern/GridPattern";
@@ -26,6 +29,7 @@ import {
   AdminSidebarSubtitle,
   AdminSidebarTitle,
 } from "./style";
+import { Constants } from "@/app/utils/Constants";
 
 const orbitron = Orbitron({
   subsets: ["latin"],
@@ -78,6 +82,35 @@ interface AdminLayoutProps {
 
 const AdminLayout = ({ children }: AdminLayoutProps) => {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleSignout = () => {
+    localStorage.removeItem(Constants.OPS_GLITCH_TOKEN);
+    router.replace("/ui/controller/admin-login");
+  };
+
+  const LogoutButton = () => {
+    const { pending } = useFormStatus();
+
+    return (
+      <Button
+        onClick={() => {
+          handleSignout();
+        }}
+        variant="ghost"
+        size="lg"
+        disabled={pending}
+        className="w-full cursor-pointer justify-start gap-3 font-medium border border-transparent text-red-300 hover:text-red-200 hover:bg-red-500/10 hover:border-red-500/40 disabled:opacity-60 disabled:pointer-events-none"
+      >
+        {pending ? (
+          <Loader2 className="size-5 animate-spin" />
+        ) : (
+          <LogOut className="size-5" />
+        )}
+        {pending ? "Logging out..." : "Logout"}
+      </Button>
+    );
+  };
 
   return (
     <AdminPannelContainer>
@@ -124,10 +157,16 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
               );
             })}
           </AdminSidebarNav>
+
+          <div className="mt-auto pt-4 border-t border-white/10">
+            <LogoutButton />
+          </div>
         </AdminSidebar>
 
         <AdminContent>
-          <div className="relative flex flex-col gap-10">{children}</div>
+          <div className="relative flex h-full flex-col gap-10 overflow-y-auto">
+            {children}
+          </div>
         </AdminContent>
       </AdminPannelWrapper>
     </AdminPannelContainer>
