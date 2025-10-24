@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Orbitron } from "next/font/google";
 import {
   LayoutDashboard,
+  Mailbox,
   Target,
   Users2,
   Settings,
@@ -45,24 +46,30 @@ const navItems: AdminNavItem[] = [
     icon: LayoutDashboard,
     description: "Monitor and manage all live security contests.",
   },
+  {
+    label: "Contact Messages",
+    href: "/ui/controller/protected/admin-pannel/contact-messages",
+    icon: Mailbox,
+    description: "Review transmissions sent via the contact portal.",
+  },
   // {
   //   label: "Create Contest",
   //   href: "/ui/controller/protected/admin-pannel/create-challenge",
   //   icon: Target,
   //   description: "Launch a new bug bounty operation.",
   // },
-  {
-    label: "Teams",
-    href: "/ui/controller/protected/admin-pannel/teams",
-    icon: Users2,
-    description: "Coordinate internal squads and guest researchers.",
-  },
-  {
-    label: "Settings",
-    href: "/ui/controller/protected/admin-pannel/settings",
-    icon: Settings,
-    description: "Fine-tune access and platform preferences.",
-  },
+  // {
+  //   label: "Teams",
+  //   href: "/ui/controller/protected/admin-pannel/teams",
+  //   icon: Users2,
+  //   description: "Coordinate internal squads and guest researchers.",
+  // },
+  // {
+  //   label: "Settings",
+  //   href: "/ui/controller/protected/admin-pannel/settings",
+  //   icon: Settings,
+  //   description: "Fine-tune access and platform preferences.",
+  // },
 ];
 
 interface AdminLayoutProps {

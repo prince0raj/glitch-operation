@@ -178,14 +178,25 @@ const Page = () => {
         <p className="text-sm tracking-[0.2em] text-emerald-200 uppercase">
           Total contests: {contests.length}
         </p>
-        <Button
-          asChild
-          className="gap-2 bg-emerald-500/20 text-emerald-200 hover:bg-emerald-400/30"
-        >
-          <Link href="/ui/controller/protected/admin-pannel/create-challenge">
-            Launch New Contest
-          </Link>
-        </Button>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button
+            asChild
+            className="gap-2 bg-emerald-500/20 text-emerald-200 hover:bg-emerald-400/30"
+          >
+            <Link href="/ui/controller/protected/admin-pannel/create-challenge">
+              Launch New Contest
+            </Link>
+          </Button>
+          <Button
+            asChild
+            variant="outline"
+            className="gap-2 border-emerald-500/40 text-emerald-200 hover:bg-emerald-500/10"
+          >
+            <Link href="/ui/controller/protected/admin-pannel/contact-messages">
+              View Contact Messages
+            </Link>
+          </Button>
+        </div>
       </div>
 
       <AdminQuickActions>
