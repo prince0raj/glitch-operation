@@ -14,6 +14,7 @@ import {
   LogOut,
   Loader2,
   LucideIcon,
+  Dumbbell,
 } from "lucide-react";
 import GlitchText from "../GlitchText/GlitchText";
 import { signout } from "@/lib/auth-actions";
@@ -78,6 +79,12 @@ const Navbar: FC = () => {
       icon: Mail,
       label: "Contact",
       path: "/ui/dashboard/contact",
+    },
+    {
+      id: "breach-proposal",
+      icon: Dumbbell,
+      label: "Breach Proposal",
+      path: "/ui/dashboard/breach-proposal",
     },
   ];
 
