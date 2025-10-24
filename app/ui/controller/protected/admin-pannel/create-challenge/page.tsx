@@ -219,9 +219,91 @@ const CreateChallengePage = () => {
     return true;
   }, [formState]);
 
+  const buildPayload = () => {
+    return {
+      slug: formState.slug,
+      title: formState.title.trim(),
+      difficulty: formState.difficulty,
+      participants: Number(formState.participants) || 0,
+      deadline: formState.deadline
+        ? formState.deadline.toISOString().split("T")[0]
+        : null,
+      reward: Number(formState.reward) || 0,
+      status: formState.status,
+      short_desc: formState.short_desc.trim(),
+      description: formState.description.trim(),
+      requirements,
+      target_url: formState.target_url.trim() || null,
+    };
+  };
+
+  const submitContest = async (payload: ReturnType<typeof buildPayload>) => {
+    if (!token) {
+      throw new Error("Missing admin token. Please log in again.");
+    }
+
+    if (isEditing && contestId) {
+      const response = await fetch("/api/v2/contests", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          id: contestId,
+          ...payload,
+        }),
+      });
+
+      if (!response.ok) {
+        let message = "Failed to update contest";
+        try {
+          const errorBody = await response.json();
+          if (errorBody && typeof errorBody.error === "string") {
+            message = errorBody.error;
+          }
+        } catch {
+          // ignore json parse error
+        }
+        throw new Error(message);
+      }
+
+      await response.json();
+    } else {
+      const response = await fetch("/api/v2/contests", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        let message = "Failed to create contest";
+        try {
+          const errorBody = await response.json();
+          if (errorBody && typeof errorBody.error === "string") {
+            message = errorBody.error;
+          }
+        } catch {
+          // ignore json parse error
+        }
+        throw new Error(message);
+      }
+
+      await response.json();
+    }
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!isValid || isSubmitting) {
+      return;
+    }
+
+    if (isEditing && !contestId) {
+      setSubmitError("Missing contest identifier");
       return;
     }
 
@@ -229,66 +311,13 @@ const CreateChallengePage = () => {
     setSubmitError(null);
 
     try {
-      if (isEditing && !contestId) {
-        throw new Error("Missing contest identifier");
-      }
-
-      if (!token) {
-        throw new Error("Missing admin token. Please log in again.");
-      }
-
-      const payload = {
-        slug: formState.slug,
-        title: formState.title.trim(),
-        difficulty: formState.difficulty,
-        participants: Number(formState.participants) || 0,
-        deadline: formState.deadline
-          ? formState.deadline.toISOString().split("T")[0]
-          : null,
-        reward: Number(formState.reward) || 0,
-        status: formState.status,
-        short_desc: formState.short_desc.trim(),
-        description: formState.description.trim(),
-        requirements,
-        target_url: formState.target_url.trim() || null,
-      };
-
-      if (isEditing && contestId) {
-        const response = await fetch("/api/v2/contests", {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            id: contestId,
-            ...payload,
-          }),
-        });
-
-        if (!response.ok) {
-          let message = "Failed to update contest";
-          try {
-            const errorBody = await response.json();
-            if (errorBody && typeof errorBody.error === "string") {
-              message = errorBody.error;
-            }
-          } catch {
-            // ignore json parse error
-          }
-          throw new Error(message);
-        }
-
-        await response.json();
-        router.push("/ui/controller/protected/admin-pannel");
-        router.refresh();
-      } else {
-        console.log("Contest payload", payload);
-        // TODO: Integrate creation flow when API route is ready.
-      }
+      const payload = buildPayload();
+      await submitContest(payload);
+      router.push("/ui/controller/protected/admin-pannel");
+      router.refresh();
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Unable to update contest";
+        error instanceof Error ? error.message : "Contest submission failed";
       setSubmitError(message);
     } finally {
       setIsSubmitting(false);

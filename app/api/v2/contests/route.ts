@@ -61,6 +61,130 @@ export async function GET(request: Request) {
   }
 }
 
+export async function POST(request: Request) {
+  try {
+    requireAdminTokenFromRequest(request);
+
+    const body = await request.json().catch(() => null);
+
+    if (!body || typeof body !== "object") {
+      return NextResponse.json(
+        { error: "Invalid request body" },
+        { status: 400 }
+      );
+    }
+
+    const {
+      slug,
+      title,
+      difficulty,
+      participants,
+      deadline,
+      reward,
+      status,
+      short_desc,
+      description,
+      requirements,
+      target_url,
+    } = body as Record<string, unknown>;
+
+    const missingFields: string[] = [];
+
+    if (typeof slug !== "string" || !slug.trim()) missingFields.push("slug");
+    if (typeof title !== "string" || !title.trim()) missingFields.push("title");
+    if (typeof difficulty !== "string" || !difficulty.trim())
+      missingFields.push("difficulty");
+    if (typeof status !== "string" || !status.trim()) missingFields.push("status");
+    if (typeof short_desc !== "string" || !short_desc.trim())
+      missingFields.push("short_desc");
+    if (typeof description !== "string" || !description.trim())
+      missingFields.push("description");
+
+    if (missingFields.length > 0) {
+      return NextResponse.json(
+        {
+          error: `Missing or invalid fields: ${missingFields.join(", ")}`,
+        },
+        { status: 400 }
+      );
+    }
+
+    const slugValue = (slug as string).trim();
+    const titleValue = (title as string).trim();
+    const difficultyValue = (difficulty as string).trim();
+    const statusValue = (status as string).trim();
+    const shortDescValue = (short_desc as string).trim();
+    const descriptionValue = (description as string).trim();
+
+    const participantsNumber = (() => {
+      if (typeof participants === "number" && Number.isFinite(participants)) {
+        return participants;
+      }
+      const parsed = Number(participants);
+      return Number.isFinite(parsed) ? parsed : 0;
+    })();
+
+    const rewardNumber = (() => {
+      if (typeof reward === "number" && Number.isFinite(reward)) {
+        return reward;
+      }
+      const parsed = Number(reward);
+      return Number.isFinite(parsed) ? parsed : 0;
+    })();
+
+    const deadlineValue =
+      typeof deadline === "string" && deadline.trim().length > 0
+        ? deadline
+        : null;
+
+    const requirementList = Array.isArray(requirements)
+      ? requirements
+          .map((item) => (typeof item === "string" ? item.trim() : ""))
+          .filter((item) => item.length > 0)
+      : [];
+
+    const targetUrlValue =
+      typeof target_url === "string" && target_url.trim().length > 0
+        ? target_url.trim()
+        : null;
+
+    const supabase = createAdminClient();
+    const { data, error } = await supabase
+      .from("contests")
+      .insert({
+        slug: slugValue,
+        title: titleValue,
+        difficulty: difficultyValue,
+        participants: participantsNumber,
+        deadline: deadlineValue,
+        reward: rewardNumber,
+        status: statusValue,
+        short_desc: shortDescValue,
+        description: descriptionValue,
+        requirements: requirementList,
+        target_url: targetUrlValue,
+      })
+      .select(
+        `id, slug, title, difficulty, reward, participants, deadline, status, short_desc, description, requirements, target_url, created_at, updated_at`
+      )
+      .single();
+
+    if (error) {
+      console.error("Failed to create contest", error);
+      return NextResponse.json(
+        { error: "Failed to create contest" },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ contest: data }, { status: 201 });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Unable to create contest";
+    return NextResponse.json({ error: message }, { status: 401 });
+  }
+}
+
 export async function PUT(request: Request) {
   try {
     requireAdminTokenFromRequest(request);
