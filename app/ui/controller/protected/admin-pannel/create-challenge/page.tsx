@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { format } from "date-fns";
 import { Orbitron } from "next/font/google";
 import {
@@ -17,6 +17,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useFetch } from "@/app/hook/useFetch";
+import { Constants } from "@/app/utils/Constants";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -67,12 +69,108 @@ const initialState: ContestFormState = {
   target_url: "",
 };
 
+type ContestResponse = {
+  contest: {
+    id: string;
+    slug: string;
+    title: string;
+    difficulty: string;
+    reward: number;
+    participants: number;
+    deadline: string | null;
+    status: string;
+    short_desc: string | null;
+    description: string | null;
+    requirements: string[] | null;
+    target_url: string | null;
+    created_at: string;
+    updated_at: string;
+  };
+};
+
 const CreateChallengePage = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const contestId = searchParams.get("id");
+  const isEditing = Boolean(contestId);
   const [formState, setFormState] = useState<ContestFormState>(initialState);
   const [requirements, setRequirements] = useState<string[]>([]);
   const [requirementDraft, setRequirementDraft] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem(Constants.OPS_GLITCH_TOKEN);
+    setToken(storedToken);
+  }, []);
+
+  const contestUrl = contestId && token ? `/api/v2/contests?id=${encodeURIComponent(contestId)}` : null;
+
+  const fetchOptions = useMemo(
+    () =>
+      token
+        ? {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        : { manual: true },
+    [token]
+  );
+
+  const {
+    data: contestResponse,
+    error: contestError,
+    loading: contestLoading,
+  } = useFetch<ContestResponse>(contestUrl, fetchOptions);
+
+  useEffect(() => {
+    const contest = contestResponse?.contest;
+    if (!contest) {
+      return;
+    }
+
+    const parsedDeadline = contest.deadline ? new Date(contest.deadline) : null;
+    const safeDeadline =
+      parsedDeadline && !Number.isNaN(parsedDeadline.getTime())
+        ? parsedDeadline
+        : null;
+
+    const difficulty = difficulties.includes(contest.difficulty as Difficulty)
+      ? (contest.difficulty as Difficulty)
+      : "Medium";
+
+    const status = statuses.includes(contest.status as Status)
+      ? (contest.status as Status)
+      : "Active";
+
+    setFormState({
+      slug: contest.slug ?? "",
+      title: contest.title ?? "",
+      difficulty,
+      participants:
+        contest.participants !== null && contest.participants !== undefined
+          ? String(contest.participants)
+          : "0",
+      deadline: safeDeadline,
+      reward:
+        contest.reward !== null && contest.reward !== undefined
+          ? String(contest.reward)
+          : "0",
+      status,
+      short_desc: contest.short_desc ?? "",
+      description: contest.description ?? "",
+      target_url: contest.target_url ?? "",
+    });
+
+    setRequirements(
+      Array.isArray(contest.requirements)
+        ? contest.requirements.filter((item): item is string => Boolean(item))
+        : []
+    );
+    setRequirementDraft("");
+  }, [contestResponse?.contest]);
 
   const handleSlugChange = (value: string) => {
     const sanitized = value
@@ -123,10 +221,22 @@ const CreateChallengePage = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!isValid || isSubmitting) return;
+    if (!isValid || isSubmitting) {
+      return;
+    }
 
     setIsSubmitting(true);
+    setSubmitError(null);
+
     try {
+      if (isEditing && !contestId) {
+        throw new Error("Missing contest identifier");
+      }
+
+      if (!token) {
+        throw new Error("Missing admin token. Please log in again.");
+      }
+
       const payload = {
         slug: formState.slug,
         title: formState.title.trim(),
@@ -143,29 +253,67 @@ const CreateChallengePage = () => {
         target_url: formState.target_url.trim() || null,
       };
 
-      console.log("Contest payload", payload);
-      // TODO: Integrate with Supabase insert when API route is ready.
+      if (isEditing && contestId) {
+        const response = await fetch("/api/v2/contests", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            id: contestId,
+            ...payload,
+          }),
+        });
+
+        if (!response.ok) {
+          let message = "Failed to update contest";
+          try {
+            const errorBody = await response.json();
+            if (errorBody && typeof errorBody.error === "string") {
+              message = errorBody.error;
+            }
+          } catch {
+            // ignore json parse error
+          }
+          throw new Error(message);
+        }
+
+        await response.json();
+        router.push("/ui/controller/protected/admin-pannel");
+        router.refresh();
+      } else {
+        console.log("Contest payload", payload);
+        // TODO: Integrate creation flow when API route is ready.
+      }
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Unable to update contest";
+      setSubmitError(message);
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  const isSubmitDisabled =
+    !isValid || isSubmitting || (isEditing && contestLoading);
 
   return (
     <div className="flex flex-col gap-10">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div className="space-y-3">
           <p className="text-xs uppercase tracking-[0.3em] text-emerald-300">
-            // Launch new operation
+            {isEditing ? "// Update existing operation" : "// Launch new operation"}
           </p>
           <h1
             className={`${orbitron.className} text-3xl sm:text-4xl font-semibold tracking-[0.25em] uppercase text-emerald-100`}
           >
-            Create Contest
+            {isEditing ? "Update Contest" : "Create Contest"}
           </h1>
           <p className="max-w-2xl text-sm text-slate-400">
-            Define a new bug bounty mission, outline the scope, and set
-            expectations for the hunters. All parameters must reflect the
-            security schema for accurate deployment.
+            {isEditing
+              ? "Review and adjust this mission before redeploying it to the hunters. Ensure all parameters reflect the latest scope."
+              : "Define a new bug bounty mission, outline the scope, and set expectations for the hunters. All parameters must reflect the security schema for accurate deployment."}
           </p>
         </div>
 
@@ -458,16 +606,20 @@ const CreateChallengePage = () => {
           <Button
             type="submit"
             className={`gap-2 bg-emerald-500/25 text-emerald-100 hover:bg-emerald-400/35`}
-            disabled={!isValid || isSubmitting}
+            disabled={isSubmitDisabled}
           >
             {isSubmitting ? (
               <Loader2 className="size-4 animate-spin" />
             ) : (
               <PlusCircle className="size-4" />
             )}
-            Save Contest
+            {isEditing ? "Update Contest" : "Save Contest"}
           </Button>
         </div>
+
+        {submitError ? (
+          <p className="text-sm text-red-400">{submitError}</p>
+        ) : null}
       </form>
     </div>
   );

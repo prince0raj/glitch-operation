@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Orbitron } from "next/font/google";
+import { useRouter } from "next/navigation";
 import { Pencil, Search, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,6 +37,9 @@ type Contest = {
   deadline: string | null;
   status: string;
   short_desc: string | null;
+  description: string | null;
+  requirements: string[] | null;
+  target_url: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -48,6 +52,7 @@ const Page = () => {
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
   const [token, setToken] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const storedToken = localStorage.getItem(Constants.OPS_GLITCH_TOKEN);
@@ -173,6 +178,7 @@ const Page = () => {
                   {paginatedContests.length > 0 ? (
                     paginatedContests.map(
                       ({
+                        id,
                         slug,
                         title,
                         difficulty,
@@ -182,7 +188,7 @@ const Page = () => {
                         status,
                       }) => (
                         <tr
-                          key={slug}
+                          key={id}
                           className="group border-b border-emerald-500/20 bg-slate-950/80 transition hover:bg-emerald-500/10"
                         >
                           <td className="rounded-l-lg px-4 py-3 text-xs uppercase tracking-[0.22em] text-emerald-300">
@@ -204,7 +210,9 @@ const Page = () => {
                                   {title}
                                 </span>
                               </TooltipTrigger>
-                              <TooltipContent side="bottom">{title}</TooltipContent>
+                              <TooltipContent side="bottom">
+                                {title}
+                              </TooltipContent>
                             </Tooltip>
                           </td>
                           <td className="px-4 py-3 text-slate-300">
@@ -247,16 +255,29 @@ const Page = () => {
                           </td>
                           <td className="rounded-r-lg px-4 py-3 text-right">
                             <div className="flex items-center justify-end gap-2">
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                className="gap-2 text-emerald-200 hover:text-emerald-100 cursor-pointer bg-emerald-500/10 border border-emerald-500/20"
-                                onClick={() => console.log(`Edit ${slug}`)}
-                              >
-                                <Pencil className="size-4" />
-                                {/* Edit */}
-                              </Button>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="gap-2 text-emerald-200 hover:text-emerald-100 cursor-pointer bg-emerald-500/10 border border-emerald-500/20"
+                                    onClick={() =>
+                                      router.push(
+                                        `/ui/controller/protected/admin-pannel/create-challenge?id=${encodeURIComponent(
+                                          id
+                                        )}`
+                                      )
+                                    }
+                                  >
+                                    <Pencil className="size-4" />
+                                    <span className="sr-only">Edit contest</span>
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent side="bottom">
+                                  Edit contest
+                                </TooltipContent>
+                              </Tooltip>
                               <Button
                                 type="button"
                                 variant="ghost"
@@ -293,7 +314,8 @@ const Page = () => {
             <span>
               {filteredContests.length > 0 ? (
                 <>
-                  Showing contests {Math.min(
+                  Showing contests{" "}
+                  {Math.min(
                     (currentPage - 1) * pageSize + 1,
                     filteredContests.length
                   )}
