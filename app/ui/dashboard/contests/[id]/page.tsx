@@ -10,6 +10,7 @@ import {
   Send,
   AlertCircle,
   Linkedin,
+  Crosshair,
 } from "lucide-react";
 import { Preloader } from "@/app/commonComponents/Preloader/Preloader";
 import { useFetch } from "@/app/hook/useFetch";
@@ -310,19 +311,35 @@ export default function ContestDetailPage() {
                 </div>
               </div>
 
-              <div className="mt-6">
-                <h3 className="text-lg font-bold text-[#00d492] mb-2">
-                  Start mission
-                </h3>
-                <button
-                  type="button"
-                  onClick={handleStartMission}
-                  disabled={!contest}
-                  className="group relative flex items-center gap-3 rounded-lg border border-[#00d492]/40 bg-[#00d492]/10 px-5 py-3 text-sm font-semibold uppercase tracking-[0.25em] text-[#00d492] transition-all hover:border-[#00d492]/70 hover:bg-[#00d492]/20 disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  <span className="absolute inset-0 rounded-lg bg-gradient-to-r from-[#00d492]/10 via-transparent to-[#00d492]/10 opacity-0 transition-opacity group-hover:opacity-100" />
-                  <span className="relative z-10">Launch Mission Terminal</span>
-                </button>
+              <div className="mt-8">
+                <div className="relative overflow-hidden rounded-2xl border border-[#00d492]/25 bg-black/40 p-5 md:flex md:items-center md:justify-between gap-5">
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#00d492]/10 via-transparent to-transparent opacity-40" />
+                  <div className="relative flex items-center gap-4">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[#00d492]/35 bg-[#00d492]/10 text-[#00d492] shadow-[0_0_18px_rgba(0,212,146,0.18)]">
+                      <Crosshair className="h-6 w-6" strokeWidth={2.6} />
+                    </div>
+                    <div>
+                      <h3 className="text-xl md:text-xl font-bold font-mono text-white uppercase tracking-[0.25em]">
+                        Start Mission
+                      </h3>
+                      <p className="text-xs uppercase tracking-[0.4em] text-[#00d492]/70">
+                        Engage Target
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="relative mt-4 flex flex-col sm:flex-row md:mt-0 md:items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={handleStartMission}
+                      disabled={!contest}
+                      className="group cursor-pointer relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full border border-[#00d492]/50 bg-[#00d492]/10 px-6 py-3 text-sm font-semibold uppercase tracking-[0.32em] text-[#00d492] transition-all hover:bg-[#00d492]/15 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      <span className="absolute inset-0 bg-gradient-to-r from-[#00d492]/20 via-transparent to-[#00d492]/25 opacity-0 transition-opacity group-hover:opacity-100" />
+                      <span className="relative z-10">Launch</span>
+                    </button>
+                  </div>
+                </div>
               </div>
 
               {/* Requirements */}
