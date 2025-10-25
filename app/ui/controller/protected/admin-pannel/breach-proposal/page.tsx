@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Orbitron } from "next/font/google";
 import {
-  CirclePlus,
   CalendarClock,
+  ExternalLink,
+  Loader2,
   Pencil,
   RefreshCcw,
   Search,
@@ -34,37 +34,62 @@ const orbitron = Orbitron({
   variable: "--font-orbitron",
 });
 
-type Testimonial = {
+const STATUS_OPTIONS = [
+  "In Review",
+  "Needs Info",
+  "Approved",
+  "Rejected",
+] as const;
+
+type ProposalStatus = (typeof STATUS_OPTIONS)[number];
+
+type BreachProposal = {
   id: string;
-  name: string;
-  role: string | null;
-  level: string | null;
-  avatar: string | null;
-  text: string;
-  rating: number | null;
+  title: string;
+  status: ProposalStatus;
   created_at: string | null;
+  document_link: string | null;
+  reference_url: string | null;
+  proposal_link: string | null;
+  full_name: string | null;
+  email: string | null;
 };
 
-interface TestimonialsResponse {
-  testimonials: Testimonial[];
-}
+type BreachProposalsResponse = {
+  proposals: BreachProposal[];
+};
 
-const TestimonialsPage = () => {
+const statusBadgeClasses: Record<string, string> = {
+  approved: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
+  rejected: "bg-rose-500/15 text-rose-300 border-rose-500/30",
+  "needs info": "bg-orange-500/15 text-orange-300 border-orange-500/30",
+  "in review": "bg-sky-500/15 text-sky-300 border-sky-500/30",
+};
+
+const formatDateTime = (value: string | null) => {
+  if (!value) return "—";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+  return date.toLocaleString();
+};
+
+const BreachProposalPage = () => {
   const router = useRouter();
   const [token, setToken] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
-  const [deleteTarget, setDeleteTarget] = useState<Testimonial | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<BreachProposal | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const pageSize = 10;
 
   useEffect(() => {
     const storedToken = localStorage.getItem(Constants.OPS_GLITCH_TOKEN);
     setToken(storedToken);
   }, []);
 
-  const requestUrl = token ? "/api/v2/testimonials" : null;
+  const requestUrl = token ? "/api/v2/breach-proposals" : null;
 
   const fetchOptions = useMemo(
     () =>
@@ -78,41 +103,42 @@ const TestimonialsPage = () => {
     [token]
   );
 
-  const { data, error, loading, refetch } = useFetch<TestimonialsResponse>(
+  const { data, error, loading, refetch } = useFetch<BreachProposalsResponse>(
     requestUrl,
     fetchOptions
   );
 
-  const testimonials = data?.testimonials ?? [];
+  const proposals = data?.proposals ?? [];
 
-  const filteredTestimonials = useMemo(() => {
+  const filteredProposals = useMemo(() => {
     const normalized = query.trim().toLowerCase();
-    if (!normalized) return testimonials;
+    if (!normalized) return proposals;
 
-    return testimonials.filter((testimonial) => {
+    return proposals.filter((proposal) => {
       const haystack = [
-        testimonial.name,
-        testimonial.role ?? "",
-        testimonial.level ?? "",
-        testimonial.text,
+        proposal.title,
+        proposal.status,
+        proposal.full_name ?? "",
+        proposal.email ?? "",
       ]
         .join(" ")
         .toLowerCase();
 
       return haystack.includes(normalized);
     });
-  }, [testimonials, query]);
+  }, [proposals, query]);
 
+  const pageSize = 5;
   const totalPages = Math.max(
     1,
-    Math.ceil(filteredTestimonials.length / pageSize)
+    Math.ceil(filteredProposals.length / pageSize)
   );
   const currentPage = Math.min(page, totalPages);
 
-  const paginatedTestimonials = useMemo(() => {
+  const paginatedProposals = useMemo(() => {
     const start = (currentPage - 1) * pageSize;
-    return filteredTestimonials.slice(start, start + pageSize);
-  }, [filteredTestimonials, currentPage]);
+    return filteredProposals.slice(start, start + pageSize);
+  }, [filteredProposals, currentPage]);
 
   useEffect(() => {
     setPage(1);
@@ -123,8 +149,8 @@ const TestimonialsPage = () => {
     setPage(clamped);
   };
 
-  const handleDeleteClick = (testimonial: Testimonial) => {
-    setDeleteTarget(testimonial);
+  const handleDeleteClick = (proposal: BreachProposal) => {
+    setDeleteTarget(proposal);
     setDeleteError(null);
   };
 
@@ -136,7 +162,7 @@ const TestimonialsPage = () => {
 
   const confirmDelete = async () => {
     if (!deleteTarget || !token) {
-      setDeleteError("Missing testimonial or admin token");
+      setDeleteError("Missing breach proposal or admin token");
       return;
     }
 
@@ -145,7 +171,7 @@ const TestimonialsPage = () => {
 
     try {
       const response = await fetch(
-        `/api/v2/testimonials?id=${deleteTarget.id}`,
+        `/api/v2/breach-proposals?id=${encodeURIComponent(deleteTarget.id)}`,
         {
           method: "DELETE",
           headers: {
@@ -155,7 +181,7 @@ const TestimonialsPage = () => {
       );
 
       if (!response.ok) {
-        let message = "Failed to delete testimonial";
+        let message = "Failed to delete breach proposal";
         try {
           const body = await response.json();
           if (body && typeof body.error === "string") {
@@ -178,55 +204,35 @@ const TestimonialsPage = () => {
     }
   };
 
-  const formatCreatedAt = (value: string | null) => {
-    if (!value) return "—";
-    try {
-      return new Date(value).toLocaleString();
-    } catch {
-      return value;
-    }
-  };
-
   return (
     <>
       <AdminContentHeader>
         <AdminContentTitle
           className={`${orbitron.className} uppercase tracking-[0.25em]`}
         >
-          Testimonial Command Deck
+          Breach Proposal Command Deck
         </AdminContentTitle>
         <AdminContentDescription>
-          Review social proof from hunters and partners. Elevate trusted voices
-          or prune outdated transmissions to keep OPS GLITCH credible.
+          Review breach scenario submissions from operatives, update their
+          status, or retire proposals once processed.
         </AdminContentDescription>
       </AdminContentHeader>
 
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <p className="text-sm tracking-[0.2em] text-emerald-200 uppercase">
-          Total testimonials: {testimonials.length}
+          Total proposals: {proposals.length}
         </p>
-        <div className="flex flex-wrap items-center gap-3">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="gap-2 cursor-pointer text-emerald-200 hover:text-emerald-100"
-            onClick={() => refetch()}
-            disabled={loading}
-          >
-            <RefreshCcw className="size-4" />
-            Refresh
-          </Button>
-          <Button
-            asChild
-            className="gap-2 bg-emerald-500/20 text-emerald-200 hover:bg-emerald-400/30"
-          >
-            <Link href="/ui/controller/protected/admin-pannel/testimonials/manage">
-              <CirclePlus className="size-4" />
-              Create Testimonial
-            </Link>
-          </Button>
-        </div>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="gap-2 cursor-pointer text-emerald-200 hover:text-emerald-100"
+          onClick={() => refetch()}
+          disabled={loading}
+        >
+          <RefreshCcw className="size-4" />
+          Refresh
+        </Button>
       </div>
 
       <AdminQuickActions>
@@ -237,73 +243,86 @@ const TestimonialsPage = () => {
               <Input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search testimonials"
+                placeholder="Search by title, status, or submitter"
                 className="h-11 w-full border-emerald-500/30 bg-slate-950/70 pl-10 text-slate-100"
               />
             </div>
             <div className="text-xs uppercase tracking-[0.2em] text-slate-400">
-              Showing {paginatedTestimonials.length} of{" "}
-              {filteredTestimonials.length} filtered testimonials
+              Showing {paginatedProposals.length} of {filteredProposals.length}{" "}
+              filtered proposals
             </div>
           </div>
 
           <div className="overflow-x-auto">
-            <table className="min-w-[760px] w-full table-fixed border-collapse text-left text-sm text-slate-200">
+            <table className="min-w-[820px] w-full table-fixed border-collapse text-left text-sm text-slate-200">
               <thead className="bg-emerald-500/10 text-xs uppercase tracking-[0.18em] text-emerald-200">
                 <tr>
-                  <th className="rounded-l-lg px-4 py-3">Name</th>
-                  <th className="px-4 py-3">Role</th>
-                  <th className="px-4 py-3">Level</th>
-                  <th className="px-4 py-3">Rating</th>
-                  <th className="px-4 py-3">Excerpt</th>
+                  <th className="rounded-l-lg px-4 py-3">Title</th>
+                  <th className="px-4 py-3">Submitter</th>
+                  <th className="px-4 py-3">Email</th>
+                  <th className="px-4 py-3">Status</th>
                   <th className="px-4 py-3">Created</th>
+                  {/* <th className="px-4 py-3">Links</th> */}
                   <th className="rounded-r-lg px-4 py-3 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="border border-emerald-500/20">
-                {paginatedTestimonials.length > 0 ? (
-                  paginatedTestimonials.map((testimonial) => {
-                    const { id, name, role, level, rating, text, created_at } =
-                      testimonial;
-                    const excerpt =
-                      text.length > 80 ? `${text.slice(0, 77)}...` : text;
+                {paginatedProposals.length > 0 ? (
+                  paginatedProposals.map((proposal) => {
+                    const normalisedStatus = proposal.status.replace(/_/g, " ");
+                    const badgeKey = normalisedStatus.toLowerCase();
+                    const badgeClass =
+                      statusBadgeClasses[badgeKey] ??
+                      "bg-slate-500/20 text-slate-200 border-slate-500/30";
+
+                    const links = [
+                      proposal.document_link
+                        ? { label: "Brief", href: proposal.document_link }
+                        : null,
+                      proposal.reference_url
+                        ? { label: "Reference", href: proposal.reference_url }
+                        : null,
+                      proposal.proposal_link
+                        ? { label: "Follow-up", href: proposal.proposal_link }
+                        : null,
+                    ].filter(Boolean) as { label: string; href: string }[];
 
                     return (
                       <tr
-                        key={id}
+                        key={proposal.id}
                         className="group border-b border-emerald-500/20 bg-slate-950/80 transition hover:bg-emerald-500/10"
                       >
                         <td className="rounded-l-lg px-4 py-3 font-medium text-slate-100">
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <span className="inline-flex items-center gap-2">
-                                <UserCircle2 className="size-5 text-emerald-300" />
-                                <span
-                                  className="block max-w-[8rem] truncate"
-                                  title={name}
-                                >
-                                  {name}
-                                </span>
+                              <span
+                                className="block max-w-[16rem] truncate"
+                                title={proposal.title}
+                              >
+                                {proposal.title}
                               </span>
                             </TooltipTrigger>
                             <TooltipContent side="bottom">
-                              {name}
+                              {proposal.title}
                             </TooltipContent>
                           </Tooltip>
                         </td>
                         <td className="px-4 py-3 text-slate-300">
-                          {role ? (
+                          {proposal.full_name ? (
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <span
-                                  className="block max-w-[8rem] truncate"
-                                  title={role}
-                                >
-                                  {role}
+                                <span className="inline-flex items-center gap-2">
+                                  <UserCircle2 className="size-4 text-emerald-300" />
+                                  <span
+                                    className="block max-w-[10rem] truncate"
+                                    title={proposal.full_name}
+                                  >
+                                    {proposal.full_name}
+                                  </span>
                                 </span>
                               </TooltipTrigger>
                               <TooltipContent side="bottom">
-                                {role}
+                                {proposal.full_name}
                               </TooltipContent>
                             </Tooltip>
                           ) : (
@@ -311,47 +330,69 @@ const TestimonialsPage = () => {
                           )}
                         </td>
                         <td className="px-4 py-3 text-slate-300">
-                          {level || "—"}
+                          {proposal.email ? (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span
+                                  className="block max-w-[14rem] truncate"
+                                  title={proposal.email}
+                                >
+                                  {proposal.email}
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent side="bottom">
+                                {proposal.email}
+                              </TooltipContent>
+                            </Tooltip>
+                          ) : (
+                            "—"
+                          )}
                         </td>
-                        <td className="px-4 py-3 text-slate-300">
-                          {rating ?? "—"}
-                        </td>
-                        <td className="px-4 py-3 text-slate-300">
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <span
-                                className="block max-w-[16rem] truncate"
-                                title={text}
-                              >
-                                {excerpt}
-                              </span>
-                            </TooltipTrigger>
-                            <TooltipContent
-                              side="bottom"
-                              className="max-w-sm break-words"
-                            >
-                              {text}
-                            </TooltipContent>
-                          </Tooltip>
+                        <td className="px-4 py-3">
+                          <span
+                            className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] ${badgeClass}`}
+                          >
+                            {normalisedStatus}
+                          </span>
                         </td>
                         <td className="px-4 py-3 text-slate-300">
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <span
                                 className="inline-flex items-center gap-2"
-                                title={formatCreatedAt(created_at)}
+                                title={formatDateTime(proposal.created_at)}
                               >
                                 <CalendarClock className="size-4 text-emerald-300" />
-                                <span className="block max-w-[6rem] truncate">
-                                  {formatCreatedAt(created_at)}
+                                <span className="block max-w-[8rem] truncate">
+                                  {formatDateTime(proposal.created_at)}
                                 </span>
                               </span>
                             </TooltipTrigger>
                             <TooltipContent side="bottom">
-                              {formatCreatedAt(created_at)}
+                              {formatDateTime(proposal.created_at)}
                             </TooltipContent>
                           </Tooltip>
                         </td>
+                        {/* <td className="px-4 py-3 text-slate-300">
+                          {links.length > 0 ? (
+                            <div className="flex flex-wrap gap-2">
+                              {links.map((link) => (
+                                <a
+                                  key={`${proposal.id}-${link.label}`}
+                                  href={link.href}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 text-[11px] font-semibold text-emerald-200 transition hover:border-emerald-500/50 hover:text-emerald-100"
+                                >
+                                  <ExternalLink className="size-3.5" />
+                                  {link.label}
+                                </a>
+                              ))}
+                            </div>
+                          ) : (
+                            "—"
+                          )}
+                        </td> */}
                         <td className="rounded-r-lg px-4 py-3 text-right">
                           <div className="flex items-center justify-end gap-2">
                             <Button
@@ -361,25 +402,27 @@ const TestimonialsPage = () => {
                               className="gap-2 text-emerald-200 hover:text-emerald-100 cursor-pointer bg-emerald-500/10 border border-emerald-500/20"
                               onClick={() =>
                                 router.push(
-                                  `/ui/controller/protected/admin-pannel/testimonials/manage?id=${encodeURIComponent(
-                                    id
+                                  `/ui/controller/protected/admin-pannel/breach-proposal/manage?id=${encodeURIComponent(
+                                    proposal.id
                                   )}`
                                 )
                               }
                             >
                               <Pencil className="size-4" />
-                              <span className="sr-only">Edit testimonial</span>
+                              <span className="sr-only">
+                                Edit breach proposal
+                              </span>
                             </Button>
                             <Button
                               type="button"
                               variant="ghost"
                               size="sm"
                               className="gap-2 text-red-300 hover:text-red-200 cursor-pointer bg-red-500/10 border border-red-500/20"
-                              onClick={() => handleDeleteClick(testimonial)}
+                              onClick={() => handleDeleteClick(proposal)}
                             >
                               <Trash2 className="size-4" />
                               <span className="sr-only">
-                                Delete testimonial
+                                Delete breach proposal
                               </span>
                             </Button>
                           </div>
@@ -394,8 +437,8 @@ const TestimonialsPage = () => {
                       colSpan={7}
                     >
                       {loading
-                        ? "Loading testimonials..."
-                        : error || "No testimonials available"}
+                        ? "Loading breach proposals..."
+                        : error || "No breach proposals available"}
                     </td>
                   </tr>
                 )}
@@ -405,21 +448,17 @@ const TestimonialsPage = () => {
 
           <div className="flex items-center justify-between gap-4 border-t border-emerald-500/20 pt-4 text-xs uppercase tracking-[0.18em] text-slate-400">
             <span>
-              {filteredTestimonials.length > 0 ? (
+              {filteredProposals.length > 0 ? (
                 <>
-                  Showing testimonials{" "}
+                  Showing proposals{" "}
                   {Math.min(
                     (currentPage - 1) * pageSize + 1,
-                    filteredTestimonials.length
+                    filteredProposals.length
                   )}
-                  -
-                  {Math.min(
-                    currentPage * pageSize,
-                    filteredTestimonials.length
-                  )}
+                  -{Math.min(currentPage * pageSize, filteredProposals.length)}
                 </>
               ) : (
-                "No testimonials to display"
+                "No proposals to display"
               )}
             </span>
             <div className="flex items-center gap-2">
@@ -457,8 +496,8 @@ const TestimonialsPage = () => {
               Confirm Delete
             </h2>
             <p className="text-sm text-slate-300">
-              Are you sure you want to delete the testimonial from
-              <span className="text-emerald-200"> {deleteTarget.name}</span>?
+              Are you sure you want to delete the breach proposal "
+              <span className="text-emerald-200">{deleteTarget.title}</span>"?
               This action cannot be undone.
             </p>
             {deleteError ? (
@@ -480,6 +519,9 @@ const TestimonialsPage = () => {
                 onClick={confirmDelete}
                 disabled={isDeleting}
               >
+                {isDeleting ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : null}
                 {isDeleting ? "Deleting..." : "Delete"}
               </Button>
             </div>
@@ -490,4 +532,4 @@ const TestimonialsPage = () => {
   );
 };
 
-export default TestimonialsPage;
+export default BreachProposalPage;

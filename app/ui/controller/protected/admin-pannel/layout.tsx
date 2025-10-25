@@ -52,6 +52,12 @@ const navItems: AdminNavItem[] = [
     description: "Monitor and manage all live security contests.",
   },
   {
+    label: "Breach Proposals",
+    href: "/ui/controller/protected/admin-pannel/breach-proposal",
+    icon: Target,
+    description: "Review and triage incoming breach scenario pitches.",
+  },
+  {
     label: "Contact Messages",
     href: "/ui/controller/protected/admin-pannel/contact-messages",
     icon: Mailbox,
