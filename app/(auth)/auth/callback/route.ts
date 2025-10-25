@@ -16,23 +16,29 @@ export async function GET(request: Request) {
 
     if (!error && data?.session) {
       const user = data.session.user;
-
       if (user?.email) {
-        const email = user.email;
-        const username = email.split("@")[0];
-        const full_name = user.user_metadata.full_name;
-        const avatar_url = user.user_metadata.avatar_url;
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("email", user.email)
+          .single();
+        if (!profile) {
+          const email = user.email;
+          const username = email.split("@")[0];
+          const full_name = user.user_metadata.full_name;
+          const avatar_url = user.user_metadata.avatar_url;
 
-        await supabase.from("profiles").upsert(
-          {
-            id: user.id,
-            email,
-            username,
-            full_name,
-            avatar_url,
-          },
-          { onConflict: "id" }
-        );
+          await supabase.from("profiles").upsert(
+            {
+              id: user.id,
+              email,
+              username,
+              full_name,
+              avatar_url,
+            },
+            { onConflict: "id" }
+          );
+        }
       }
 
       const forwardedHost = request.headers.get("x-forwarded-host");
