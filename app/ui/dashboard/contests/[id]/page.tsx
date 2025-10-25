@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   Trophy,
@@ -114,6 +114,28 @@ export default function ContestDetailPage() {
       setError(fetchError);
     }
   }, [fetchError]);
+
+  const handleStartMission = useCallback(() => {
+    if (!contest) return;
+
+    const payload = {
+      creator: contest.creator,
+      id: contest.id,
+      title: contest.title,
+      target_url: contest.target_url,
+    };
+
+    try {
+      sessionStorage.setItem(
+        "ops.glitch.startMission",
+        JSON.stringify(payload)
+      );
+    } catch (storageError) {
+      console.error("Failed to persist mission payload", storageError);
+    }
+
+    router.push("/ui/start-mission");
+  }, [contest, router]);
 
   const requirements = useMemo(() => {
     return Array.isArray(contest?.requirements)
@@ -288,21 +310,20 @@ export default function ContestDetailPage() {
                 </div>
               </div>
 
-              {contest.target_url ? (
-                <div className="mt-6">
-                  <h3 className="text-lg font-bold text-[#00d492] mb-2">
-                    Target URL
-                  </h3>
-                  <a
-                    href={contest.target_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[#00d492] underline break-all"
-                  >
-                    {contest.target_url}
-                  </a>
-                </div>
-              ) : null}
+              <div className="mt-6">
+                <h3 className="text-lg font-bold text-[#00d492] mb-2">
+                  Start mission
+                </h3>
+                <button
+                  type="button"
+                  onClick={handleStartMission}
+                  disabled={!contest}
+                  className="group relative flex items-center gap-3 rounded-lg border border-[#00d492]/40 bg-[#00d492]/10 px-5 py-3 text-sm font-semibold uppercase tracking-[0.25em] text-[#00d492] transition-all hover:border-[#00d492]/70 hover:bg-[#00d492]/20 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <span className="absolute inset-0 rounded-lg bg-gradient-to-r from-[#00d492]/10 via-transparent to-[#00d492]/10 opacity-0 transition-opacity group-hover:opacity-100" />
+                  <span className="relative z-10">Launch Mission Terminal</span>
+                </button>
+              </div>
 
               {/* Requirements */}
               <div className="mt-6 mb-6">
