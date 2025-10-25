@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
+import StyledComponentsRegistry from "@/lib/registry";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,7 +40,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <TooltipProvider delayDuration={200}>
-            <main className="flex-1">{children}</main>
+            <main className="flex-1">
+              <StyledComponentsRegistry>{children}</StyledComponentsRegistry>
+            </main>
           </TooltipProvider>
         </ThemeProvider>
       </body>
