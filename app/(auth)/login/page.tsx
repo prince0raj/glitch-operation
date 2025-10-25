@@ -11,6 +11,7 @@ import {
   Code2,
   Chrome,
   Github,
+  Loader2,
 } from "lucide-react";
 import {
   LoginContainer,
@@ -40,7 +41,9 @@ import GithubSignIn from "./GithubSignIn";
 import GridPattern from "@/app/commonComponents/GridPattern/GridPattern";
 import WireframeSpheres from "@/app/commonComponents/Sphere/WireframeSphere";
 import GlitchText from "@/app/commonComponents/GlitchText/GlitchText";
-
+import { createClient } from "@/utils/supabase/client";
+import { redirect } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
 const orbitron = Orbitron({
   subsets: ["latin"],
   variable: "--font-orbitron",
@@ -51,6 +54,24 @@ const Page = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [binaryColumns, setBinaryColumns] = useState<any[]>([]);
   const [isClient, setIsClient] = useState(false);
+  const [loginStatus, setLoginStatus] = useState(false);
+
+  useEffect(() => {
+    const validateGate = async () => {
+      const supabase = createClient();
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        redirect("/ui/dashboard/home");
+      }
+      setLoginStatus(true);
+    };
+
+    validateGate();
+  }, []);
 
   const hackingCommands = useMemo(
     () => [
@@ -102,6 +123,33 @@ const Page = () => {
     return null;
   }
 
+  if (!loginStatus) {
+    return (
+      <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#05060a]">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -top-32 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-emerald-500/20 blur-3xl" />
+          <div className="absolute -bottom-24 left-12 h-48 w-48 rounded-full bg-emerald-500/10 blur-3xl" />
+          <div className="absolute right-16 top-16 h-56 w-56 rounded-full bg-emerald-400/10 blur-3xl" />
+        </div>
+        <div className="relative z-10 flex flex-col items-center gap-6 text-center text-white">
+          <Loader2 className="h-12 w-12 animate-spin text-emerald-400" />
+          <div className="space-y-3">
+            <p className="text-sm uppercase tracking-[0.4em] text-emerald-300">
+              Verifying access
+            </p>
+            <p className="max-w-xs text-sm text-zinc-300">
+              Please wait while we secure your tunnel and confirm your credentials.
+            </p>
+          </div>
+          <div className="mt-2 flex w-56 flex-col gap-2">
+            <Skeleton className="h-2 w-full" />
+            <Skeleton className="h-2 w-5/6" />
+            <Skeleton className="h-2 w-2/3" />
+          </div>
+        </div>
+      </div>
+    );
+  }
   return (
     <LoginContainer>
       <LeftContainer className="relative h-screen w-full bg-[#05060a]">
