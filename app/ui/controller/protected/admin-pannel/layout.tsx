@@ -8,6 +8,7 @@ import { Orbitron } from "next/font/google";
 import {
   LayoutDashboard,
   Mailbox,
+  MessageSquare,
   Target,
   Users2,
   Settings,
@@ -55,6 +56,12 @@ const navItems: AdminNavItem[] = [
     href: "/ui/controller/protected/admin-pannel/contact-messages",
     icon: Mailbox,
     description: "Review transmissions sent via the contact portal.",
+  },
+  {
+    label: "Testimonials",
+    href: "/ui/controller/protected/admin-pannel/testimonials",
+    icon: MessageSquare,
+    description: "Manage social proof from hunters and partners.",
   },
   // {
   //   label: "Create Contest",
