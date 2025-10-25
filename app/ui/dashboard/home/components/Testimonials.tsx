@@ -6,6 +6,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Link as LinkIcon,
+  Quote,
+  ExternalLink,
 } from "lucide-react";
 import { useFetch } from "@/app/hook/useFetch";
 import { Preloader } from "@/app/commonComponents/Preloader/Preloader";
@@ -55,6 +57,15 @@ const Testimonials = () => {
     return value.length > 2
       ? value.slice(0, 2).toUpperCase()
       : value.toUpperCase();
+  };
+
+  const resolveProfileLabel = (url: string) => {
+    try {
+      const hostname = new URL(url).hostname.replace(/^www\./i, "");
+      return hostname.length > 18 ? `${hostname.slice(0, 15)}…` : hostname;
+    } catch {
+      return "Visit profile";
+    }
   };
 
   return (
@@ -132,63 +143,84 @@ const Testimonials = () => {
                     0,
                     Math.min(5, Number(testimonial.rating) || 0)
                   );
+                  const formattedRating = rating > 0 ? rating.toFixed(1) : null;
                   return (
                     <div
                       key={testimonial.id}
                       className="w-full md:w-1/2 lg:w-1/3 flex-shrink-0"
                     >
-                      <div className="bg-card/50 border border-[#00d492]/20 hover:border-[#00d492]/40 transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,255,136,0.2)] backdrop-blur-sm rounded-2xl h-[280px] flex flex-col">
-                        <div className="p-8 flex flex-col h-full">
-                          {/* Avatar and Info */}
-                          <div className="flex items-start gap-4 mb-4">
-                            <div className="w-12 h-12 rounded-lg bg-[#00d492]/10 border border-[#00d492]/30 flex items-center justify-center text-[#00d492] font-bold">
-                              {renderAvatar(testimonial.name.slice(0, 2))}
-                            </div>
-                            <div className="flex-1">
-                              <h3 className="font-bold text-foreground flex items-center gap-2">
-                                {testimonial.name}
-                                {testimonial.social_id ? (
-                                  <a
-                                    href={testimonial.social_id}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="mt-1 inline-flex items-center gap-1 text-xs text-[#00d492] hover:text-[#00ffa7] transition"
-                                  >
-                                    <LinkIcon className="w-3 h-3" />
-                                    <span className="truncate max-w-[10rem]">
-                                      Visit profile
-                                    </span>
-                                  </a>
-                                ) : null}
-                              </h3>
-                              <p className="text-sm text-muted-foreground">
-                                {testimonial.role}
-                              </p>
-                              <div className="flex items-center gap-1 mt-1">
-                                <Shield className="w-3 h-3 text-[#00d492]" />
-                                <span className="text-xs text-[#00d492]">
-                                  {testimonial.level}
-                                </span>
+                      <article className="group relative flex h-full min-h-[280px] flex-col overflow-hidden rounded-2xl border border-emerald-500/18 bg-[#010b11] p-8 transition-colors duration-300 hover:border-emerald-400/45 hover:bg-[#010f16]">
+                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-transparent via-emerald-500/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-90" />
+                        <div className="relative flex h-full flex-col gap-5">
+                          <header className="flex items-start justify-between gap-4">
+                            <div className="flex items-start gap-3">
+                              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-emerald-500/40 bg-emerald-500/15 text-lg font-semibold text-emerald-200">
+                                {renderAvatar(testimonial.name.slice(0, 2))}
+                              </div>
+                              <div className="space-y-1">
+                                <h3 className="flex items-center gap-2 text-base font-semibold text-slate-100">
+                                  <span className="truncate max-w-[12rem] text-pretty">
+                                    {testimonial.name}
+                                  </span>
+                                  {testimonial.social_id ? (
+                                    <a
+                                      href={testimonial.social_id}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-medium text-emerald-200 transition hover:border-emerald-400/60 hover:bg-emerald-500/20"
+                                    >
+                                      <ExternalLink className="h-3 w-3" />
+                                      <span className="truncate max-w-[7rem]">
+                                        {resolveProfileLabel(
+                                          testimonial.social_id
+                                        )}
+                                      </span>
+                                    </a>
+                                  ) : null}
+                                </h3>
+                                <p className="text-xs uppercase tracking-[0.25em] text-emerald-300/70 line-clamp-1">
+                                  {testimonial.role || "Security Operative"}
+                                </p>
+                                <div className="inline-flex items-center gap-1 text-xs text-emerald-200/80">
+                                  <Shield className="h-3 w-3" />
+                                  <span className="line-clamp-1">
+                                    {testimonial.level || "Level undisclosed"}
+                                  </span>
+                                </div>
                               </div>
                             </div>
-                          </div>
+                            <Quote className="h-6 w-6 shrink-0 text-emerald-400/60" />
+                          </header>
 
-                          {/* Testimonial Text */}
-                          <p className="text-sm text-muted-foreground leading-relaxed mb-4 flex-1 overflow-hidden">
+                          <p className="text-sm leading-relaxed text-slate-300/90 line-clamp-4 text-pretty">
                             {testimonial.text}
                           </p>
 
-                          {/* Rating */}
-                          <div className="flex gap-1 mt-auto">
-                            {[...Array(rating)].map((_, i) => (
-                              <Star
-                                key={i}
-                                className="w-4 h-4 fill-yellow-400 text-yellow-400"
-                              />
-                            ))}
-                          </div>
+                          <footer className="mt-auto flex items-center justify-between gap-3 text-emerald-200/90">
+                            <div className="flex items-center gap-1">
+                              {[...Array(rating)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className="h-4 w-4 fill-yellow-400 text-yellow-400 "
+                                />
+                              ))}
+                              {rating < 5
+                                ? [...Array(5 - rating)].map((_, i) => (
+                                    <Star
+                                      key={`empty-${i}`}
+                                      className="h-4 w-4 text-slate-600"
+                                    />
+                                  ))
+                                : null}
+                            </div>
+                            <span className="rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2 py-1 text-xs font-medium text-emerald-200">
+                              {formattedRating
+                                ? `${formattedRating} / 5`
+                                : "Awaiting intel"}
+                            </span>
+                          </footer>
                         </div>
-                      </div>
+                      </article>
                     </div>
                   );
                 })}
