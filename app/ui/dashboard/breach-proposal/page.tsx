@@ -549,11 +549,11 @@ const BreachProposalPage = () => {
                   const key = normalisedStatus.toLowerCase();
 
                   const statusClasses: Record<string, string> = {
-                    Rejected: "bg-rose-500/15 text-rose-300 border-rose-500/30",
-                    Approved:
+                    rejected: "bg-rose-500/15 text-rose-300 border-rose-500/30",
+                    approved:
                       "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
-                    "In Review": "bg-sky-500/15 text-sky-300 border-sky-500/30",
-                    "Needs Info":
+                    "in review": "bg-sky-500/15 text-sky-300 border-sky-500/30",
+                    "needs info":
                       "bg-orange-500/15 text-orange-300 border-orange-500/30",
                   };
 
