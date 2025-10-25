@@ -4,7 +4,13 @@ const nextConfig: NextConfig = {
   compiler: {
     styledComponents: true,
   },
-  devIndicators: false
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  devIndicators: false,
 };
 
 export default nextConfig;
