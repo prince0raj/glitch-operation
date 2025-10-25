@@ -3,7 +3,7 @@ import { requireAdminTokenFromRequest } from "@/lib/admin-jwt";
 import { createAdminClient } from "@/utils/supabase/admin";
 
 const TESTIMONIAL_COLUMNS =
-  "id, name, role, level, avatar, text, rating, created_at";
+  "id, name, role, level, social_id, text, rating, created_at";
 
 const coerceOptionalField = (value: unknown) => {
   if (typeof value !== "string") {
@@ -98,12 +98,12 @@ export async function POST(request: Request) {
       );
     }
 
-    const { name, text, role, level, avatar, rating } = body as {
+    const { name, text, role, level, social_id, rating } = body as {
       name?: unknown;
       text?: unknown;
       role?: unknown;
       level?: unknown;
-      avatar?: unknown;
+      social_id?: unknown;
       rating?: unknown;
     };
 
@@ -142,7 +142,7 @@ export async function POST(request: Request) {
         text: textValue,
         role: coerceOptionalField(role),
         level: coerceOptionalField(level),
-        avatar: coerceOptionalField(avatar),
+        social_id: coerceOptionalField(social_id),
         rating: ratingValue,
       })
       .select(TESTIMONIAL_COLUMNS)
@@ -177,21 +177,13 @@ export async function PUT(request: Request) {
       );
     }
 
-    const {
-      id,
-      name,
-      text,
-      role,
-      level,
-      avatar,
-      rating,
-    } = body as {
+    const { id, name, text, role, level, social_id, rating } = body as {
       id?: unknown;
       name?: unknown;
       text?: unknown;
       role?: unknown;
       level?: unknown;
-      avatar?: unknown;
+      social_id?: unknown;
       rating?: unknown;
     };
 
@@ -234,8 +226,8 @@ export async function PUT(request: Request) {
       updateData.level = coerceOptionalField(level);
     }
 
-    if (avatar !== undefined) {
-      updateData.avatar = coerceOptionalField(avatar);
+    if (social_id !== undefined) {
+      updateData.social_id = coerceOptionalField(social_id);
     }
 
     if (rating !== undefined) {

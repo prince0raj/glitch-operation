@@ -39,7 +39,7 @@ type Testimonial = {
   name: string;
   role: string | null;
   level: string | null;
-  avatar: string | null;
+  social_id: string | null;
   text: string;
   rating: number | null;
   created_at: string | null;

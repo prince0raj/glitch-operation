@@ -1,6 +1,12 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { Shield, Star, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Shield,
+  Star,
+  ChevronLeft,
+  ChevronRight,
+  Link as LinkIcon,
+} from "lucide-react";
 import { useFetch } from "@/app/hook/useFetch";
 import { Preloader } from "@/app/commonComponents/Preloader/Preloader";
 
@@ -9,17 +15,22 @@ type Testimonial = {
   name: string;
   role: string | null;
   level: string | null;
-  avatar: string | null;
+  social_id: string | null;
   text: string;
   rating: number | null;
 };
 
 const Testimonials = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const { data, error, loading } = useFetch<{ testimonials: Testimonial[] }>("/api/v1/testimonials");
+  const { data, error, loading } = useFetch<{ testimonials: Testimonial[] }>(
+    "/api/v1/testimonials"
+  );
   const testimonials = data?.testimonials ?? [];
 
-  const maxIndex = useMemo(() => Math.max(0, testimonials.length - 3), [testimonials.length]);
+  const maxIndex = useMemo(
+    () => Math.max(0, testimonials.length - 3),
+    [testimonials.length]
+  );
 
   useEffect(() => {
     setCurrentIndex((prev) => Math.min(prev, maxIndex));
@@ -41,14 +52,18 @@ const Testimonials = () => {
   const canGoNext = canNavigate && currentIndex < maxIndex;
   const renderAvatar = (value: string | null) => {
     if (!value) return "";
-    return value.length > 2 ? value.slice(0, 2).toUpperCase() : value.toUpperCase();
+    return value.length > 2
+      ? value.slice(0, 2).toUpperCase()
+      : value.toUpperCase();
   };
 
   return (
     <section className="py-10 relative">
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
-          <p className="text-[#00d492]/70 text-sm tracking-wider mb-2">// Player Reviews</p>
+          <p className="text-[#00d492]/70 text-sm tracking-wider mb-2">
+            // Player Reviews
+          </p>
           <h2 className="text-4xl font-bold tracking-wider">
             <span className="text-[#00d492]">COMMUNITY INTEL</span>
           </h2>
@@ -67,7 +82,11 @@ const Testimonials = () => {
             }`}
             aria-label="Previous"
           >
-            <ChevronLeft className={`w-5 h-5 md:w-6 md:h-6 ${canGoPrev ? "text-[#00d492]" : "text-gray-500"}`} />
+            <ChevronLeft
+              className={`w-5 h-5 md:w-6 md:h-6 ${
+                canGoPrev ? "text-[#00d492]" : "text-gray-500"
+              }`}
+            />
           </button>
 
           <button
@@ -80,26 +99,39 @@ const Testimonials = () => {
             }`}
             aria-label="Next"
           >
-            <ChevronRight className={`w-5 h-5 md:w-6 md:h-6 ${canGoNext ? "text-[#00d492]" : "text-gray-500"}`} />
+            <ChevronRight
+              className={`w-5 h-5 md:w-6 md:h-6 ${
+                canGoNext ? "text-[#00d492]" : "text-gray-500"
+              }`}
+            />
           </button>
 
           {/* Carousel Track */}
           <div className="overflow-hidden px-2">
             {error ? (
-              <div className="py-12 text-center text-sm text-muted-foreground">{error}</div>
+              <div className="py-12 text-center text-sm text-muted-foreground">
+                {error}
+              </div>
             ) : loading ? (
               <Preloader message="Loading testimonials" />
             ) : testimonials.length === 0 ? (
-              <div className="py-12 text-center text-sm text-muted-foreground">No testimonials available yet.</div>
+              <div className="py-12 text-center text-sm text-muted-foreground">
+                No testimonials available yet.
+              </div>
             ) : (
               <div
                 className="flex transition-transform duration-500 ease-out gap-6"
                 style={{
-                  transform: `translateX(calc(-${currentIndex * 33.33}% - ${currentIndex * 1.5}rem))`,
+                  transform: `translateX(calc(-${currentIndex * 33.33}% - ${
+                    currentIndex * 1.5
+                  }rem))`,
                 }}
               >
                 {testimonials.map((testimonial) => {
-                  const rating = Math.max(0, Math.min(5, Number(testimonial.rating) || 0));
+                  const rating = Math.max(
+                    0,
+                    Math.min(5, Number(testimonial.rating) || 0)
+                  );
                   return (
                     <div
                       key={testimonial.id}
@@ -110,14 +142,33 @@ const Testimonials = () => {
                           {/* Avatar and Info */}
                           <div className="flex items-start gap-4 mb-4">
                             <div className="w-12 h-12 rounded-lg bg-[#00d492]/10 border border-[#00d492]/30 flex items-center justify-center text-[#00d492] font-bold">
-                              {renderAvatar(testimonial.avatar)}
+                              {renderAvatar(testimonial.name.slice(0, 2))}
                             </div>
                             <div className="flex-1">
-                              <h3 className="font-bold text-foreground">{testimonial.name}</h3>
-                              <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                              <h3 className="font-bold text-foreground flex items-center gap-2">
+                                {testimonial.name}
+                                {testimonial.social_id ? (
+                                  <a
+                                    href={testimonial.social_id}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="mt-1 inline-flex items-center gap-1 text-xs text-[#00d492] hover:text-[#00ffa7] transition"
+                                  >
+                                    <LinkIcon className="w-3 h-3" />
+                                    <span className="truncate max-w-[10rem]">
+                                      Visit profile
+                                    </span>
+                                  </a>
+                                ) : null}
+                              </h3>
+                              <p className="text-sm text-muted-foreground">
+                                {testimonial.role}
+                              </p>
                               <div className="flex items-center gap-1 mt-1">
                                 <Shield className="w-3 h-3 text-[#00d492]" />
-                                <span className="text-xs text-[#00d492]">{testimonial.level}</span>
+                                <span className="text-xs text-[#00d492]">
+                                  {testimonial.level}
+                                </span>
                               </div>
                             </div>
                           </div>
@@ -130,7 +181,10 @@ const Testimonials = () => {
                           {/* Rating */}
                           <div className="flex gap-1 mt-auto">
                             {[...Array(rating)].map((_, i) => (
-                              <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                              <Star
+                                key={i}
+                                className="w-4 h-4 fill-yellow-400 text-yellow-400"
+                              />
                             ))}
                           </div>
                         </div>

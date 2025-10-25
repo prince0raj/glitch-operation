@@ -3,13 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Orbitron } from "next/font/google";
-import {
-  ArrowLeft,
-  Loader2,
-  Save,
-  Sparkle,
-  UserPlus,
-} from "lucide-react";
+import { ArrowLeft, Loader2, Save, Sparkle, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -32,7 +26,7 @@ type TestimonialResponse = {
     name: string;
     role: string | null;
     level: string | null;
-    avatar: string | null;
+    social_id: string | null;
     text: string;
     rating: number | null;
   };
@@ -42,7 +36,7 @@ type FormState = {
   name: string;
   role: string;
   level: string;
-  avatar: string;
+  social_id: string;
   text: string;
   rating: string;
 };
@@ -51,7 +45,7 @@ const initialState: FormState = {
   name: "",
   role: "",
   level: "",
-  avatar: "",
+  social_id: "",
   text: "",
   rating: "",
 };
@@ -100,19 +94,23 @@ const ManageTestimonialPage = () => {
       return;
     }
 
-    const { name, role, level, avatar, text, rating } = testimonialResponse.testimonial;
+    const { name, role, level, social_id, text, rating } =
+      testimonialResponse.testimonial;
 
     setFormState({
       name: name ?? "",
       role: role ?? "",
       level: level ?? "",
-      avatar: avatar ?? "",
+      social_id: social_id ?? "",
       text: text ?? "",
       rating: rating !== null && rating !== undefined ? String(rating) : "",
     });
   }, [testimonialResponse?.testimonial]);
 
-  const updateField = <K extends keyof FormState>(key: K, value: FormState[K]) => {
+  const updateField = <K extends keyof FormState>(
+    key: K,
+    value: FormState[K]
+  ) => {
     setFormState((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -140,7 +138,7 @@ const ManageTestimonialPage = () => {
       name: formState.name.trim(),
       role: coerceOptional(formState.role),
       level: coerceOptional(formState.level),
-      avatar: coerceOptional(formState.avatar),
+      social_id: coerceOptional(formState.social_id),
       text: formState.text.trim(),
       rating: parsedRating,
     };
@@ -236,7 +234,9 @@ const ManageTestimonialPage = () => {
           variant="ghost"
           size="sm"
           className="gap-2 cursor-pointer text-emerald-200 hover:text-emerald-100"
-          onClick={() => router.push("/ui/controller/protected/admin-pannel/testimonials")}
+          onClick={() =>
+            router.push("/ui/controller/protected/admin-pannel/testimonials")
+          }
         >
           <ArrowLeft className="size-4" />
           Back to testimonials
@@ -302,17 +302,17 @@ const ManageTestimonialPage = () => {
 
           <div className="space-y-2">
             <label
-              htmlFor="avatar"
+              htmlFor="social_id"
               className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-300"
             >
-              Avatar URL
+              Social Media URL
             </label>
             <Input
-              id="avatar"
+              id="social_id"
               type="url"
-              value={formState.avatar}
-              onChange={(event) => updateField("avatar", event.target.value)}
-              placeholder="https://ops-glitch.cdn/avatar.png"
+              value={formState.social_id}
+              onChange={(event) => updateField("social_id", event.target.value)}
+              placeholder="https://ops-glitch.cdn/"
             />
           </div>
 
@@ -357,7 +357,9 @@ const ManageTestimonialPage = () => {
             type="button"
             variant="ghost"
             className="cursor-pointer text-emerald-200 hover:text-emerald-100"
-            onClick={() => router.push("/ui/controller/protected/admin-pannel/testimonials")}
+            onClick={() =>
+              router.push("/ui/controller/protected/admin-pannel/testimonials")
+            }
           >
             Cancel
           </Button>
@@ -369,8 +371,10 @@ const ManageTestimonialPage = () => {
           >
             {isSubmitting ? (
               <Loader2 className="size-4 animate-spin" />
+            ) : isEditing ? (
+              <Save className="size-4" />
             ) : (
-              isEditing ? <Save className="size-4" /> : <UserPlus className="size-4" />
+              <UserPlus className="size-4" />
             )}
             {isEditing ? "Update Testimonial" : "Create Testimonial"}
           </Button>
