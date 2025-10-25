@@ -1,29 +1,29 @@
-import { NextResponse } from 'next/server'
-import { createClient } from '@/utils/supabase/server'
+import { NextResponse } from "next/server";
+import { createClient } from "@/utils/supabase/server";
 
 export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url)
-  const code = searchParams.get('code')
-  let next = searchParams.get('next') ?? '/'
+  const { searchParams, origin } = new URL(request.url);
+  const code = searchParams.get("code");
+  let next = searchParams.get("next") ?? "/";
 
-  if (!next.startsWith('/')) {
-    next = '/'
+  if (!next.startsWith("/")) {
+    next = "/";
   }
 
   if (code) {
-    const supabase = await createClient()
-    const { data, error } = await supabase.auth.exchangeCodeForSession(code)
+    const supabase = await createClient();
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error && data?.session) {
-      const user = data.session.user
+      const user = data.session.user;
 
       if (user?.email) {
-        const email = user.email
-        const username = email.split('@')[0]
-        const full_name = user.user_metadata.full_name
-        const avatar_url = user.user_metadata.avatar_url
+        const email = user.email;
+        const username = email.split("@")[0];
+        const full_name = user.user_metadata.full_name;
+        const avatar_url = user.user_metadata.avatar_url;
 
-        await supabase.from('profiles').upsert(
+        await supabase.from("profiles").upsert(
           {
             id: user.id,
             email,
@@ -31,22 +31,24 @@ export async function GET(request: Request) {
             full_name,
             avatar_url,
           },
-          { onConflict: 'id' }
-        )
+          { onConflict: "id" }
+        );
       }
 
-      const forwardedHost = request.headers.get('x-forwarded-host')
-      const isLocalEnv = process.env.NODE_ENV === 'development'
-
+      const forwardedHost = request.headers.get("x-forwarded-host");
+      const isLocalEnv = process.env.NODE_ENV === "development";
+      console.log("forwardedHost", `https://${forwardedHost}${next}`);
       if (isLocalEnv) {
-        return NextResponse.redirect(`${origin}${next}`)
+        console.log("isLocalEnv", `${origin}${next}`);
+        return NextResponse.redirect(`${origin}${next}`);
       } else if (forwardedHost) {
-        return NextResponse.redirect(`https://${forwardedHost}${next}`)
+        return NextResponse.redirect(`https://${forwardedHost}${next}`);
       } else {
-        return NextResponse.redirect(`${origin}${next}`)
+        console.log("else");
+        return NextResponse.redirect(`${origin}${next}`);
       }
     }
   }
 
-  return NextResponse.redirect(`${origin}/auth/auth-code-error`)
+  return NextResponse.redirect(`${origin}/auth/auth-code-error`);
 }
