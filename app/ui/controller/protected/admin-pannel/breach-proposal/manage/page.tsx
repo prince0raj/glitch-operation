@@ -7,7 +7,12 @@ import { ArrowLeft, Loader2, Save, Sparkle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useFetch } from "@/app/hook/useFetch";
 import { Constants } from "@/app/utils/Constants";
 import {
@@ -21,7 +26,12 @@ const orbitron = Orbitron({
   variable: "--font-orbitron",
 });
 
-const STATUS_OPTIONS = ["In Review", "Needs Info", "Approved", "Rejected"] as const;
+const STATUS_OPTIONS = [
+  "In Review",
+  "Needs Info",
+  "Approved",
+  "Rejected",
+] as const;
 
 type ProposalStatus = (typeof STATUS_OPTIONS)[number];
 
@@ -77,9 +87,10 @@ const ManageBreachProposalPage = () => {
     setToken(storedToken);
   }, []);
 
-  const requestUrl = proposalId && token
-    ? `/api/v2/breach-proposals?id=${encodeURIComponent(proposalId)}`
-    : null;
+  const requestUrl =
+    proposalId && token
+      ? `/api/v2/breach-proposals?id=${encodeURIComponent(proposalId)}`
+      : null;
 
   const fetchOptions = useMemo(
     () =>
@@ -126,7 +137,10 @@ const ManageBreachProposalPage = () => {
     });
   }, [proposalResponse?.proposal]);
 
-  const updateField = <K extends keyof FormState>(key: K, value: FormState[K]) => {
+  const updateField = <K extends keyof FormState>(
+    key: K,
+    value: FormState[K]
+  ) => {
     setFormState((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -198,7 +212,9 @@ const ManageBreachProposalPage = () => {
       router.refresh();
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Breach proposal update failed";
+        error instanceof Error
+          ? error.message
+          : "Breach proposal update failed";
       setSubmitError(message);
     } finally {
       setIsSubmitting(false);
@@ -216,7 +232,8 @@ const ManageBreachProposalPage = () => {
           </AdminContentTitle>
         </AdminContentHeader>
         <div className="rounded-xl border border-red-500/40 bg-red-500/10 p-6 text-sm text-red-200">
-          Missing breach proposal identifier. Please navigate from the proposals table.
+          Missing breach proposal identifier. Please navigate from the proposals
+          table.
         </div>
       </div>
     );
@@ -235,7 +252,8 @@ const ManageBreachProposalPage = () => {
             Edit Breach Proposal
           </h1>
           <p className="max-w-2xl text-sm text-slate-400">
-            Adjust the mission briefing details, update review status, or refresh contact links for this breach scenario submission.
+            Adjust the mission briefing details, update review status, or
+            refresh contact links for this breach scenario submission.
           </p>
         </div>
 
@@ -244,7 +262,9 @@ const ManageBreachProposalPage = () => {
           variant="ghost"
           size="sm"
           className="gap-2 cursor-pointer text-emerald-200 hover:text-emerald-100"
-          onClick={() => router.push("/ui/controller/protected/admin-pannel/breach-proposal")}
+          onClick={() =>
+            router.push("/ui/controller/protected/admin-pannel/breach-proposal")
+          }
         >
           <ArrowLeft className="size-4" />
           Back to proposals
@@ -272,9 +292,11 @@ const ManageBreachProposalPage = () => {
             <Input
               id="title"
               value={formState.title}
-              onChange={(event) => updateField("title", event.target.value)}
+              // onChange={(event) => updateField("title", event.target.value)}
               placeholder="Ghost Hydra Breach"
+              className="bg-emerald-500/10"
               required
+              readOnly
             />
           </div>
 
@@ -322,7 +344,9 @@ const ManageBreachProposalPage = () => {
               type="url"
               placeholder="https://docs.google.com/..."
               value={formState.documentLink}
-              onChange={(event) => updateField("documentLink", event.target.value)}
+              className="bg-emerald-500/10"
+              // onChange={(event) => updateField("documentLink", event.target.value)}
+              readOnly
               required
             />
           </div>
@@ -339,7 +363,9 @@ const ManageBreachProposalPage = () => {
               type="url"
               placeholder="https://github.com/org/project"
               value={formState.referenceUrl}
-              onChange={(event) => updateField("referenceUrl", event.target.value)}
+              className="bg-emerald-500/10"
+              // onChange={(event) => updateField("referenceUrl", event.target.value)}
+              readOnly
             />
           </div>
 
@@ -355,7 +381,9 @@ const ManageBreachProposalPage = () => {
               type="url"
               placeholder="https://cal.com/your-team/breach-brief"
               value={formState.proposalLink}
-              onChange={(event) => updateField("proposalLink", event.target.value)}
+              className="bg-emerald-500/10"
+              // onChange={(event) => updateField("proposalLink", event.target.value)}
+              readOnly
             />
           </div>
 
@@ -369,7 +397,9 @@ const ManageBreachProposalPage = () => {
             <Input
               id="fullName"
               value={formState.fullName}
-              onChange={(event) => updateField("fullName", event.target.value)}
+              className="bg-emerald-500/10"
+              // onChange={(event) => updateField("fullName", event.target.value)}
+              readOnly
               placeholder="Operator Alias"
             />
           </div>
@@ -385,7 +415,9 @@ const ManageBreachProposalPage = () => {
               id="email"
               type="email"
               value={formState.email}
-              onChange={(event) => updateField("email", event.target.value)}
+              className="bg-emerald-500/10"
+              // onChange={(event) => updateField("email", event.target.value)}
+              readOnly
               placeholder="operator@glitch.net"
             />
           </div>
@@ -412,7 +444,11 @@ const ManageBreachProposalPage = () => {
             type="button"
             variant="ghost"
             className="cursor-pointer text-emerald-200 hover:text-emerald-100"
-            onClick={() => router.push("/ui/controller/protected/admin-pannel/breach-proposal")}
+            onClick={() =>
+              router.push(
+                "/ui/controller/protected/admin-pannel/breach-proposal"
+              )
+            }
           >
             Cancel
           </Button>
@@ -422,7 +458,11 @@ const ManageBreachProposalPage = () => {
             className="gap-2 bg-emerald-500/25 text-emerald-100 hover:bg-emerald-400/35"
             disabled={!isValid || isSubmitting}
           >
-            {isSubmitting ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
+            {isSubmitting ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <Save className="size-4" />
+            )}
             Save Changes
           </Button>
         </div>
