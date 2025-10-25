@@ -1,8 +1,9 @@
+"use client";
 import { redirect } from "next/navigation";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/utils/supabase/client";
 
 export default async function Home() {
-  const supabase = await createClient();
+  const supabase = createClient();
 
   // Check if user is authenticated
   const {
