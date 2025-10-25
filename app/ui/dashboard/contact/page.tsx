@@ -1,6 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Mail, MapPin, Phone, Send, Check, AlertCircle } from "lucide-react";
+import {
+  Mail,
+  MapPin,
+  Phone,
+  Send,
+  Check,
+  AlertCircle,
+  HandHeart,
+} from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { useFetch } from "@/app/hook/useFetch";
 
@@ -113,7 +121,7 @@ export default function ContactPage() {
         <div className="text-center mb-12 animate-fadeIn">
           <h1 className="text-5xl font-bold text-[#00d492] mb-4 flex items-center justify-center gap-3">
             <Mail className="w-12 h-12" />
-            Contact Us
+            Contact Us | <HandHeart className="w-12 h-12" /> Feedback
           </h1>
           <p className="text-gray-400 text-lg">
             Get in touch with our team. We're here to help!

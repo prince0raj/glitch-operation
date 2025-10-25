@@ -57,7 +57,7 @@ const TestimonialsPage = () => {
   const [deleteTarget, setDeleteTarget] = useState<Testimonial | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const pageSize = 10;
+  const pageSize = 5;
 
   useEffect(() => {
     const storedToken = localStorage.getItem(Constants.OPS_GLITCH_TOKEN);
