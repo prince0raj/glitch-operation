@@ -31,13 +31,15 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
+import { da } from "date-fns/locale";
+import HttpService from "@/app/utils/HttpUtils";
 
 const orbitron = Orbitron({
   subsets: ["latin"],
   variable: "--font-orbitron",
 });
 
-const difficulties = ["Easy", "Medium", "Hard"] as const;
+const difficulties = ["EASY", "MEDIUM", "HARD"] as const;
 const statuses = ["Active", "Closed", "Draft"] as const;
 
 type Difficulty = (typeof difficulties)[number];
@@ -74,7 +76,7 @@ interface ContestFormState {
 const initialState: ContestFormState = {
   slug: "",
   title: "",
-  difficulty: "Medium",
+  difficulty: "MEDIUM",
   participants: "0",
   deadline: null,
   reward: "0",
@@ -104,6 +106,15 @@ type ContestResponse = {
   };
 };
 
+type Username = {
+  id: string;
+  username: string;
+};
+
+type PrefixUserNames = {
+  usernames: Username[]
+}
+
 const CreateChallengePage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -116,6 +127,8 @@ const CreateChallengePage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [token, setToken] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [suggestedUsernames, setSuggesttedUsernames] = useState<Username[] | undefined>(undefined);
+  const [creatorName, setCreatorName] = useState<string>("");
 
   useEffect(() => {
     const storedToken = localStorage.getItem(Constants.OPS_GLITCH_TOKEN);
@@ -141,6 +154,12 @@ const CreateChallengePage = () => {
     error: contestError,
     loading: contestLoading,
   } = useFetch<ContestResponse>(contestUrl, fetchOptions);
+
+  const getCreators = async (prefixNames: string) => {
+    const http = new HttpService();
+    const response = await http.get<PrefixUserNames>("", "/v2/getcreators", {}, fetchOptions);
+    setSuggesttedUsernames(response?.data?.usernames);
+  }
 
   useEffect(() => {
     const contest = contestResponse?.contest;
@@ -665,50 +684,22 @@ const CreateChallengePage = () => {
           </div>
 
           <div className="space-y-3">
-            {creators.map((creator, index) => (
-              <div
-                key={`creator-${index}`}
-                className="relative grid gap-4 rounded-xl border border-emerald-500/25 bg-slate-950/60 p-5 sm:grid-cols-2"
-              >
+
                 <div className="space-y-2">
                   <label className="text-[0.6rem] font-semibold uppercase tracking-[0.22em] text-slate-400">
                     Name
                   </label>
                   <Input
-                    value={creator.creator_name}
-                    onChange={(event) =>
-                      handleCreatorChange(index, "creator_name", event.target.value)
-                    }
+                    value={creatorName}
+                    onChange={(event) => {
+                      setCreatorName(event.target.value);
+                      getCreators(event.target.value)
+                      // handleCreatorChange(index, "creator_name", event.target.value)
+                    }}
                     placeholder="Creator display name"
                   />
+                  {suggestedUsernames && suggestedUsernames.map(username => <div>{username.username}</div>) }
                 </div>
-
-                <div className="space-y-2">
-                  <label className="text-[0.6rem] font-semibold uppercase tracking-[0.22em] text-slate-400">
-                    Social handle / ID
-                  </label>
-                  <Input
-                    value={creator.social_Id}
-                    onChange={(event) =>
-                      handleCreatorChange(index, "social_Id", event.target.value)
-                    }
-                    placeholder="@creator_handle"
-                  />
-                </div>
-
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-3 top-3 cursor-pointer rounded-full text-emerald-200 hover:text-emerald-100"
-                  onClick={() => removeCreator(index)}
-                  disabled={creators.length === 1 && !creator.creator_name && !creator.social_Id}
-                >
-                  <X className="size-4" />
-                  <span className="sr-only">Remove creator</span>
-                </Button>
-              </div>
-            ))}
           </div>
 
           <div className="space-y-2">
