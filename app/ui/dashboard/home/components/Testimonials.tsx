@@ -13,13 +13,21 @@ import { useFetch } from "@/app/hook/useFetch";
 import { Preloader } from "@/app/commonComponents/Preloader/Preloader";
 
 type Testimonial = {
-  id: string;
-  name: string;
-  role: string | null;
-  level: string | null;
-  social_id: string | null;
+  id: number;
   text: string;
-  rating: number | null;
+  social_id: string | null;
+  profile: {
+    id: string;
+    full_name: string;
+    email: string;
+    username: string;
+    avatar_url: string;
+    role: string;
+    profile_metrics: {
+      rank: string;
+      score: string;
+    }
+  }
 };
 
 const Testimonials = () => {
@@ -139,11 +147,7 @@ const Testimonials = () => {
                 }}
               >
                 {testimonials.map((testimonial) => {
-                  const rating = Math.max(
-                    0,
-                    Math.min(5, Number(testimonial.rating) || 0)
-                  );
-                  const formattedRating = rating > 0 ? rating.toFixed(1) : null;
+                  // TODO: need to change from rating into rank
                   return (
                     <div
                       key={testimonial.id}
@@ -155,12 +159,12 @@ const Testimonials = () => {
                           <header className="flex items-start justify-between gap-4">
                             <div className="flex items-start gap-3">
                               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-emerald-500/40 bg-emerald-500/15 text-lg font-semibold text-emerald-200">
-                                {renderAvatar(testimonial.name.slice(0, 2))}
+                                {renderAvatar(testimonial.profile.full_name.slice(0, 2))}
                               </div>
                               <div className="space-y-1">
                                 <h3 className="flex items-center gap-2 text-base font-semibold text-slate-100">
                                   <span className="truncate max-w-[12rem] text-pretty">
-                                    {testimonial.name}
+                                    {testimonial.profile.full_name}
                                   </span>
                                   {testimonial.social_id ? (
                                     <a
@@ -179,12 +183,12 @@ const Testimonials = () => {
                                   ) : null}
                                 </h3>
                                 <p className="text-xs uppercase tracking-[0.25em] text-emerald-300/70 line-clamp-1">
-                                  {testimonial.role || "Security Operative"}
+                                  {testimonial.profile.role || "Security Operative"}
                                 </p>
                                 <div className="inline-flex items-center gap-1 text-xs text-emerald-200/80">
                                   <Shield className="h-3 w-3" />
                                   <span className="line-clamp-1">
-                                    {testimonial.level || "Level undisclosed"}
+                                    {String(testimonial.profile.profile_metrics.score) + " XP" || "Level undisclosed"}
                                   </span>
                                 </div>
                               </div>
@@ -196,9 +200,9 @@ const Testimonials = () => {
                             {testimonial.text}
                           </p>
 
-                          <footer className="mt-auto flex items-center justify-between gap-3 text-emerald-200/90">
+                          {/*<footer className="mt-auto flex items-center justify-between gap-3 text-emerald-200/90">
                             <div className="flex items-center gap-1">
-                              {[...Array(rating)].map((_, i) => (
+                              {[...Array(Math.floor(Math.random() * 5) + 1)].map((_, i) => (
                                 <Star
                                   key={i}
                                   className="h-4 w-4 fill-yellow-400 text-yellow-400 "
@@ -218,7 +222,7 @@ const Testimonials = () => {
                                 ? `${formattedRating} / 5`
                                 : "Awaiting intel"}
                             </span>
-                          </footer>
+                          </footer>*/}
                         </div>
                       </article>
                     </div>
