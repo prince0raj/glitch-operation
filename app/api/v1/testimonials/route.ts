@@ -10,6 +10,7 @@ export async function GET() {
         id,
         text,
         social_id,
+        rating,
         profile:profiles (
           id,
           full_name,

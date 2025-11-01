@@ -16,6 +16,7 @@ type Testimonial = {
   id: number;
   text: string;
   social_id: string | null;
+  rating: number;
   profile: {
     id: string;
     full_name: string;
@@ -147,7 +148,8 @@ const Testimonials = () => {
                 }}
               >
                 {testimonials.map((testimonial) => {
-                  // TODO: need to change from rating into rank
+                  const rating = Math.max(0, Math.min(5, Number(testimonial.rating) || 0));
+                  const formattedRating = rating > 0 ? rating.toFixed(1) : null;
                   return (
                     <div
                       key={testimonial.id}
@@ -200,9 +202,9 @@ const Testimonials = () => {
                             {testimonial.text}
                           </p>
 
-                          {/*<footer className="mt-auto flex items-center justify-between gap-3 text-emerald-200/90">
+                          <footer className="mt-auto flex items-center justify-between gap-3 text-emerald-200/90">
                             <div className="flex items-center gap-1">
-                              {[...Array(Math.floor(Math.random() * 5) + 1)].map((_, i) => (
+                              {[...Array(rating)].map((_, i) => (
                                 <Star
                                   key={i}
                                   className="h-4 w-4 fill-yellow-400 text-yellow-400 "
@@ -219,10 +221,10 @@ const Testimonials = () => {
                             </div>
                             <span className="rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2 py-1 text-xs font-medium text-emerald-200">
                               {formattedRating
-                                ? `${formattedRating} / 5`
+                                ? `${formattedRating} / 5.0`
                                 : "Awaiting intel"}
                             </span>
-                          </footer>*/}
+                          </footer>
                         </div>
                       </article>
                     </div>

@@ -24,7 +24,6 @@ export async function GET(request: Request) {
                     .select("*")
                     .eq("email", user.email)
                     .single();
-                console.log("Profile Data --> ", profile);
                 if (!profile) {
                     const email = user.email;
                     const username = email.split("@")[0];
