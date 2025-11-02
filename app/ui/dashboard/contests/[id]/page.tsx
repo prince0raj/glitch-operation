@@ -17,8 +17,10 @@ import { useFetch } from "@/app/hook/useFetch";
 import Link from "next/link";
 
 type Creator = {
-  creator_name?: string;
-  social_Id?: string;
+  profiles: {
+    username: string;
+    social_id: string;
+  }
 };
 
 const normalizeProfileUrl = (value: string) => {
@@ -62,17 +64,17 @@ export default function ContestDetailPage() {
   const contestId = params.id as string | undefined;
 
   type Contest = {
-    creator: Creator[] | Creator | null;
+    creators: Creator[];
     id: string;
     title: string;
     difficulty: string;
-    participants: number;
     deadline: string | null;
     reward: number;
     status: string;
     description: string | null;
     requirements: string[] | null;
     target_url: string | null;
+    submissions: number;
   };
 
   const [contest, setContest] = useState<Contest | null>(null);
@@ -100,6 +102,8 @@ export default function ContestDetailPage() {
     error?: string;
   }>(contestId ? `/api/v1/contests/${contestId}` : null);
 
+  console.log(data);
+
   useEffect(() => {
     if (data?.contest) {
       setContest(data.contest);
@@ -120,7 +124,7 @@ export default function ContestDetailPage() {
     if (!contest) return;
 
     const payload = {
-      creator: contest.creator,
+      creator: contest.creators,
       id: contest.id,
       title: contest.title,
       target_url: contest.target_url,
@@ -147,21 +151,21 @@ export default function ContestDetailPage() {
   }, [contest?.requirements]);
 
   const creatorProfiles = useMemo(() => {
-    const rawCreators = Array.isArray(contest?.creator)
-      ? contest?.creator
-      : contest?.creator
-      ? [contest.creator]
+    const rawCreators = Array.isArray(contest?.creators)
+      ? contest?.creators
+      : contest?.creators
+      ? [contest.creators]
       : [];
 
     return rawCreators
       .map((rawCreator) => {
         const name =
-          typeof rawCreator?.creator_name === "string"
-            ? rawCreator.creator_name.trim()
+          typeof rawCreator?.profiles?.username === "string"
+            ? rawCreator?.profiles?.username.trim()
             : "";
         const rawUrl =
-          typeof rawCreator?.social_Id === "string"
-            ? rawCreator.social_Id.trim()
+          typeof rawCreator?.profiles?.social_id === "string"
+            ? rawCreator?.profiles?.social_id.trim()
             : "";
         const href = normalizeProfileUrl(rawUrl);
 
@@ -173,7 +177,7 @@ export default function ContestDetailPage() {
         };
       })
       .filter((profile) => profile.name || profile.href);
-  }, [contest?.creator]);
+  }, [contest?.creators]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -274,10 +278,10 @@ export default function ContestDetailPage() {
                 <div className="bg-black/40 rounded-lg p-4 border border-[#00d492]/20">
                   <div className="flex items-center gap-2 mb-1">
                     <Users className="w-4 h-4 text-[#00d492]" />
-                    <span className="text-xs text-gray-400">Participants</span>
+                    <span className="text-xs text-gray-400">Submissions</span>
                   </div>
                   <p className="text-2xl font-bold text-white">
-                    {Number(contest.participants || 0).toLocaleString()}
+                    {contest.submissions || 0}
                   </p>
                 </div>
                 <div className="bg-black/40 rounded-lg p-4 border border-[#00d492]/20">

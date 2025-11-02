@@ -15,10 +15,10 @@ import { Preloader } from "@/app/commonComponents/Preloader/Preloader";
 type Testimonial = {
   id: number;
   text: string;
-  social_id: string | null;
   rating: number;
   profile: {
     id: string;
+    social_id: string | null;
     full_name: string;
     email: string;
     username: string;
@@ -168,9 +168,9 @@ const Testimonials = () => {
                                   <span className="truncate max-w-[12rem] text-pretty">
                                     {testimonial.profile.full_name}
                                   </span>
-                                  {testimonial.social_id ? (
+                                  {testimonial.profile.social_id ? (
                                     <a
-                                      href={testimonial.social_id}
+                                      href={testimonial.profile.social_id}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-medium text-emerald-200 transition hover:border-emerald-400/60 hover:bg-emerald-500/20"

@@ -9,11 +9,11 @@ export async function GET() {
             .select(`
         id,
         text,
-        social_id,
         rating,
         profile:profiles (
           id,
           full_name,
+          social_id,
           email,
           username,
           avatar_url,

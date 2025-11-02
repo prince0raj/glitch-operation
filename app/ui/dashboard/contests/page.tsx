@@ -15,11 +15,11 @@ type Contest = {
   id: string;
   title: string;
   difficulty: string;
-  participants: number;
   deadline: string | null;
   reward: number;
   status: string;
   short_desc: string | null;
+  submissions: number;
 };
 
 type ContestsResponse = {
@@ -33,6 +33,8 @@ export default function ContestsPage() {
   const { data, loading, error: fetchError } = useFetch<ContestsResponse>(
     "/api/v1/contests"
   );
+
+  console.log(data);
 
   const contests = useMemo(() => {
     if (!data?.contests) {
@@ -140,7 +142,7 @@ export default function ContestsPage() {
                   <div className="flex items-center gap-2 text-sm text-gray-400">
                     <Users className="w-4 h-4 text-[#00d492]" />
                     <span>
-                      {Number(contest.participants || 0).toLocaleString()} participants
+                      Submissions : {contest.submissions || 0}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-gray-400">
