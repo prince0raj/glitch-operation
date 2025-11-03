@@ -218,14 +218,16 @@ const Page = () => {
             <table className="min-w-[720px] w-full table-fixed border-collapse text-left text-sm text-slate-200">
               <thead className="bg-emerald-500/10 text-xs uppercase tracking-[0.18em] text-emerald-200">
                 <tr>
-                  <th className="rounded-l-lg px-4 py-3">Slug</th>
+                  <th className="rounded-tl-lg px-4 py-3">Slug</th>
                   <th className="px-4 py-3">Title</th>
                   <th className="px-4 py-3">Difficulty</th>
                   <th className="px-4 py-3">Reward (XP)</th>
-                  <th className="px-4 py-3">Participants</th>
+                  <th className="px-4 py-3">Submission</th>
                   <th className="px-4 py-3">Deadline</th>
                   <th className="px-4 py-3">Status</th>
-                  <th className="rounded-r-lg px-4 py-3 text-right">Actions</th>
+                  <th className="rounded-tr-lg px-4 py-3 text-right">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="border border-emerald-500/20">

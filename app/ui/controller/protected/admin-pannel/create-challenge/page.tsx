@@ -49,8 +49,7 @@ type CreatorInput = {
 };
 
 type CreatorResponseItem = {
-  creator_name: string | null;
-  social_Id: string | null;
+  profiles: CreatorInput;
 };
 
 const createEmptyCreator = (): CreatorInput => ({
@@ -112,7 +111,9 @@ const CreateChallengePage = () => {
   const [formState, setFormState] = useState<ContestFormState>(initialState);
   const [requirements, setRequirements] = useState<string[]>([]);
   const [requirementDraft, setRequirementDraft] = useState("");
-  const [creators, setCreators] = useState<CreatorInput[]>([createEmptyCreator()]);
+  const [creators, setCreators] = useState<CreatorInput[]>([
+    createEmptyCreator(),
+  ]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [token, setToken] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -122,7 +123,10 @@ const CreateChallengePage = () => {
     setToken(storedToken);
   }, []);
 
-  const contestUrl = contestId && token ? `/api/v2/contests?id=${encodeURIComponent(contestId)}` : null;
+  const contestUrl =
+    contestId && token
+      ? `/api/v2/contests?id=${encodeURIComponent(contestId)}`
+      : null;
 
   const fetchOptions = useMemo(
     () =>
@@ -194,12 +198,19 @@ const CreateChallengePage = () => {
       ? [contest.creator]
       : [];
 
+    console.log("raw Creator : ", rawCreators);
+    console.log("contest Creator : ", contest);
+
     const mappedCreators = rawCreators
       .map((entry) => ({
         creator_name:
-          typeof entry?.creator_name === "string" ? entry.creator_name : "",
+          typeof entry?.profiles?.creator_name === "string"
+            ? entry.profiles.creator_name
+            : "",
         social_Id:
-          typeof entry?.social_Id === "string" ? entry.social_Id : "",
+          typeof entry?.profiles?.social_Id === "string"
+            ? entry.profiles.social_Id
+            : "",
       }))
       .filter((item) => item.creator_name || item.social_Id);
 
@@ -402,7 +413,9 @@ const CreateChallengePage = () => {
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div className="space-y-3">
           <p className="text-xs uppercase tracking-[0.3em] text-emerald-300">
-            {isEditing ? "// Update existing operation" : "// Launch new operation"}
+            {isEditing
+              ? "// Update existing operation"
+              : "// Launch new operation"}
           </p>
           <h1
             className={`${orbitron.className} text-3xl sm:text-4xl font-semibold tracking-[0.25em] uppercase text-emerald-100`}
@@ -677,7 +690,11 @@ const CreateChallengePage = () => {
                   <Input
                     value={creator.creator_name}
                     onChange={(event) =>
-                      handleCreatorChange(index, "creator_name", event.target.value)
+                      handleCreatorChange(
+                        index,
+                        "creator_name",
+                        event.target.value
+                      )
                     }
                     placeholder="Creator display name"
                   />
@@ -690,7 +707,11 @@ const CreateChallengePage = () => {
                   <Input
                     value={creator.social_Id}
                     onChange={(event) =>
-                      handleCreatorChange(index, "social_Id", event.target.value)
+                      handleCreatorChange(
+                        index,
+                        "social_Id",
+                        event.target.value
+                      )
                     }
                     placeholder="@creator_handle"
                   />
@@ -702,7 +723,11 @@ const CreateChallengePage = () => {
                   size="icon"
                   className="absolute right-3 top-3 cursor-pointer rounded-full text-emerald-200 hover:text-emerald-100"
                   onClick={() => removeCreator(index)}
-                  disabled={creators.length === 1 && !creator.creator_name && !creator.social_Id}
+                  disabled={
+                    creators.length === 1 &&
+                    !creator.creator_name &&
+                    !creator.social_Id
+                  }
                 >
                   <X className="size-4" />
                   <span className="sr-only">Remove creator</span>

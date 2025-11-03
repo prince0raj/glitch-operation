@@ -24,10 +24,8 @@ const normalizeCreators = (input: unknown): CreatorEntry[] => {
         social_Id?: unknown;
       };
 
-      const name =
-        typeof creator_name === "string" ? creator_name.trim() : "";
-      const social =
-        typeof social_Id === "string" ? social_Id.trim() : "";
+      const name = typeof creator_name === "string" ? creator_name.trim() : "";
+      const social = typeof social_Id === "string" ? social_Id.trim() : "";
 
       if (!name && !social) {
         return null;
@@ -53,7 +51,12 @@ export async function GET(request: Request) {
       const { data, error } = await supabase
         .from("contests")
         .select(
-          `id, slug, title, difficulty, reward, participants, deadline, status, short_desc, description, requirements, target_url, creator, created_at, updated_at`
+          `id, slug, title, difficulty, reward, participants:submissions, deadline, status, short_desc, description, requirements, target_url, created_at, updated_at, creator:profiles_to_contests (
+              profiles (
+                creator_name:username,
+                social_Id:social_id
+              )
+            )`
         )
         .eq("id", contestId)
         .single();
@@ -79,7 +82,12 @@ export async function GET(request: Request) {
     const { data, error } = await supabase
       .from("contests")
       .select(
-        `id, slug, title, difficulty, reward, participants, deadline, status, short_desc, description, requirements, target_url, creator, created_at, updated_at`
+        `id, slug, title, difficulty, reward, participants:submissions, deadline, status, short_desc, description, requirements, target_url, created_at, updated_at, creator:profiles_to_contests (
+              profiles (
+                creator_name:username,
+                social_Id:social_id
+              )
+            )`
       )
       .order("created_at", { ascending: false });
 
@@ -130,10 +138,7 @@ export async function DELETE(request: Request) {
     }
 
     if (!data) {
-      return NextResponse.json(
-        { error: "Contest not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Contest not found" }, { status: 404 });
     }
 
     return NextResponse.json({ success: true });
@@ -178,7 +183,8 @@ export async function POST(request: Request) {
     if (typeof title !== "string" || !title.trim()) missingFields.push("title");
     if (typeof difficulty !== "string" || !difficulty.trim())
       missingFields.push("difficulty");
-    if (typeof status !== "string" || !status.trim()) missingFields.push("status");
+    if (typeof status !== "string" || !status.trim())
+      missingFields.push("status");
     if (typeof short_desc !== "string" || !short_desc.trim())
       missingFields.push("short_desc");
     if (typeof description !== "string" || !description.trim())
@@ -362,15 +368,13 @@ export async function PUT(request: Request) {
     }
 
     if (!data) {
-      return NextResponse.json(
-        { error: "Contest not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Contest not found" }, { status: 404 });
     }
 
     return NextResponse.json({ contest: data });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unable to update contest";
+    const message =
+      error instanceof Error ? error.message : "Unable to update contest";
     return NextResponse.json({ error: message }, { status: 401 });
   }
 }
