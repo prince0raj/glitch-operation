@@ -44,7 +44,6 @@ const page = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log("click handler");
 
     if (loading) {
       return;

@@ -20,7 +20,7 @@ type Creator = {
   profiles: {
     username: string;
     social_id: string;
-  }
+  };
 };
 
 const normalizeProfileUrl = (value: string) => {
@@ -102,8 +102,6 @@ export default function ContestDetailPage() {
     error?: string;
   }>(contestId ? `/api/v1/contests/${contestId}` : null);
 
-  console.log(data);
-
   useEffect(() => {
     if (data?.contest) {
       setContest(data.contest);
@@ -182,7 +180,6 @@ export default function ContestDetailPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Here you would typically send the data to your backend
-    console.log("Bug Report Submitted:", formData);
     setSubmitted(true);
     setTimeout(() => {
       router.push("/ui/dashboard/contests");

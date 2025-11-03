@@ -34,7 +34,6 @@ const ProtectedLayout = ({ children }: ProtectedLayoutProps) => {
           },
           cache: "no-store",
         });
-        console.log(response);
 
         if (!response.ok) {
           throw new Error("Invalid token");

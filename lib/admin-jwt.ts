@@ -104,7 +104,6 @@ export const extractAdminToken = (authorizationHeader?: string | null) => {
 
 export const requireAdminTokenFromRequest = (request: Request) => {
   const token = extractAdminToken(request.headers.get("authorization"));
-  console.log(token);
   if (!token) {
     throw new Error("Missing admin token");
   }

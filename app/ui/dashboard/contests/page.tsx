@@ -1,11 +1,5 @@
 "use client";
-import {
-  Trophy,
-  Calendar,
-  Users,
-  Zap,
-  ChevronRight,
-} from "lucide-react";
+import { Trophy, Calendar, Users, Zap, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 import { Preloader } from "@/app/commonComponents/Preloader/Preloader";
@@ -30,11 +24,11 @@ type ContestsResponse = {
 export default function ContestsPage() {
   const router = useRouter();
 
-  const { data, loading, error: fetchError } = useFetch<ContestsResponse>(
-    "/api/v1/contests"
-  );
-
-  console.log(data);
+  const {
+    data,
+    loading,
+    error: fetchError,
+  } = useFetch<ContestsResponse>("/api/v1/contests");
 
   const contests = useMemo(() => {
     if (!data?.contests) {
@@ -134,21 +128,23 @@ export default function ContestsPage() {
 
                 {/* Description */}
                 <p className="text-gray-400 text-sm mb-4 line-clamp-2">
-                  {contest.short_desc ?? "Join to learn more about this contest."}
+                  {contest.short_desc ??
+                    "Join to learn more about this contest."}
                 </p>
 
                 {/* Stats */}
                 <div className="space-y-2 mb-4">
                   <div className="flex items-center gap-2 text-sm text-gray-400">
                     <Users className="w-4 h-4 text-[#00d492]" />
-                    <span>
-                      Submissions : {contest.submissions || 0}
-                    </span>
+                    <span>Submissions : {contest.submissions || 0}</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-gray-400">
                     <Calendar className="w-4 h-4 text-[#00d492]" />
                     <span>
-                      Ends: {contest.deadline ? new Date(contest.deadline).toLocaleDateString() : "No deadline"}
+                      Ends:{" "}
+                      {contest.deadline
+                        ? new Date(contest.deadline).toLocaleDateString()
+                        : "No deadline"}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-gray-400">

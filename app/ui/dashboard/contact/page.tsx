@@ -35,7 +35,6 @@ export default function ContactPage() {
     const fetchUserEmail = async () => {
       const supabase = createClient();
       const { data, error } = await supabase.auth.getUser();
-      console.log(data);
 
       if (error) {
         console.error("Error fetching user email", error);
