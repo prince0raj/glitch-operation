@@ -23,7 +23,19 @@ export async function GET(request: Request) {
     const { data, error } = await supabase
       .from("profiles")
       .select(
-        "id, full_name, username, email, avatar_url, bio, tag_line, metrics, activity"
+        `
+        id,
+        full_name,
+        username,
+        email,
+        avatar_url,
+        bio,
+        tag_line,
+        profile_metrics (
+          score,
+          rank
+        )
+      `
       )
       .eq("id", userId)
       .single();
@@ -36,20 +48,39 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Profile not found" }, { status: 404 });
     }
 
-    const defaultMetrics = {
-      score: 0,
-      rank: 0,
-    } as const;
+    const rawMetricsArray = (data.profile_metrics ?? []) as
+      | { score: number; rank: number }[]
+      | [];
+    const metricsRow = Array.isArray(rawMetricsArray)
+      ? rawMetricsArray[0]
+      : (rawMetricsArray as { score: number; rank: number });
 
-    const rawMetrics = data.metrics ?? defaultMetrics;
-    const score = Number.parseInt(String(rawMetrics?.score ?? 0)) || 0;
-    const rank = Number.parseInt(String(rawMetrics?.rank ?? 0)) || 0;
+    const score = Number(metricsRow?.score ?? 0);
+    const rank = Number(metricsRow?.rank ?? 0);
 
-    const rawActivity = (data.activity ?? {}) as Record<string, any>;
-    const rawContests = Array.isArray(rawActivity?.contest)
-      ? rawActivity.contest
-      : [];
+    // ACTIVITY:
 
+    const { data: activityData, error: errorActivity } = await supabase
+      .from("submissions")
+      .select(
+        `
+          submission_time:created_at,
+          status,
+          contest_id,
+          contest_details:contests(
+            title,
+            reward
+          )
+      `
+      )
+      .eq("profile_id", userId);
+
+    const rawContests = Array.isArray(activityData) ? activityData : [];
+
+    let contestMetaMap: Record<
+      string,
+      { title: string | null; reward: number }
+    > = {};
     const contests = rawContests.map((contest: any) => ({
       contest_id: String(contest?.contest_id ?? ""),
       status: String(contest?.status ?? ""),
@@ -58,35 +89,21 @@ export async function GET(request: Request) {
         : null,
     }));
 
-    const contestIds = contests
-      .map((contest) => contest.contest_id)
-      .filter((id) => typeof id === "string" && id.length > 0);
-
-    let contestMetaMap: Record<string, { title: string | null; reward: number }> = {};
-
-    if (contestIds.length > 0) {
-      const { data: contestRows, error: contestError } = await supabase
-        .from("contests")
-        .select("id, title, reward")
-        .in("id", contestIds);
-
-      if (!contestError && Array.isArray(contestRows)) {
-        contestMetaMap = contestRows.reduce<
-          Record<string, { title: string | null; reward: number }>
-        >(
-          (acc, current) => {
-            if (current?.id) {
-              acc[String(current.id)] = {
-                title: current?.title ? String(current.title) : null,
-                reward: Number(current?.reward ?? 0) || 0,
-              };
-            }
-            return acc;
-          },
-          {}
-        );
-      }
-    }
+    contestMetaMap = rawContests.reduce(
+      (
+        acc: Record<string, { title: string | null; reward: number }>,
+        x: any
+      ) => {
+        if (x?.contest_id && x?.contest_details) {
+          acc[String(x.contest_id)] = {
+            title: x.contest_details.title ?? null,
+            reward: x.contest_details.reward ?? 0,
+          };
+        }
+        return acc;
+      },
+      {}
+    );
 
     const contestsWithMeta = contests.map((contest) => {
       const meta = contestMetaMap[contest.contest_id];
@@ -99,11 +116,6 @@ export async function GET(request: Request) {
         reward: isPass ? rawReward : 0,
       };
     });
-
-    const totalScore = contestsWithMeta.reduce(
-      (sum, contest) => sum + (Number(contest.reward) || 0),
-      0
-    );
 
     let xpTarget = 0;
 
@@ -125,20 +137,19 @@ export async function GET(request: Request) {
     const unsuccessfulAttempts = contestsWithMeta.filter(
       (contest) => contest.status.toLowerCase() === "fail"
     ).length;
-    const level = Math.max(Math.floor(totalScore / 1000), 1);
+    const level = Math.max(Math.floor(score / 1000), 1);
 
     const metrics = {
       Challenges: challenges,
       Bugs_found: bugsFound,
       Unsuccessful_attempts: unsuccessfulAttempts,
       Level: level,
-      score: totalScore,
+      score: score,
       rank,
       xpTarget,
     };
-    const activity = {
-      contest: contestsWithMeta,
-    };
+
+    const activity = { contest: contestsWithMeta };
 
     return NextResponse.json(
       {
@@ -182,28 +193,11 @@ export async function PUT(request: Request) {
     }
 
     const body = await request.json().catch(() => ({}));
-    const { bio, tag_line, metrics, activity } = body ?? {};
+    const { bio, tag_line } = body ?? {};
 
     const updatePayload: Record<string, any> = {};
     if (typeof bio === "string") updatePayload.bio = bio;
     if (typeof tag_line === "string") updatePayload.tag_line = tag_line;
-
-    if (metrics && typeof metrics === "object") {
-      const m = metrics as Record<string, any>;
-      updatePayload.metrics = {
-        rank: Number.parseInt(String(m?.rank ?? 0)) || 0,
-      };
-    }
-
-    if (activity && typeof activity === "object") {
-      const content = Array.isArray(activity.content) ? activity.content : [];
-      updatePayload.activity = {
-        content: content.map((a: any) => ({
-          text: String(a?.text ?? ""),
-          xp: Number(a?.xp) || undefined,
-        })),
-      };
-    }
 
     if (Object.keys(updatePayload).length === 0) {
       return NextResponse.json(
@@ -217,7 +211,17 @@ export async function PUT(request: Request) {
       .update(updatePayload)
       .eq("id", user.id)
       .select(
-        "id, full_name, username, email, avatar_url, bio, tag_line, metrics, activity"
+        `id,
+        full_name,
+        username,
+        email,
+        avatar_url,
+        bio,
+        tag_line,
+        profile_metrics (
+          score,
+          rank
+        )`
       )
       .single();
 
