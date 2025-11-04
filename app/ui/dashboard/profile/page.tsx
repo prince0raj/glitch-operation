@@ -224,8 +224,9 @@ export default function ProfilePage() {
                 <input
                   type="text"
                   value={title}
+                  placeholder="place your tagline"
                   onChange={(e) => setTitle(e.target.value)}
-                  className="text-lg text-gray-400 mb-3 bg-black/40 border border-[#00d492]/30 rounded-lg px-3 py-2 w-full focus:outline-none focus:border-[#00d492]"
+                  className="text-sm my-2 text-gray-400 mb-3 bg-black/40 border border-[#00d492]/30 rounded-lg px-3 py-2 w-full focus:outline-none focus:border-[#00d492]"
                 />
               ) : (
                 <p className="text-gray-400 text-lg mb-3">{title}</p>
@@ -243,6 +244,7 @@ export default function ProfilePage() {
                 <textarea
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
+                  placeholder="BIO.."
                   rows={3}
                   className="text-sm text-gray-400 mb-6 mx-auto md:mx-0 leading-relaxed bg-black/40 border border-[#00d492]/30 rounded-lg px-3 py-2 w-full focus:outline-none focus:border-[#00d492] resize-none"
                 />
@@ -358,7 +360,9 @@ export default function ProfilePage() {
                     key={idx}
                     type="button"
                     onClick={() =>
-                      router.push(`/ui/dashboard/contests/${activity.contest_id}`)
+                      router.push(
+                        `/ui/dashboard/contests/${activity.contest_id}`
+                      )
                     }
                     className="w-full text-left bg-black/50 border border-[#00d492]/20 p-4 rounded-lg flex justify-between items-center hover:border-[#00d492]/50 hover:shadow-[0_0_10px_rgba(0,255,174,0.2)] transition-all animate-slideRight cursor-pointer"
                     style={{ animationDelay: `${0.5 + idx * 0.1}s` }}
