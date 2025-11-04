@@ -594,7 +594,7 @@ const BreachProposalPage = () => {
                       <div className="flex flex-col gap-4">
                         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                           <div className="space-y-2">
-                            <p className="rounded-l-lg text-xs uppercase tracking-[0.22em] text-emerald-300">
+                            <div className="rounded-l-lg text-xs uppercase tracking-[0.22em] text-emerald-300">
                               <Tooltip>
                                 <TooltipTrigger asChild>
                                   <span className="block max-w-[6rem] truncate text-white text-[14px] font-semibold text-ellipsis">
@@ -608,7 +608,7 @@ const BreachProposalPage = () => {
                                   Contest title: {proposal.title}
                                 </TooltipContent>
                               </Tooltip>
-                            </p>
+                            </div>
                             <p className="text-xs uppercase tracking-[0.32em] text-gray-500">
                               {formatTimestamp(proposal.createdAt)}
                             </p>

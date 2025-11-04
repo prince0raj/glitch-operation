@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { useFetch } from "@/app/hook/useFetch";
+import { contactInfo } from "@/config/contact";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -249,10 +250,10 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-bold text-white mb-1">Email</h3>
                     <a
-                      href="mailto:orbitlinker01@gmail.com"
+                      href={`mailto:${contactInfo.email}`}
                       className="text-gray-400 text-sm hover:text-[#00d492] transition-colors"
                     >
-                      orbitlinker01@gmail.com
+                      {contactInfo.email}
                     </a>
                     {/* <p className="text-gray-400 text-sm">
                       contact@opsglitch.com
@@ -267,9 +268,11 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-bold text-white mb-1">Phone</h3>
-                    <p className="text-gray-400 text-sm">+91-9220994117</p>
                     <p className="text-gray-400 text-sm">
-                      Mon-Fri, 9AM-6PM IST
+                      {contactInfo.phone.contact_no}
+                    </p>
+                    <p className="text-gray-400 text-sm">
+                      {contactInfo.phone.avaliable}
                     </p>
                   </div>
                 </div>
@@ -281,9 +284,11 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-bold text-white mb-1">Location</h3>
-                    <p className="text-gray-400 text-sm">India, Delhi</p>
                     <p className="text-gray-400 text-sm">
-                      New Delhi, Delhi 110049
+                      {contactInfo.address.country}, {contactInfo.address.state}
+                    </p>
+                    <p className="text-gray-400 text-sm">
+                      {contactInfo.address.pin_address}
                     </p>
                   </div>
                 </div>

@@ -2,6 +2,7 @@
 import GlitchText from "@/app/commonComponents/GlitchText/GlitchText";
 import React from "react";
 import { Orbitron } from "next/font/google";
+import { contactInfo } from "@/config/contact";
 
 const orbitron = Orbitron({
   subsets: ["latin"],
@@ -77,13 +78,14 @@ const Footer = () => {
             </h4>
             <ul className="space-y-2 text-emerald-400 text-sm font-mono">
               <li className="hover:text-emerald-300 transition-colors cursor-pointer">
-                contact@nexustech.com
+                {contactInfo.email}
+              </li>
+              <li className="hover:text-emerald-300 transition-colors cursor-pointer flex flex-col gap-1.5">
+                {contactInfo.phone.contact_no}{" "}
+                {/* <p>{contactInfo.phone.avaliable}</p> */}
               </li>
               <li className="hover:text-emerald-300 transition-colors cursor-pointer">
-                +1 (555) 123-4567
-              </li>
-              <li className="hover:text-emerald-300 transition-colors cursor-pointer">
-                San Francisco, CA
+                {contactInfo.address.pin_address}
               </li>
             </ul>
           </div>
