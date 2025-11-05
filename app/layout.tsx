@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   title: "GlitchOps - Bug Bounty & Debugging Platform",
   description:
     "Enter the world of GlitchOps — a hacker-themed bug bounty playground. Hunt bugs, earn rewards, level up your debugging skills, and dominate the leaderboard.",
-    other: {
+  other: {
     "google-site-verification": "HiOOE0gl5vSE9dXEsbfVTE5zIcYdB-fUeXDkL4OvjWI",
   },
   keywords: [
@@ -91,17 +91,18 @@ export default function RootLayout({
       >
         <Script
           strategy="afterInteractive"
-          src="https://www.googletagmanager.com/gtag/js?id=G-85YJSL25Z3"
+          src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
         />
         <Script id="google-analytics" strategy="afterInteractive">
           {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-85YJSL25Z3');
-          `}
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}');
+  `}
         </Script>
-        
+
+
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
