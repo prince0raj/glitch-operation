@@ -373,7 +373,7 @@ export default function ProfilePage() {
           ) : (
             <div className="space-y-3">
               {paginatedActivities.map((activity, idx) => {
-                const isPass = activity.status.toLowerCase() === "pass";
+                const isPass = activity.status.toUpperCase() === "ACCEPTED";
                 const formattedTime = formatTimestamp(activity.submission_time);
 
                 return (
