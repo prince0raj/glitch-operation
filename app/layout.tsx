@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
 import StyledComponentsRegistry from "@/lib/registry";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,6 +44,7 @@ export default function RootLayout({
             <main className="flex-1">
               <StyledComponentsRegistry>{children}</StyledComponentsRegistry>
             </main>
+            <Toaster position="top-right" theme="dark" richColors closeButton />
           </TooltipProvider>
         </ThemeProvider>
       </body>

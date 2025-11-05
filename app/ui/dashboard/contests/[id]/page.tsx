@@ -11,12 +11,17 @@ import {
   AlertCircle,
   Linkedin,
   Crosshair,
+  PartyPopper,
+  Loader2,
+  Frown,
+  LocateOff,
 } from "lucide-react";
 import { Preloader } from "@/app/commonComponents/Preloader/Preloader";
 import { useFetch } from "@/app/hook/useFetch";
 import Link from "next/link";
 import { Tooltip, TooltipContent } from "@/components/ui/tooltip";
 import { TooltipTrigger } from "@radix-ui/react-tooltip";
+import { toast } from "sonner";
 
 type Creator = {
   profiles: {
@@ -94,6 +99,11 @@ export default function ContestDetailPage() {
   const [formData, setFormData] = useState(createInitialFormData);
 
   const [submitted, setSubmitted] = useState(false);
+  const [submissionStatus, setSubmissionStatus] = useState<boolean | null>(
+    null
+  );
+  const [submissionMessage, setSubmissionMessage] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     data,
@@ -179,18 +189,75 @@ export default function ContestDetailPage() {
       .filter((profile) => profile.name || profile.href);
   }, [contest?.creators]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically send the data to your backend
-    setSubmitted(true);
-    setTimeout(() => {
-      router.push("/ui/dashboard/contests");
-    }, 2000);
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    try {
+      const result = await submitChallenge();
+      if (result) {
+        setSubmissionStatus(!!result.status);
+        setSubmissionMessage(result.message || "");
+      }
+      setSubmitted(true);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const submitChallenge = async (): Promise<
+    { message?: string; status?: boolean } | undefined
+  > => {
+    try {
+      if (!contestId) {
+        toast.error("Contest ID is missing.");
+        return;
+      }
+
+      const payload = {
+        improvements: formData.stepsToImprove,
+        uniqueCode: formData.codeObtainedByBreaking,
+        steps: formData.stepsFollowedToBreak,
+      };
+
+      const response = await fetch(`/api/v1/contests/${contestId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const respData = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(
+          respData?.error || respData?.message || "Failed to submit challenge."
+        );
+      }
+
+      if (respData?.status) {
+        toast.success(respData?.message || "Challenge passed!");
+      } else {
+        toast.info(
+          respData?.message || "Challenge submitted, but did not pass."
+        );
+      }
+
+      return respData as { message?: string; status?: boolean };
+    } catch (error: any) {
+      toast.error(
+        error.message || "Something went wrong while submitting the challenge."
+      );
+      return undefined;
+    }
   };
 
   const handleReset = () => {
     setFormData(createInitialFormData());
     setSubmitted(false);
+    setSubmissionStatus(null);
+    setSubmissionMessage("");
   };
 
   const handleChange = (
@@ -436,14 +503,55 @@ export default function ContestDetailPage() {
             {submitted ? (
               <div className="bg-black/30 border border-[#00d492]/30 rounded-2xl p-8 backdrop-blur-sm text-center">
                 <div className="w-16 h-16 bg-[#00d492]/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Send className="w-8 h-8 text-[#00d492]" />
+                  {submissionStatus === true ? (
+                    <PartyPopper
+                      className="w-8 h-8 text-[#00d492]"
+                      aria-label="Passed"
+                    />
+                  ) : submissionStatus == false ? (
+                    <LocateOff
+                      className="w-8 h-8 text-[#d40000]"
+                      aria-label="Failed"
+                    />
+                  ) : (
+                    <Send
+                      className="w-8 h-8 text-[#00d492]"
+                      aria-label="Submitted"
+                    />
+                  )}
                 </div>
                 <h2 className="text-2xl font-bold text-[#00d492] mb-2">
                   Bug Report Submitted!
                 </h2>
                 <p className="text-gray-400">
-                  Thank you for your submission. Redirecting to contests page...
+                  {submissionMessage || "Thank you for your submission."}
                 </p>
+                <p
+                  className={`mt-1 text-sm ${
+                    submissionStatus === true
+                      ? "text-emerald-400"
+                      : submissionStatus === false
+                      ? "text-[#d40000]"
+                      : "text-gray-400"
+                  }`}
+                >
+                  {submissionStatus === true
+                    ? "You passed the challenge."
+                    : submissionStatus === false
+                    ? "You didn't pass the challenge."
+                    : ""}
+                </p>
+                <div className="h-6" />
+                <div className="flex items-center justify-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => router.push("/ui/dashboard/contests")}
+                    className="inline-flex cursor-pointer items-center justify-center gap-2 bg-[#00d492] text-black font-bold px-5 py-3 rounded-lg hover:bg-[#00d492]/80 transition-all"
+                  >
+                    <ArrowLeft className="w-5 h-5" />
+                    Go to Contests
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="bg-black/30 border border-[#00d492]/30 rounded-2xl p-8 backdrop-blur-sm">
@@ -462,6 +570,7 @@ export default function ContestDetailPage() {
                       value={formData.stepsFollowedToBreak}
                       onChange={handleChange}
                       required
+                      disabled={isSubmitting}
                       rows={5}
                       placeholder="1. Identified the vulnerable endpoint&#10;2. Tested different payloads&#10;3. Successfully exploited the vulnerability..."
                       className="w-full bg-black/40 border border-[#00d492]/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#00d492] transition-colors resize-none"
@@ -478,8 +587,9 @@ export default function ContestDetailPage() {
                       value={formData.codeObtainedByBreaking}
                       onChange={handleChange}
                       required
-                      rows={6}
-                      placeholder="Paste the exploit code, payload, or response data you obtained..."
+                      disabled={isSubmitting}
+                      rows={1}
+                      placeholder="Paste the exploit code (i.e 3c7340c526ca4a40ebf8a90d0d0de353) you obtained..."
                       className="w-full bg-black/40 border border-[#00d492]/30 rounded-lg px-4 py-3 text-white font-mono text-sm focus:outline-none focus:border-[#00d492] transition-colors resize-none"
                     />
                   </div>
@@ -493,6 +603,7 @@ export default function ContestDetailPage() {
                       name="stepsToImprove"
                       value={formData.stepsToImprove}
                       onChange={handleChange}
+                      disabled={isSubmitting}
                       rows={4}
                       placeholder="Suggest improvements or fixes to prevent this vulnerability..."
                       className="w-full bg-black/40 border border-[#00d492]/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#00d492] transition-colors resize-none"
@@ -518,15 +629,26 @@ export default function ContestDetailPage() {
                   <div className="flex gap-4 pt-4">
                     <button
                       type="submit"
-                      className="flex-1 flex cursor-pointer items-center justify-center gap-2 bg-[#00d492] text-black font-bold py-3 rounded-lg hover:bg-[#00d492]/80 transition-all"
+                      disabled={isSubmitting}
+                      className="flex-1 flex cursor-pointer items-center justify-center gap-2 bg-[#00d492] text-black font-bold py-3 rounded-lg hover:bg-[#00d492]/80 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                     >
-                      <Send className="w-5 h-5" />
-                      Submit Bug Report
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          Submitting...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-5 h-5" />
+                          Submit Bug Report
+                        </>
+                      )}
                     </button>
                     <button
                       type="button"
                       onClick={handleReset}
-                      className="px-6 py-3 bg-black/40 cursor-pointer border border-[#00d492]/30 text-[#00d492] rounded-lg hover:bg-black/60 transition-all"
+                      disabled={isSubmitting}
+                      className="px-6 py-3 bg-black/40 cursor-pointer border border-[#00d492]/30 text-[#00d492] rounded-lg hover:bg-black/60 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                       Reset
                     </button>
