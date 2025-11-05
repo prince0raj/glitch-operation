@@ -30,19 +30,19 @@ export const metadata: Metadata = {
     "code debugging",
     "GlitchOps",
   ],
-  authors: [{ name: "GlitchOps Team", url: "https://opsglitch.com" }],
+  authors: [{ name: "GlitchOps Team", url: "https://www.opsglitch.com" }],
   creator: "GlitchOps",
   publisher: "GlitchOps",
-  metadataBase: new URL("https://opsglitch.com"),
+  metadataBase: new URL("https://www.opsglitch.com"),
   openGraph: {
     title: "GlitchOps - Bug Bounty & Debugging Platform",
     description:
       "Join GlitchOps to find bugs, earn rewards, and sharpen your debugging and ethical hacking skills in a neon cyber environment.",
-    url: "https://opsglitch.com",
+    url: "https://www.opsglitch.com",
     siteName: "GlitchOps",
     images: [
       {
-        url: "https://opsglitch.com/Ops.Glitch.png",
+        url: "/Ops.Glitch.png",
         width: 1200,
         height: 630,
         alt: "GlitchOps - Bug Bounty & Debugging Platform",
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     description:
       "Find bugs. Earn rewards. Level up your debugging skills in a hacker-themed playground.",
     creator: "@GlitchOps",
-    images: ["https://opsglitch.com/Ops.Glitch.png"],
+    images: ["/Ops.Glitch.png"],
   },
   themeColor: "#0ff",
   category: "Cybersecurity",
@@ -70,7 +70,7 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
   },
   alternates: {
-    canonical: "https://opsglitch.com",
+    canonical: "https://www.opsglitch.com",
   },
 };
 

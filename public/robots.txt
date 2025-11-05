@@ -1,0 +1,13 @@
+# GlitchOps - Bug Bounty Platform
+# Controls what search engines can crawl
+
+User-agent: *
+Allow: /
+
+Disallow: /ui/dashboard/
+Disallow: /api/
+
+Allow: /login
+
+# Sitemap
+Sitemap: https://opsglitch.com/sitemap.xml
