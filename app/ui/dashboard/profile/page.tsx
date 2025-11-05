@@ -48,6 +48,17 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 5;
+  const totalPages = useMemo(
+    () => Math.max(1, Math.ceil(activities.length / pageSize)),
+    [activities.length]
+  );
+  const paginatedActivities = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return activities.slice(start, start + pageSize);
+  }, [activities, currentPage]);
+
   const BIO_CHAR_LIMIT = 150;
 
   const {
@@ -97,6 +108,12 @@ export default function ProfilePage() {
   useEffect(() => {
     setLoading(getLoading);
   }, [getLoading]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [activities.length, totalPages]);
 
   const xpTarget = Number(metrics?.xpTarget ?? 0);
   const progressPercent = useMemo(() => {
@@ -333,7 +350,7 @@ export default function ProfilePage() {
 
         {/* Recent Activity with fade animation */}
         <div
-          className="bg-black/30 border border-[#00d492]/30 rounded-2xl p-6 backdrop-blur-sm animate-fadeInUp"
+          className="bg-black/30 border border-[#00d492]/30 rounded-2xl p-6 backdrop-blur-sm"
           style={{ animationDelay: "0.4s" }}
         >
           <h2 className="text-2xl font-bold text-[#00d492] mb-6">
@@ -355,7 +372,7 @@ export default function ProfilePage() {
             </div>
           ) : (
             <div className="space-y-3">
-              {activities.map((activity, idx) => {
+              {paginatedActivities.map((activity, idx) => {
                 const isPass = activity.status.toLowerCase() === "pass";
                 const formattedTime = formatTimestamp(activity.submission_time);
 
@@ -368,7 +385,7 @@ export default function ProfilePage() {
                         `/ui/dashboard/contests/${activity.contest_id}`
                       )
                     }
-                    className="w-full text-left bg-black/50 border border-[#00d492]/20 p-4 rounded-lg flex justify-between items-center hover:border-[#00d492]/50 hover:shadow-[0_0_10px_rgba(0,255,174,0.2)] transition-all animate-slideRight cursor-pointer"
+                    className="w-full text-left bg-black/50 border border-[#00d492]/20 p-4 rounded-lg flex justify-between items-center hover:border-[#00d492]/50 hover:shadow-[0_0_10px_rgba(0,255,174,0.2)] transition-all cursor-pointer"
                     style={{ animationDelay: `${0.5 + idx * 0.1}s` }}
                   >
                     <div className="flex flex-col">
@@ -405,6 +422,31 @@ export default function ProfilePage() {
                   </button>
                 );
               })}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-between pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className="px-3 py-2 rounded-lg border border-[#00d492]/30 text-[#00d492] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#00d492]/10 transition-colors"
+                  >
+                    Prev
+                  </button>
+                  <span className="text-sm text-gray-400">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setCurrentPage((p) => Math.min(totalPages, p + 1))
+                    }
+                    disabled={currentPage === totalPages}
+                    className="px-3 py-2 rounded-lg border border-[#00d492]/30 text-[#00d492] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#00d492]/10 transition-colors"
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>
