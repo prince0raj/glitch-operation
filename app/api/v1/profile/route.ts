@@ -2,216 +2,169 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 
 export async function GET(request: Request) {
-  try {
-    const supabase = await createClient();
+    try {
+        const supabase = await createClient();
 
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
+        const {
+            data: { user },
+            error: userError,
+        } = await supabase.auth.getUser();
 
-    if (userError) {
-      return NextResponse.json({ error: userError.message }, { status: 500 });
-    }
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const url = new URL(request.url);
-    const userId = url.searchParams.get("userId") || user.id;
-
-    const { data, error } = await supabase
-      .from("profiles")
-      .select(
-        `
-        id,
-        full_name,
-        username,
-        email,
-        avatar_url,
-        bio,
-        tag_line,
-        profile_metrics (
-          score,
-          rank
-        )
-      `
-      )
-      .eq("id", userId)
-      .single();
-
-    if (error && error.code !== "PGRST116") {
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
-
-    if (!data) {
-      return NextResponse.json({ error: "Profile not found" }, { status: 404 });
-    }
-
-    const rawMetricsArray = (data.profile_metrics ?? []) as
-      | { score: number; rank: number }[]
-      | [];
-    const metricsRow = Array.isArray(rawMetricsArray)
-      ? rawMetricsArray[0]
-      : (rawMetricsArray as { score: number; rank: number });
-
-    const score = Number(metricsRow?.score ?? 0);
-    const rank = Number(metricsRow?.rank ?? 0);
-
-    // ACTIVITY:
-
-    const { data: activityData, error: errorActivity } = await supabase
-      .from("submissions")
-      .select(
-        `
-          submission_time:created_at,
-          status,
-          contest_id,
-          contest_details:contests(
-            title,
-            reward
-          )
-      `
-      )
-      .eq("profile_id", userId);
-
-    const rawContests = Array.isArray(activityData) ? activityData : [];
-
-    let contestMetaMap: Record<
-      string,
-      { title: string | null; reward: number }
-    > = {};
-    const contests = rawContests.map((contest: any) => ({
-      contest_id: String(contest?.contest_id ?? ""),
-      status: String(contest?.status ?? ""),
-      submission_time: contest?.submission_time
-        ? String(contest.submission_time)
-        : null,
-    }));
-
-    contestMetaMap = rawContests.reduce(
-      (
-        acc: Record<string, { title: string | null; reward: number }>,
-        x: any
-      ) => {
-        if (x?.contest_id && x?.contest_details) {
-          acc[String(x.contest_id)] = {
-            title: x.contest_details.title ?? null,
-            reward: x.contest_details.reward ?? 0,
-          };
+        if (userError) {
+            return NextResponse.json(
+                { error: userError.message },
+                { status: 500 },
+            );
         }
-        return acc;
-      },
-      {}
-    );
+        if (!user) {
+            return NextResponse.json(
+                { error: "Unauthorized" },
+                { status: 401 },
+            );
+        }
 
-    const contestsWithMeta = contests.map((contest) => {
-      const meta = contestMetaMap[contest.contest_id];
-      const rawReward = Number(meta?.reward ?? 0) || 0;
-      const isPass = contest.status.toLowerCase() === "pass";
+        const url = new URL(request.url);
+        const userId = url.searchParams.get("userId") || user.id;
 
-      return {
-        ...contest,
-        title: meta?.title ?? null,
-        reward: isPass ? rawReward : 0,
-      };
-    });
+        const { data: profileData, error } = await supabase
+            .from("profiles")
+            .select(
+                `
+            id,
+            full_name,
+            username,
+            email,
+            avatar_url,
+            bio,
+            tag_line,
+            profile_metrics (
+              score,
+              rank
+            ),
+            contest_status (
+              status,
+              created_at,
+              contest_id,
+              contests (
+                id,
+                title
+              )
+            ),
+            profile_activities (
+              status,
+              created_at,
+              contest_id,
+              unique_code,
+              contests (
+                id,
+                title
+              )
+            )
+          `,
+            )
+            .eq("id", userId)
+            .order("created_at", {
+                foreignTable: "profile_activities",
+                ascending: false,
+            })
+            .limit(5, { foreignTable: "profile_activities" })
+            .single();
 
-    let xpTarget = 0;
+        if (error) throw error;
 
-    const { data: allContestRewards, error: rewardSumError } = await supabase
-      .from("contests")
-      .select("reward");
+        // Compute stats
+        const totalAttempts = profileData.contest_status?.length || 0;
+        const successfulAttempts =
+            profileData.contest_status?.filter((c) => c.status === "ACCEPTED")
+                .length || 0;
+        const failedAttempts =
+            profileData.contest_status?.filter((c) => c.status === "REJECTED")
+                .length || 0;
 
-    if (!rewardSumError && Array.isArray(allContestRewards)) {
-      xpTarget = allContestRewards.reduce((sum, current) => {
-        const rewardValue = Number(current?.reward ?? 0);
-        return sum + (Number.isFinite(rewardValue) ? rewardValue : 0);
-      }, 0);
+        // Map and structure recent activities
+        const recentActivities =
+            profileData.profile_activities?.map((activity) => ({
+                status: activity.status,
+                unique_code: activity.unique_code,
+                created_at: activity.created_at,
+                contest: {
+                    id: activity.contests?.id,
+                    title: activity.contests?.title,
+                },
+            })) || [];
+
+        const result = {
+            profile: {
+                id: profileData.id,
+                full_name: profileData.full_name,
+                username: profileData.username,
+                email: profileData.email,
+                avatar_url: profileData.avatar_url,
+                bio: profileData.bio,
+                tag_line: profileData.tag_line,
+                score: profileData.profile_metrics?.score,
+                rank: profileData.profile_metrics?.rank,
+            },
+            stats: {
+                totalAttempts,
+                successfulAttempts,
+                failedAttempts,
+            },
+            recentActivities,
+        };
+
+        return NextResponse.json(result);
+    } catch (e: any) {
+        return NextResponse.json(
+            { error: e?.message ?? "Unknown error" },
+            { status: 500 },
+        );
     }
-
-    const challenges = contestsWithMeta.length;
-    const bugsFound = contestsWithMeta.filter(
-      (contest) => contest.status.toLowerCase() === "pass"
-    ).length;
-    const unsuccessfulAttempts = contestsWithMeta.filter(
-      (contest) => contest.status.toLowerCase() === "fail"
-    ).length;
-    const level = Math.max(Math.floor(score / 1000), 1);
-
-    const metrics = {
-      Challenges: challenges,
-      Bugs_found: bugsFound,
-      Unsuccessful_attempts: unsuccessfulAttempts,
-      Level: level,
-      score: score,
-      rank,
-      xpTarget,
-    };
-
-    const activity = { contest: contestsWithMeta };
-
-    return NextResponse.json(
-      {
-        profile: {
-          id: data.id,
-          full_name: data.full_name,
-          username: data.username,
-          email: data.email,
-          avatar_url: data.avatar_url,
-          bio: data.bio,
-          tag_line: data.tag_line,
-          metrics,
-          activity,
-        },
-      },
-      { status: 200 }
-    );
-  } catch (e: any) {
-    return NextResponse.json(
-      { error: e?.message ?? "Unknown error" },
-      { status: 500 }
-    );
-  }
 }
 
 export async function PUT(request: Request) {
-  try {
-    const supabase = await createClient();
+    try {
+        const supabase = await createClient();
 
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
+        const {
+            data: { user },
+            error: userError,
+        } = await supabase.auth.getUser();
 
-    if (userError) {
-      return NextResponse.json({ error: userError.message }, { status: 500 });
-    }
+        if (userError) {
+            return NextResponse.json(
+                { error: userError.message },
+                { status: 500 },
+            );
+        }
 
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+        if (!user) {
+            return NextResponse.json(
+                { error: "Unauthorized" },
+                { status: 401 },
+            );
+        }
 
-    const body = await request.json().catch(() => ({}));
-    const { bio, tag_line } = body ?? {};
+        const body = await request.json().catch(() => ({}));
+        const { bio, tag_line } = body ?? {};
 
-    const updatePayload: Record<string, any> = {};
-    if (typeof bio === "string") updatePayload.bio = bio;
-    if (typeof tag_line === "string") updatePayload.tag_line = tag_line;
+        const updatePayload: Record<string, any> = {};
+        if (typeof bio === "string") updatePayload.bio = bio;
+        if (typeof tag_line === "string") updatePayload.tag_line = tag_line;
 
-    if (Object.keys(updatePayload).length === 0) {
-      return NextResponse.json(
-        { error: "No valid fields to update" },
-        { status: 400 }
-      );
-    }
+        if (Object.keys(updatePayload).length === 0) {
+            return NextResponse.json(
+                { error: "No valid fields to update" },
+                { status: 400 },
+            );
+        }
 
-    const { data, error } = await supabase
-      .from("profiles")
-      .update(updatePayload)
-      .eq("id", user.id)
-      .select(
-        `id,
+        const { data, error } = await supabase
+            .from("profiles")
+            .update(updatePayload)
+            .eq("id", user.id)
+            .select(
+                `id,
         full_name,
         username,
         email,
@@ -221,19 +174,19 @@ export async function PUT(request: Request) {
         profile_metrics (
           score,
           rank
-        )`
-      )
-      .single();
+        )`,
+            )
+            .single();
 
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+        if (error) {
+            return NextResponse.json({ error: error.message }, { status: 500 });
+        }
+
+        return NextResponse.json({ profile: data }, { status: 200 });
+    } catch (e: any) {
+        return NextResponse.json(
+            { error: e?.message ?? "Unknown error" },
+            { status: 500 },
+        );
     }
-
-    return NextResponse.json({ profile: data }, { status: 200 });
-  } catch (e: any) {
-    return NextResponse.json(
-      { error: e?.message ?? "Unknown error" },
-      { status: 500 }
-    );
-  }
 }
