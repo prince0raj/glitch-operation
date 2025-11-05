@@ -13,6 +13,8 @@ import {
   XCircle,
   ArrowRight,
   RefreshCcw,
+  Linkedin,
+  ExternalLink,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useFetch } from "@/app/hook/useFetch";
@@ -27,6 +29,7 @@ export default function ProfilePage() {
   const [bio, setBio] = useState("");
   const [level, setLevel] = useState<number>(1);
   const [score, setScore] = useState<number>(0);
+  const [social_id, setSocialId] = useState<string>("");
   const [metrics, setMetrics] = useState<{
     Challenges: number;
     Bugs_found: number;
@@ -81,6 +84,7 @@ export default function ProfilePage() {
     setUsername(profile?.username || "");
     setTitle(profile?.tag_line || "");
     setBio(profile?.bio || "");
+    setSocialId(profile?.social_id || "");
     setMetrics({
       Challenges: getData.stats.totalAttempts,
       Bugs_found: getData.stats.successfulAttempts,
@@ -257,6 +261,20 @@ export default function ProfilePage() {
                 <TrendingUp className="w-4 h-4" />
                 <span className="text-sm">
                   Rank #{metrics?.rank ?? 0} Globally
+                </span>
+                <span>|</span>
+                <span className="bg-[#00d492]/10 px-2 py-1 rounded-lg hover:bg-[#00d492]/20">
+                  <a
+                    className="flex items-center gap-2"
+                    href={social_id}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Linkedin className="w-4 h-4" />{" "}
+                    <p className="text-[14px] flex items-center gap-1">
+                      visit-profile <ExternalLink className="w-3 h-3" />
+                    </p>
+                  </a>
                 </span>
               </div>
 
