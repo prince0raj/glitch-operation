@@ -38,7 +38,6 @@ export async function GET(request: Request) {
             bio,
             tag_line,
             profile_metrics (
-              score,
               rank
             ),
             contest_status (
@@ -47,7 +46,8 @@ export async function GET(request: Request) {
               contest_id,
               contests (
                 id,
-                title
+                title,
+                reward
               )
             ),
             profile_activities (
@@ -57,7 +57,8 @@ export async function GET(request: Request) {
               unique_code,
               contests (
                 id,
-                title
+                title,
+                reward
               )
             )
           `,
@@ -80,6 +81,10 @@ export async function GET(request: Request) {
         const failedAttempts =
             profileData.contest_status?.filter((c) => c.status === "REJECTED")
                 .length || 0;
+        const totalXPAchieved =
+          profileData.contest_status
+            ?.filter(c => c.status === "ACCEPTED")
+            .reduce((sum, c) => sum + (c.contests?.reward || 0), 0) || 0;
 
         // Map and structure recent activities
         const recentActivities =
@@ -90,8 +95,12 @@ export async function GET(request: Request) {
                 contest: {
                     id: activity.contests?.id,
                     title: activity.contests?.title,
+                    reward: activity.contests?.reward
                 },
             })) || [];
+
+        const currentLevel = Math.floor(totalXPAchieved / 1000);
+        const maxLevelXP = (currentLevel * 1000) + 1000;
 
         const result = {
             profile: {
@@ -102,7 +111,9 @@ export async function GET(request: Request) {
                 avatar_url: profileData.avatar_url,
                 bio: profileData.bio,
                 tag_line: profileData.tag_line,
-                score: profileData.profile_metrics?.score,
+                totalXPAchieved: totalXPAchieved,
+                currentLevel,
+                maxLevelXP,
                 rank: profileData.profile_metrics?.rank,
             },
             stats: {
