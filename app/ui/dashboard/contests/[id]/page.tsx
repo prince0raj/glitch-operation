@@ -15,6 +15,8 @@ import {
 import { Preloader } from "@/app/commonComponents/Preloader/Preloader";
 import { useFetch } from "@/app/hook/useFetch";
 import Link from "next/link";
+import { Tooltip, TooltipContent } from "@/components/ui/tooltip";
+import { TooltipTrigger } from "@radix-ui/react-tooltip";
 
 type Creator = {
   profiles: {
@@ -376,7 +378,7 @@ export default function ContestDetailPage() {
                     {creatorProfiles.map((profile, index) => (
                       <div
                         key={`${profile.name}-${profile.href}-${index}`}
-                        className="group relative w-full overflow-hidden rounded-xl border border-[#00d492]/20 bg-black/40 p-2 transition-colors hover:border-[#00d492]/40 max-w-[340px]"
+                        className="group relative w-full overflow-hidden rounded-xl border border-[#00d492]/20 bg-black/40 p-2 transition-colors hover:border-[#00d492]/40 max-w-[360px]"
                       >
                         <div className="absolute inset-0 bg-gradient-to-r from-[#00d492]/10 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
                         <div className="relative flex items-center justify-between gap-3">
@@ -385,12 +387,26 @@ export default function ContestDetailPage() {
                               {profile.initials}
                             </div>
                             <div>
-                              <p className="text-sm font-semibold text-white">
-                                {profile.name || "Anonymous Creator"}
-                              </p>
-                              <p className="text-xs text-gray-400">
-                                {profile.hostname || "Profile details"}
-                              </p>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <p className="text-sm font-semibold text-white block max-w-[130px] truncate overflow-hidden whitespace-nowrap">
+                                    {profile.name || "Anonymous Creator"}
+                                  </p>
+                                </TooltipTrigger>
+                                <TooltipContent side="bottom">
+                                  {profile.name || "Anonymous Creator"}
+                                </TooltipContent>
+                              </Tooltip>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <p className="text-xs text-gray-400 block max-w-[130px] truncate overflow-hidden whitespace-nowrap">
+                                    {profile.hostname || "Profile details"}
+                                  </p>
+                                </TooltipTrigger>
+                                <TooltipContent side="bottom">
+                                  {profile.hostname || "Anonymous Creator"}
+                                </TooltipContent>
+                              </Tooltip>
                             </div>
                           </div>
                           {profile.href ? (
