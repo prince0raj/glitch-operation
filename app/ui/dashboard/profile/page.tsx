@@ -161,6 +161,7 @@ export default function ProfilePage() {
     const body = {
       bio,
       tag_line: title,
+      social_id,
     };
 
     await saveProfile({ body });
@@ -263,19 +264,31 @@ export default function ProfilePage() {
                   Rank #{metrics?.rank ?? 0} Globally
                 </span>
                 <span>|</span>
-                <span className="bg-[#00d492]/10 px-2 py-1 rounded-lg hover:bg-[#00d492]/20">
-                  <a
-                    className="flex items-center gap-2"
-                    href={social_id}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Linkedin className="w-4 h-4" />{" "}
-                    <p className="text-[14px] flex items-center gap-1">
-                      visit-profile <ExternalLink className="w-3 h-3" />
-                    </p>
-                  </a>
-                </span>
+                {isEditing ? (
+                  <input
+                    type="url"
+                    value={social_id}
+                    placeholder="https://www.linkedin.com/in/your-id"
+                    onChange={(e) => setSocialId(e.target.value)}
+                    className="text-sm my-2 text-gray-400 bg-black/40 border border-[#00d492]/30 rounded-lg px-3 py-1 w-full max-w-md focus:outline-none focus:border-[#00d492]"
+                  />
+                ) : (
+                  social_id && (
+                    <span className="bg-[#00d492]/10 px-2 py-1 rounded-lg hover:bg-[#00d492]/20">
+                      <a
+                        className="flex items-center gap-2"
+                        href={social_id}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <Linkedin className="w-4 h-4" />{" "}
+                        <p className="text-[14px] flex items-center gap-1">
+                          visit-profile <ExternalLink className="w-3 h-3" />
+                        </p>
+                      </a>
+                    </span>
+                  )
+                )}
               </div>
 
               {/* Bio */}

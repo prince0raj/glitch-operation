@@ -147,11 +147,12 @@ export async function PUT(request: Request) {
     }
 
     const body = await request.json().catch(() => ({}));
-    const { bio, tag_line } = body ?? {};
+    const { bio, tag_line, social_id } = body ?? {};
 
     const updatePayload: Record<string, any> = {};
     if (typeof bio === "string") updatePayload.bio = bio;
     if (typeof tag_line === "string") updatePayload.tag_line = tag_line;
+    if (typeof social_id === "string") updatePayload.social_id = social_id;
 
     if (Object.keys(updatePayload).length === 0) {
       return NextResponse.json(
@@ -172,6 +173,7 @@ export async function PUT(request: Request) {
         avatar_url,
         bio,
         tag_line,
+        social_id,
         profile_metrics (
           score,
           rank
