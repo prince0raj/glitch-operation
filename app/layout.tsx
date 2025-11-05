@@ -17,12 +17,63 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "GlitchOps - Bug Bounty Platform",
-  description: "Find bugs, earn rewards, and level up your debugging skills",
+  title: "GlitchOps - Bug Bounty & Debugging Platform",
+  description:
+    "Enter the world of GlitchOps — a hacker-themed bug bounty playground. Hunt bugs, earn rewards, level up your debugging skills, and dominate the leaderboard.",
+  keywords: [
+    "bug bounty",
+    "debugging challenges",
+    "ethical hacking",
+    "cybersecurity training",
+    "gamified learning",
+    "hacker platform",
+    "code debugging",
+    "GlitchOps",
+  ],
+  authors: [{ name: "GlitchOps Team", url: "https://opsglitch.com" }],
+  creator: "GlitchOps",
+  publisher: "GlitchOps",
+  metadataBase: new URL("https://opsglitch.com"),
+  openGraph: {
+    title: "GlitchOps - Bug Bounty & Debugging Platform",
+    description:
+      "Join GlitchOps to find bugs, earn rewards, and sharpen your debugging and ethical hacking skills in a neon cyber environment.",
+    url: "https://opsglitch.com",
+    siteName: "GlitchOps",
+    images: [
+      {
+        url: "https://opsglitch.com/Ops.Glitch.png",
+        width: 1200,
+        height: 630,
+        alt: "GlitchOps - Bug Bounty & Debugging Platform",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+
+    determiner: "the",
+    emails: ["ops.glitch.hack@gmail.com"]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "GlitchOps - Bug Bounty & Debugging Platform",
+    description:
+      "Find bugs. Earn rewards. Level up your debugging skills in a hacker-themed playground.",
+    creator: "@GlitchOps",
+    images: ["https://opsglitch.com/Ops.Glitch.png"],
+  },
+  themeColor: "#0ff",
+  category: "Cybersecurity",
   icons: {
     icon: "/terminal-icon.svg",
+    shortcut: "/terminal-icon.svg",
+    apple: "/apple-touch-icon.png",
+  },
+  alternates: {
+    canonical: "https://opsglitch.com",
   },
 };
+
 
 export default function RootLayout({
   children,
