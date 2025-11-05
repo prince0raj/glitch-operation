@@ -19,7 +19,7 @@ export const getContestStatusForUser = async (supabase: SupabaseClient, contestI
     return contestStatusDetails.status as string;
 }
 
-export const validateContestCode = async (supabase: SupabaseClient, code: string, contestID: string) => {
+export const validateContestCode = async (supabase: SupabaseClient, contestID: string, code: string) => {
     const { data: contestCodeData, error } = await supabase.from('contest_codes').select().eq('contest_id', contestID).eq('code', code).eq('is_active', true).limit(1).single();
     if(error) {
         return false;
