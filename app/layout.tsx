@@ -20,6 +20,9 @@ export const metadata: Metadata = {
   title: "GlitchOps - Bug Bounty & Debugging Platform",
   description:
     "Enter the world of GlitchOps — a hacker-themed bug bounty playground. Hunt bugs, earn rewards, level up your debugging skills, and dominate the leaderboard.",
+    other: {
+    "google-site-verification": "HiOOE0gl5vSE9dXEsbfVTE5zIcYdB-fUeXDkL4OvjWI",
+  },
   keywords: [
     "bug bounty",
     "debugging challenges",
