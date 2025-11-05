@@ -54,7 +54,9 @@ export default function ProfilePage() {
     data: getData,
     error: getError,
     loading: getLoading,
-  } = useFetch<{ profile: any }>("/api/v1/profile");
+  } = useFetch<{ profile: any; stats: any; recentActivities: any }>(
+    "/api/v1/profile"
+  );
 
   useEffect(() => {
     if (getError) setError(getError);
@@ -62,29 +64,31 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (!getData?.profile) return;
+    // console.log(getData);
+
     const profile = getData.profile;
     setUsername(profile?.username || "");
     setTitle(profile?.tag_line || "");
     setBio(profile?.bio || "");
-    const m = profile?.metrics || null;
-    setMetrics(m);
-    const lvl = Number(m?.Level ?? 1);
-    setLevel(Number.isFinite(lvl) ? lvl : 1);
-    const scr =
-      typeof m?.score === "number"
-        ? m.score
-        : Number.parseInt(String(m?.score ?? 0));
-    setScore(Number.isFinite(scr) ? scr : 0);
-    const act = profile?.activity?.contest ?? [];
+    setMetrics({
+      Challenges: getData.stats.totalAttempts,
+      Bugs_found: getData.stats.successfulAttempts,
+      Unsuccessful_attempts: getData.stats.failedAttempts,
+      score: getData.profile.totalXPAchieved,
+      Level: Math.max(getData.profile.totalXPAchieved / 1000, 1),
+      rank: getData.profile.rank,
+      xpTarget: getData.profile.maxLevelXP,
+    });
+    setLevel(getData.profile.currentLevel);
+    setScore(getData.profile.totalXPAchieved);
+    const act = getData?.recentActivities ?? [];
     const normalisedActivities = Array.isArray(act)
       ? act.map((item: any) => ({
-          contest_id: String(item?.contest_id ?? ""),
-          title: item?.title ? String(item.title) : null,
+          contest_id: String(item?.contest?.id ?? ""),
+          title: item?.contest?.title ? String(item?.contest?.title) : null,
           status: String(item?.status ?? ""),
-          submission_time: item?.submission_time
-            ? String(item.submission_time)
-            : null,
-          reward: Number(item?.reward ?? 0) || 0,
+          submission_time: item?.created_at ? String(item.created_at) : null,
+          reward: Number(item?.contest?.reward ?? 0) || 0,
         }))
       : [];
     setActivities(normalisedActivities);
