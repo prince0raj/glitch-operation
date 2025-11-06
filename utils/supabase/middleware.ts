@@ -35,9 +35,15 @@ export async function updateSession(request: NextRequest) {
 
   // IMPORTANT: DO NOT REMOVE auth.getUser()
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user = null;
+
+  try {
+    const { data, error } = await supabase.auth.getUser();
+    if (error) console.error("Supabase auth error:", error);
+      user = data?.user || null;
+  } catch (err) {
+    console.error("UTF-8 decode error:", err);
+  }
 
   if (
     !user &&
