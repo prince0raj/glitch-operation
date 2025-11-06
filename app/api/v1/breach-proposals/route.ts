@@ -39,6 +39,10 @@ export async function GET(request: Request) {
 
   try {
     const supabase = await createClient();
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
 
     const { data, error } = await supabase
       .from("breach_proposal")
@@ -59,8 +63,9 @@ export async function GET(request: Request) {
           )
         `
       )
-      .eq("profiles.email", email) // ✅ correct filter path
+      .eq("profile_id", user?.id) // ✅ correct filter path
       .order("created_at", { ascending: false });
+      
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
