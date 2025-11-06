@@ -42,6 +42,8 @@ export async function updateSession(request: NextRequest) {
     if (error) console.error("Supabase auth error:", error);
       user = data?.user || null;
   } catch (err) {
+    supabaseResponse.cookies.delete("sb-llcbltsgwobmfjqqgara-auth-token.0");
+    supabaseResponse.cookies.delete("sb-llcbltsgwobmfjqqgara-auth-token.1");
     console.error("UTF-8 decode error:", err);
   }
 
