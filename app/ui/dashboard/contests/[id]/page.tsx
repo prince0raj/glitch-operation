@@ -83,6 +83,7 @@ export default function ContestDetailPage() {
     requirements: string[] | null;
     target_url: string | null;
     submissions: number;
+    reference: string | null;
   };
 
   const [contest, setContest] = useState<Contest | null>(null);
@@ -376,7 +377,17 @@ export default function ContestDetailPage() {
                     <AlertCircle className="w-4 h-4 text-[#00d492]" />
                     <span className="text-xs text-gray-400">Difficulty</span>
                   </div>
-                  <p className="text-lg font-bold text-yellow-400">
+                  <p
+                    className={`text-lg font-bold ${
+                      contest.difficulty === "EASY"
+                        ? "text-green-400"
+                        : contest.difficulty === "MEDIUM"
+                        ? "text-yellow-400"
+                        : contest.difficulty === "HARD"
+                        ? "text-red-400"
+                        : "text-gray-400"
+                    }`}
+                  >
                     {contest.difficulty}
                   </p>
                 </div>
@@ -401,7 +412,7 @@ export default function ContestDetailPage() {
 
                   <div className="relative mt-4 flex flex-col sm:flex-row md:mt-0 md:items-center gap-3">
                     <a
-                      href={contest?.target_url||""}
+                      href={contest?.target_url || ""}
                       target="_blank"
                       // onClick={handleStartMission}
                       // disabled={!contest}
@@ -409,11 +420,27 @@ export default function ContestDetailPage() {
                     >
                       <span className="absolute inset-0 bg-gradient-to-r from-[#00d492]/20 via-transparent to-[#00d492]/25 opacity-0 transition-opacity group-hover:opacity-100" />
                       <span className="relative z-10">Launch</span>
-                      <ExternalLink size={21}/>
+                      <ExternalLink size={21} />
                     </a>
                   </div>
                 </div>
               </div>
+
+              {/* reference */}
+              {contest.reference && (
+                <div className="mt-6 mb-6">
+                  <h3 className="text-lg font-bold text-[#00d492] mb-2">
+                    Reference (Blog)
+                  </h3>
+                  <a
+                    href={contest.reference}
+                    target="_blank"
+                    className="flex underline items-baseline gap-2 text-gray-400 hover:text-teal-600"
+                  >
+                    https://reference.opsglitch.com/
+                  </a>
+                </div>
+              )}
 
               {/* Requirements */}
               <div className="mt-6 mb-6">

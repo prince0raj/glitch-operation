@@ -49,11 +49,11 @@ export default function ContestsPage() {
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case "Easy":
+      case "EASY":
         return "text-green-400 bg-green-400/10 border-green-400/30";
-      case "Medium":
+      case "MEDIUM":
         return "text-yellow-400 bg-yellow-400/10 border-yellow-400/30";
-      case "Hard":
+      case "HARD":
         return "text-red-400 bg-red-400/10 border-red-400/30";
       default:
         return "text-gray-400 bg-gray-400/10 border-gray-400/30";
