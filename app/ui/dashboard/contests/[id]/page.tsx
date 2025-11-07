@@ -15,6 +15,7 @@ import {
   Loader2,
   Frown,
   LocateOff,
+  ExternalLink,
 } from "lucide-react";
 import { Preloader } from "@/app/commonComponents/Preloader/Preloader";
 import { useFetch } from "@/app/hook/useFetch";
@@ -399,15 +400,17 @@ export default function ContestDetailPage() {
                   </div>
 
                   <div className="relative mt-4 flex flex-col sm:flex-row md:mt-0 md:items-center gap-3">
-                    <button
-                      type="button"
-                      onClick={handleStartMission}
-                      disabled={!contest}
+                    <a
+                      href={contest?.target_url||""}
+                      target="_blank"
+                      // onClick={handleStartMission}
+                      // disabled={!contest}
                       className="group cursor-pointer relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full border border-[#00d492]/50 bg-[#00d492]/10 px-6 py-3 text-sm font-semibold uppercase tracking-[0.32em] text-[#00d492] transition-all hover:bg-[#00d492]/15 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       <span className="absolute inset-0 bg-gradient-to-r from-[#00d492]/20 via-transparent to-[#00d492]/25 opacity-0 transition-opacity group-hover:opacity-100" />
                       <span className="relative z-10">Launch</span>
-                    </button>
+                      <ExternalLink size={21}/>
+                    </a>
                   </div>
                 </div>
               </div>
