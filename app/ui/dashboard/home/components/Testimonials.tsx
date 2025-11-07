@@ -27,8 +27,8 @@ type Testimonial = {
     profile_metrics: {
       rank: string;
       score: string;
-    }
-  }
+    };
+  };
 };
 
 const Testimonials = () => {
@@ -148,7 +148,10 @@ const Testimonials = () => {
                 }}
               >
                 {testimonials.map((testimonial) => {
-                  const rating = Math.max(0, Math.min(5, Number(testimonial.rating) || 0));
+                  const rating = Math.max(
+                    0,
+                    Math.min(5, Number(testimonial.rating) || 0)
+                  );
                   const formattedRating = rating > 0 ? rating.toFixed(1) : null;
                   return (
                     <div
@@ -161,7 +164,9 @@ const Testimonials = () => {
                           <header className="flex items-start justify-between gap-4">
                             <div className="flex items-start gap-3">
                               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-emerald-500/40 bg-emerald-500/15 text-lg font-semibold text-emerald-200">
-                                {renderAvatar(testimonial.profile.full_name.slice(0, 2))}
+                                {renderAvatar(
+                                  testimonial.profile.full_name.slice(0, 2)
+                                )}
                               </div>
                               <div className="space-y-1">
                                 <h3 className="flex items-center gap-2 text-base font-semibold text-slate-100">
@@ -185,12 +190,16 @@ const Testimonials = () => {
                                   ) : null}
                                 </h3>
                                 <p className="text-xs uppercase tracking-[0.25em] text-emerald-300/70 line-clamp-1">
-                                  {testimonial.profile.role || "Security Operative"}
+                                  {testimonial.profile.role ||
+                                    "Security Operative"}
                                 </p>
                                 <div className="inline-flex items-center gap-1 text-xs text-emerald-200/80">
                                   <Shield className="h-3 w-3" />
                                   <span className="line-clamp-1">
-                                    {String(testimonial.profile.profile_metrics.score) + " XP" || "Level undisclosed"}
+                                    {String(
+                                      testimonial?.profile?.profile_metrics
+                                        ?.score
+                                    ) + " XP" || "Level undisclosed"}
                                   </span>
                                 </div>
                               </div>
