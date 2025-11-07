@@ -2,11 +2,11 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 
 export async function GET() {
-    try {
-        const supabase = await createClient();
+  try {
+    const supabase = await createClient();
 
-        let { data: testimonials, error } = await supabase.from("testimonals")
-            .select(`
+    let { data: testimonials, error } = await supabase.from("testimonals")
+      .select(`
         id,
         text,
         rating,
@@ -14,7 +14,6 @@ export async function GET() {
           id,
           full_name,
           social_id,
-          email,
           username,
           avatar_url,
           role,
@@ -26,18 +25,18 @@ export async function GET() {
         )
       `);
 
-        if (error) {
-            return NextResponse.json({ error: error.message }, { status: 500 });
-        }
-
-        return NextResponse.json(
-            { testimonials: testimonials ?? [] },
-            { status: 200 },
-        );
-    } catch (e: any) {
-        return NextResponse.json(
-            { error: e?.message ?? "Unknown error" },
-            { status: 500 },
-        );
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
+
+    return NextResponse.json(
+      { testimonials: testimonials ?? [] },
+      { status: 200 }
+    );
+  } catch (e: any) {
+    return NextResponse.json(
+      { error: e?.message ?? "Unknown error" },
+      { status: 500 }
+    );
+  }
 }

@@ -20,7 +20,6 @@ type Testimonial = {
     id: string;
     social_id: string | null;
     full_name: string;
-    email: string;
     username: string;
     avatar_url: string;
     role: string;
