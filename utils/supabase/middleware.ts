@@ -40,7 +40,7 @@ export async function updateSession(request: NextRequest) {
   try {
     const { data, error } = await supabase.auth.getUser();
     if (error) console.error("Supabase auth error:", error);
-      user = data?.user || null;
+    user = data?.user || null;
   } catch (err) {
     supabaseResponse.cookies.delete("sb-llcbltsgwobmfjqqgara-auth-token.0");
     supabaseResponse.cookies.delete("sb-llcbltsgwobmfjqqgara-auth-token.1");
@@ -53,7 +53,8 @@ export async function updateSession(request: NextRequest) {
     !request.nextUrl.pathname.startsWith("/auth") &&
     !request.nextUrl.pathname.startsWith("/error") &&
     !request.nextUrl.pathname.startsWith("/ui/controller") &&
-    !request.nextUrl.pathname.startsWith("/api/v2")
+    !request.nextUrl.pathname.startsWith("/api/v2") &&
+    !request.nextUrl.pathname.startsWith("/ui/public")
   ) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone();
