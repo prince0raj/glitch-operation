@@ -19,7 +19,6 @@ export async function GET() {
           role,
           profile_metrics: profile_metrics (
             id,
-            score,
             rank
           )
         )
