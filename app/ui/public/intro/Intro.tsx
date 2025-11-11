@@ -315,12 +315,12 @@ const IntroPage = () => {
                         <video
                             ref={videoRef}
                             className="w-full h-full object-cover cursor-pointer"
-                            src="https://orbitlinker.com/assets//video/Into.mp4"
+                            src="/assets/video/contest.mp4"
                             onClick={togglePlayPause}
                             controls={false}
                             playsInline
                             preload="metadata"
-                            poster="/video-poster.jpg"
+                            poster="/assets/img/contest-poster.png"
                         />
 
                         {/* Play/Pause Overlay */}
