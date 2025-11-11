@@ -175,7 +175,6 @@ export async function PUT(request: Request) {
         tag_line,
         social_id,
         profile_metrics (
-          score,
           rank
         )`
       )
