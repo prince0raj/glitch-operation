@@ -86,6 +86,7 @@ const Testimonials = () => {
           <h2 className="text-4xl font-bold tracking-wider">
             <span className="text-[#00d492]">COMMUNITY INTEL</span>
           </h2>
+          <div className="w-28 h-[2px] bg-gradient-to-r from-transparent via-[#00d492] to-transparent mx-auto my-6 rounded-full" />
         </div>
 
         {/* Carousel Container */}
@@ -94,34 +95,30 @@ const Testimonials = () => {
           <button
             onClick={prevSlide}
             disabled={!canGoPrev}
-            className={`absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 z-10 w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-all ${
-              canGoPrev
+            className={`absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 z-10 w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-all ${canGoPrev
                 ? "bg-[#00d492]/20 hover:bg-[#00d492]/30 border border-[#00d492]/40 hover:scale-110 cursor-pointer"
                 : "bg-gray-500/10 border border-gray-500/20 cursor-not-allowed opacity-50"
-            }`}
+              }`}
             aria-label="Previous"
           >
             <ChevronLeft
-              className={`w-5 h-5 md:w-6 md:h-6 ${
-                canGoPrev ? "text-[#00d492]" : "text-gray-500"
-              }`}
+              className={`w-5 h-5 md:w-6 md:h-6 ${canGoPrev ? "text-[#00d492]" : "text-gray-500"
+                }`}
             />
           </button>
 
           <button
             onClick={nextSlide}
             disabled={!canGoNext}
-            className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 z-10 w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-all ${
-              canGoNext
+            className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 z-10 w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-all ${canGoNext
                 ? "bg-[#00d492]/20 hover:bg-[#00d492]/30 border border-[#00d492]/40 hover:scale-110 cursor-pointer"
                 : "bg-gray-500/10 border border-gray-500/20 cursor-not-allowed opacity-50"
-            }`}
+              }`}
             aria-label="Next"
           >
             <ChevronRight
-              className={`w-5 h-5 md:w-6 md:h-6 ${
-                canGoNext ? "text-[#00d492]" : "text-gray-500"
-              }`}
+              className={`w-5 h-5 md:w-6 md:h-6 ${canGoNext ? "text-[#00d492]" : "text-gray-500"
+                }`}
             />
           </button>
 
@@ -141,9 +138,8 @@ const Testimonials = () => {
               <div
                 className="flex transition-transform duration-500 ease-out gap-6"
                 style={{
-                  transform: `translateX(calc(-${currentIndex * 33.33}% - ${
-                    currentIndex * 1.5
-                  }rem))`,
+                  transform: `translateX(calc(-${currentIndex * 33.33}% - ${currentIndex * 1.5
+                    }rem))`,
                 }}
               >
                 {testimonials.map((testimonial) => {
@@ -220,11 +216,11 @@ const Testimonials = () => {
                               ))}
                               {rating < 5
                                 ? [...Array(5 - rating)].map((_, i) => (
-                                    <Star
-                                      key={`empty-${i}`}
-                                      className="h-4 w-4 text-slate-600"
-                                    />
-                                  ))
+                                  <Star
+                                    key={`empty-${i}`}
+                                    className="h-4 w-4 text-slate-600"
+                                  />
+                                ))
                                 : null}
                             </div>
                             <span className="rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2 py-1 text-xs font-medium text-emerald-200">
@@ -249,11 +245,10 @@ const Testimonials = () => {
                 <button
                   key={index}
                   onClick={() => setCurrentIndex(index)}
-                  className={`h-2 rounded-full transition-all ${
-                    index === currentIndex
+                  className={`h-2 rounded-full transition-all ${index === currentIndex
                       ? "w-8 bg-[#00d492]"
                       : "w-2 bg-[#00d492]/30 hover:bg-[#00d492]/50"
-                  }`}
+                    }`}
                   aria-label={`Go to slide ${index + 1}`}
                 />
               ))}
