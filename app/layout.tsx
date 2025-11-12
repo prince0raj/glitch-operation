@@ -18,9 +18,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "GlitchOps - Bug Bounty & Debugging Platform",
+  title: "OPS. GLITCH - Bug Bounty & Debugging Platform",
   description:
-    "Enter the world of GlitchOps — a hacker-themed bug bounty playground. Hunt bugs, earn rewards, level up your debugging skills, and dominate the leaderboard.",
+    "Enter the world of OPS GLITCH — a hacker-themed bug bounty playground. Hunt bugs, earn rewards, level up your debugging skills, and dominate the leaderboard.",
   other: {
     "google-site-verification": "HiOOE0gl5vSE9dXEsbfVTE5zIcYdB-fUeXDkL4OvjWI",
   },
@@ -30,26 +30,27 @@ export const metadata: Metadata = {
     "ethical hacking",
     "cybersecurity training",
     "gamified learning",
-    "hacker platform",
+    "OPS. GLITCH",
     "code debugging",
-    "GlitchOps",
+    "Operations GlitcH",
+    "OPSGLITCH ",
   ],
-  authors: [{ name: "GlitchOps Team", url: "https://www.opsglitch.com" }],
-  creator: "GlitchOps",
-  publisher: "GlitchOps",
+  authors: [{ name: "OPS GLITCH Team", url: "https://www.opsglitch.com" }],
+  creator: "OPS. GLITCH",
+  publisher: "OPS. GLITCH",
   metadataBase: new URL("https://www.opsglitch.com"),
   openGraph: {
-    title: "GlitchOps - Bug Bounty & Debugging Platform",
+    title: "OPS. GLITCH - Bug Bounty & Debugging Platform",
     description:
-      "Join GlitchOps to find bugs, earn rewards, and sharpen your debugging and ethical hacking skills in a neon cyber environment.",
+      "Join OPS. GLITCH to find bugs, earn rewards, and sharpen your debugging and ethical hacking skills in a neon cyber environment.",
     url: "https://www.opsglitch.com",
-    siteName: "GlitchOps",
+    siteName: "OPS. GLITCH",
     images: [
       {
-        url: "/Ops.Glitch.png",
+        url: "/OpsGlitch.png",
         width: 1200,
         height: 630,
-        alt: "GlitchOps - Bug Bounty & Debugging Platform",
+        alt: "OPS. GLITCH - Bug Bounty & Debugging Platform",
       },
     ],
     locale: "en_US",
@@ -60,11 +61,11 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "GlitchOps - Bug Bounty & Debugging Platform",
+    title: "OPS. GLITCH - Bug Bounty & Debugging Platform",
     description:
       "Find bugs. Earn rewards. Level up your debugging skills in a hacker-themed playground.",
-    creator: "@GlitchOps",
-    images: ["/Ops.Glitch.png"],
+    creator: "@OPS. GLITCH",
+    images: ["/OpsGlitch.png"],
   },
   themeColor: "#0ff",
   category: "Cybersecurity",
