@@ -1,9 +1,24 @@
 "use client";
-import { Trophy, Calendar, Users, Zap, ChevronRight } from "lucide-react";
+import {
+  Trophy,
+  Calendar,
+  Users,
+  Zap,
+  ChevronRight,
+  CircleCheckBig,
+  Activity,
+  Compass,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 import { Preloader } from "@/app/commonComponents/Preloader/Preloader";
 import { useFetch } from "@/app/hook/useFetch";
+import { Constants } from "@/app/utils/Constants";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type Contest = {
   id: string;
@@ -14,6 +29,7 @@ type Contest = {
   status: string;
   short_desc: string | null;
   submissions: number;
+  user_submission_status: string | null;
 };
 
 type ContestsResponse = {
@@ -122,8 +138,34 @@ export default function ContestsPage() {
                 </div>
 
                 {/* Title */}
-                <h3 className="text-xl font-bold text-white mb-3">
+                <h3 className="text-xl font-bold text-white mb-3 flex items-center gap-2.5">
                   {contest.title}
+                  <span className="cursor-pointer">
+                    {contest.user_submission_status ? (
+                      contest.user_submission_status == Constants.ACCEPTED ? (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <CircleCheckBig
+                              color="#00d492"
+                              className="w-4 h-4"
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom">
+                            {Constants.SOLVED}
+                          </TooltipContent>
+                        </Tooltip>
+                      ) : (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Activity color="#fdc600d6" className="w-4 h-4" />
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom">
+                            {Constants.ATTEMPTED}
+                          </TooltipContent>
+                        </Tooltip>
+                      )
+                    ) : null}
+                  </span>
                 </h3>
 
                 {/* Description */}
