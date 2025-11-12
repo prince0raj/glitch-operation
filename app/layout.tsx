@@ -71,13 +71,14 @@ export const metadata: Metadata = {
   themeColor: "#0ff",
   category: "Cybersecurity",
   icons: {
-    icon: [
-      { url: "/terminal-icon.svg", type: "image/svg+xml" },
-      { url: "/terminal-icon-48.png", sizes: "48x48", type: "image/png" },
-      { url: "/terminal-icon-192.png", sizes: "192x192", type: "image/png" },
-      { url: "/terminal-icon-512.png", sizes: "512x512", type: "image/png" },
-    ],
-  },
+  icon: [
+    { url: "/favicon.ico" },
+    { url: "/terminal-icon.svg", type: "image/svg+xml" },
+    { url: "/terminal-con-48.png", sizes: "48x48", type: "image/png" },
+    { url: "/terminal-icon-192.png", sizes: "192x192", type: "image/png" },
+    { url: "/terminal-icon-512.png", sizes: "512x512", type: "image/png" },
+  ],
+},
   alternates: {
     canonical: "https://www.opsglitch.com",
   },
@@ -90,6 +91,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/terminal-icon-192.png" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
