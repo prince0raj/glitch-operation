@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
 import StyledComponentsRegistry from "@/lib/registry";
 import { Toaster } from "sonner";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import Script from "next/script";
 
 const geistSans = Geist({
@@ -20,7 +21,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "OPS. GLITCH - Bug Bounty & Debugging Platform",
   description:
-    "Enter the world of OPS GLITCH — a hacker-themed bug bounty playground. Hunt bugs, earn rewards, level up your debugging skills, and dominate the leaderboard.",
+    "Enter the world of Operation Glitch (OPS GLITCH) — a hacker-themed bug bounty playground. Hunt bugs, earn rewards, level up your debugging skills, and dominate the leaderboard.",
   other: {
     "google-site-verification": "HiOOE0gl5vSE9dXEsbfVTE5zIcYdB-fUeXDkL4OvjWI",
   },
@@ -57,7 +58,7 @@ export const metadata: Metadata = {
     type: "website",
 
     determiner: "the",
-    emails: ["ops.glitch.hack@gmail.com"]
+    emails: ["ops.glitch.hack@gmail.com"],
   },
   twitter: {
     card: "summary_large_image",
@@ -70,18 +71,17 @@ export const metadata: Metadata = {
   themeColor: "#0ff",
   category: "Cybersecurity",
   icons: {
-  icon: [
-    { url: "/terminal-icon.svg", type: "image/svg+xml" },
-    { url: "/terminal-icon-48.png", sizes: "48x48", type: "image/png" },
-    { url: "/terminal-icon-192.png", sizes: "192x192", type: "image/png" },
-    { url: "/terminal-icon-512.png", sizes: "512x512", type: "image/png" },
-  ],
-},
+    icon: [
+      { url: "/terminal-icon.svg", type: "image/svg+xml" },
+      { url: "/terminal-icon-48.png", sizes: "48x48", type: "image/png" },
+      { url: "/terminal-icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/terminal-icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+  },
   alternates: {
     canonical: "https://www.opsglitch.com",
   },
 };
-
 
 export default function RootLayout({
   children,
@@ -105,8 +105,6 @@ export default function RootLayout({
     gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}');
   `}
         </Script>
-
-
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
@@ -120,6 +118,7 @@ export default function RootLayout({
             <Toaster position="top-right" theme="dark" richColors closeButton />
           </TooltipProvider>
         </ThemeProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
