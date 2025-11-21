@@ -19,19 +19,19 @@
   </url>
 
   <url>
-    <loc>https://opsglitch.com/ui/dashboard/profile</loc>
+    <loc>https://www.opsglitch.com/ui/dashboard/profile</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
 
   <url>
-    <loc>https://opsglitch.com/ui/dashboard/contact</loc>
+    <loc>https://www.opsglitch.com/ui/dashboard/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
 
   <url>
-    <loc>https://opsglitch.com/ui/dashboard/breach-proposal</loc>
+    <loc>https://www.opsglitch.com/ui/dashboard/breach-proposal</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

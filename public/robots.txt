@@ -10,4 +10,4 @@ Disallow: /api/
 Allow: /login
 
 # Sitemap
-Sitemap: https://opsglitch.com/sitemap.xml
+Sitemap: https://www.opsglitch.com/sitemap.xml
