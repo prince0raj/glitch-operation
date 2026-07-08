@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { signAdminJwt } from "@/lib/admin-jwt";
 
-const ADMIN_ID = "admin";
-const ADMIN_SECRET = "admin";
+const ADMIN_ID = process.env.ADMIN_ID || "admin";
+const ADMIN_SECRET = process.env.ADMIN_SECRET || "admin";
 
 export async function POST(request: Request) {
   try {
@@ -11,7 +11,7 @@ export async function POST(request: Request) {
     if (!body || typeof body !== "object") {
       return NextResponse.json(
         { error: "Invalid request body" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -23,13 +23,13 @@ export async function POST(request: Request) {
     if (!adminId || !secretKey) {
       return NextResponse.json(
         { error: "`adminId` and `secretKey` are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
     if (adminId !== ADMIN_ID || secretKey !== ADMIN_SECRET) {
       return NextResponse.json(
         { error: "Invalid credentials" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -47,13 +47,13 @@ export async function POST(request: Request) {
         token,
         expiresIn: expiresAt - issuedAt,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Admin login error", error);
     return NextResponse.json(
       { error: "Unable to process request" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
