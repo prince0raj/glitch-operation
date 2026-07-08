@@ -2,6 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+
 **Operation Glitch** is an innovative bug bounty platform that transforms cybersecurity training into an engaging, gamified experience. We bridge the gap between theoretical knowledge and real-world application by providing hands-on challenges that simulate actual security vulnerabilities.
 
 It provides an interactive platform for security researchers (hunters) to sign up, explore active bounty missions, submit breach proposals, track levels and XP progression, and view activity history. Additionally, it features a secure administrative dashboard for managing contests, checking logs, and viewing user submissions.
