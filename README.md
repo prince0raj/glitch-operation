@@ -1,6 +1,6 @@
-# Glitch Operation 🛡️🚀
+# Operation Glitch 🛡️🚀
 
-**Glitch Operation** is a modern, high-performance, and visually stunning open-source **Bug Bounty & Vulnerability Tracking Platform** bootstrapped with Next.js (App Router) and powered by Supabase. 
+**Operation Glitch** is an innovative bug bounty platform that transforms cybersecurity training into an engaging, gamified experience. We bridge the gap between theoretical knowledge and real-world application by providing hands-on challenges that simulate actual security vulnerabilities.
 
 It provides an interactive platform for security researchers (hunters) to sign up, explore active bounty missions, submit breach proposals, track levels and XP progression, and view activity history. Additionally, it features a secure administrative dashboard for managing contests, checking logs, and viewing user submissions.
 
@@ -10,15 +10,15 @@ It provides an interactive platform for security researchers (hunters) to sign u
 
 ---
 
-## 🔗 Quick Links
+## Quick Links
 
-*   📄 **[Setup & Installation Guide](SETUP.md)** - Step-by-step instructions to get up and running locally.
-*   ⚖️ **[MIT License](LICENSE)** - Licensing terms and conditions.
-*   🔒 **[Security Policy](SECURITY.md)** - Guidelines for reporting vulnerability disclosures.
+*   **[Setup & Installation Guide](SETUP.md)** - Step-by-step instructions to get up and running locally.🛡️
+*   **[MIT License](LICENSE)** - Licensing terms and conditions.
+*   **[Security Policy](SECURITY.md)** - Guidelines for reporting vulnerability disclosures.
 
 ---
 
-## ✨ Key Features
+## Key Features
 
 *   **Interactive Public Landing Page**: Showcases live statistics, rules, testimonials, and active bounty hunts.
 *   **XP & Level Tracker**: Calculates researcher level and rank using database-backed XP models from successfully accepted submissions.
@@ -29,7 +29,7 @@ It provides an interactive platform for security researchers (hunters) to sign u
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 *   **Framework**: [Next.js 15](https://nextjs.org/) (App Router, Server Actions)
 *   **Database & Auth**: [Supabase](https://supabase.com/) (SSR, Postgres, Real-time client)
@@ -40,7 +40,7 @@ It provides an interactive platform for security researchers (hunters) to sign u
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 Here is a quick overview of how to run the project locally. For a comprehensive guide including database setup, please read **[SETUP.md](SETUP.md)**.
 
@@ -64,7 +64,7 @@ cp .env.example .env
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser to see the result.
 
 ### 4. Code Standards & Biome Checks
 
@@ -80,6 +80,6 @@ npm run format
 
 ---
 
-## ⚖️ License
+## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
